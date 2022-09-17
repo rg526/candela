@@ -21,7 +21,7 @@ type CourseResponse struct {
 
 type ProfessorResponse struct {
 	Status		string
-	Data		cdmodel.Professor
+	Data        cdmodel.Professor
 }
 
 func getCourse(ctx *gin.Context, conf config) {
@@ -103,7 +103,7 @@ type AuthResponse struct {
 
 type UserResponse struct {
 	Status			string
-	Data			cdmodel.User
+	Token			string
 }
 
 func getAuthCallback(ctx *gin.Context, conf config) {
@@ -143,7 +143,7 @@ func getAuthCallback(ctx *gin.Context, conf config) {
 
 	ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
 			"ErrorTitle": "Success",
-			"ErrorDescription": user.Data.Name + ", " + user.Data.Email})
+			"ErrorDescription": user.Token})
 }
 
 

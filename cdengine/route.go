@@ -15,6 +15,8 @@ import (
 
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
+
+	"github.com/google/uuid"
 )
 
 func getCourse(ctx *gin.Context, db *sql.DB, conf config) {
@@ -146,13 +148,59 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 	user.FamilyName = userResp.FamilyName
 	user.Email = userResp.Email
 
-	// Return result
+	// Generate token
+	userToken := uuid.New().String()
+
+	stmtCheck, err := db.Prepare("SELECT uid FROM user WHERE uid = ?")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+		return
+	}
+	rows, err := stmtCheck.Query(user.UID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+		return
+	}
+	if !rows.Next() {
+		stmtInsert, err := db.Prepare("INSERT INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)")
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+		_, err = stmtInsert.Exec(user.UID, user.Name, user.GivenName ,user.FamilyName, user.Email)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+	}
+
+	stmtInsert, err := db.Prepare("INSERT INTO token (token, uid) VALUES (?, ?)")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+		return
+	}
+	_, err = stmtInsert.Exec(userToken, user.UID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"Status": "OK",
-		"Data": user})
+		"token": userToken})
 }
-
-
 
 
 type config struct {
