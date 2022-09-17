@@ -29,7 +29,7 @@ def generate_course(semester):
 	Return a dict
 		- key CID
 		- value: a dict
-			- key: name, desc, dept, units, prof, prereq, coreq
+			- key: name, description, dept, units, prof, prereq, coreq
 			- value: string/float
 	"""
 	# Read course data
@@ -46,7 +46,7 @@ def generate_course(semester):
 				course["name"]
 				if "name" in course and course["name"] is not None
 				else "Unknown")
-		result[cid]["desc"] = (
+		result[cid]["description"] = (
 				course["desc"]
 				if "desc" in course and course["desc"] is not None
 				else "Unknown")
