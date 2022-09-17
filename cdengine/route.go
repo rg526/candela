@@ -22,21 +22,32 @@ func getCourse(ctx *gin.Context, db *sql.DB) {
 	cid_query := ctx.Query("cid")
 	cid, err := strconv.Atoi(cid_query)
 	if err != nil {
-		log.Fatal("Error", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error": "Error: " + err.Error()})
+		return
 	}
 
 	// Query DB
 	stmtCourse, err := db.Prepare("SELECT cid, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?")
 	if err != nil {
-		log.Fatal("Error", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error": "Error: " + err.Error()})
+		return
 	}
 	err = stmtCourse.QueryRow(cid).Scan(&course.CID, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq, &course.FCEHours, &course.FCETeachingRate, &course.FCECourseRate, &course.FCELevel, &course.FCEStudentCount)
 	if err != nil {
-		log.Fatal("Error", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error": "Error: " + err.Error()})
+		return
 	}
 
 	// Return result
-	ctx.JSON(http.StatusOK, course)
+	ctx.JSON(http.StatusOK, gin.H{
+		"status": "OK",
+		"data": course})
 }
 
 
