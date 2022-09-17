@@ -7,6 +7,7 @@ replace candela/cdmodel => ../cdmodel
 require (
 	candela/cdmodel v0.0.0-00010101000000-000000000000
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-sql-driver/mysql v1.6.0
 )
 
 require (
