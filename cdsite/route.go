@@ -24,13 +24,23 @@ func getCourse(ctx *gin.Context, conf config) {
 
 	// Send CDAPI request
 	res, err := http.Get(url)
-	if err != nil || res.StatusCode != http.StatusOK {
-		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{})
+	if err != nil {
+		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
+			"ErrorTitle": "Service Error",
+			"ErrorDescription": "Unsuccessful connection to CDEngine."})
+		return
+	}
+	if res.StatusCode != http.StatusOK {
+		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
+			"ErrorTitle": "Invalid Request",
+			"ErrorDescription": "Your request is not valid."})
 		return
 	}
 	err = json.NewDecoder(res.Body).Decode(&course)
 	if err != nil {
-		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{})
+		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
+			"ErrorTitle": "Service Error",
+			"ErrorDescription": "CDEngine returns invalid response."})
 		return
 	}
 
