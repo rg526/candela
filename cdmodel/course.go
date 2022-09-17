@@ -1,14 +1,14 @@
 package cdmodel
 
 type Course struct {
-	cid					int
-	description			string
-	dept				string
-	units				float32
-	prof				string
+	CID					int
+	Description			string
+	Dept				string
+	Units				float32
+	Prof				string
 
-	prereq				string
-	coreq				string
+	Prereq				string
+	Coreq				string
 
 	FCEHours			float32
 	FCETeachingRate		float32
