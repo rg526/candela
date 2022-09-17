@@ -105,18 +105,18 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
     authVal.Add("redirect_uri", conf.OAuth2RedirectURI)
     res, err := http.PostForm("https://oauth2.googleapis.com/token", authVal)
     if err != nil {
-        ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
-                "ErrorTitle": "Auth Error",
-                "ErrorDescription": "Error " + err.Error() + "."})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
         return
     }
 
 	var result AuthResponse
     err = json.NewDecoder(res.Body).Decode(&result)
     if err != nil {
-        ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
-                "ErrorTitle": "Auth Error",
-                "ErrorDescription": "Error decoding json" + err.Error() + "."})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
         return
     }
 
@@ -125,17 +125,17 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
     userVal.Add("access_token", result.AccessToken)
     res, err = http.Get("https://www.googleapis.com/oauth2/v1/userinfo?" + userVal.Encode())
     if err != nil {
-        ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
-                "ErrorTitle": "Auth Error",
-                "ErrorDescription": "Error" + err.Error() + "."})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
         return
     }
     var userResp UserInfoResponse
     err = json.NewDecoder(res.Body).Decode(&userResp)
     if err != nil {
-        ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
-                "ErrorTitle": "Auth Error",
-                "ErrorDescription": "Error decoding json" + err.Error() + "."})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
         return
     }
 
