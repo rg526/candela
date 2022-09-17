@@ -12,6 +12,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 )
 
 type CourseResponse struct {
@@ -24,7 +27,26 @@ type ProfessorResponse struct {
 	Data        cdmodel.Professor
 }
 
+func getHome(ctx *gin.Context, conf config) {
+	// AUTH REQUIRED
+	session := sessions.Default(ctx)
+	if session.Get("token") == nil {
+		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
+		return
+	}
+
+	// Main content
+	ctx.HTML(http.StatusOK, "home_page.tmpl", gin.H{})
+}
+
 func getCourse(ctx *gin.Context, conf config) {
+	// AUTH REQUIRED
+	session := sessions.Default(ctx)
+	if session.Get("token") == nil {
+		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
+		return
+	}
+
 	// Find course ID
 	var course CourseResponse
 	courseVal := url.Values{}
@@ -141,6 +163,12 @@ func getAuthCallback(ctx *gin.Context, conf config) {
 		return
 	}
 
+	// Set cookie
+	session := sessions.Default(ctx)
+	session.Set("token", user.Token)
+	session.Save()
+
+	// Page
 	ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
 			"ErrorTitle": "Success",
 			"ErrorDescription": user.Token})
@@ -151,6 +179,7 @@ type config struct {
 	Host				string
 	Port				int
 	CDAPIUrl			string
+	CookieSecret		string
 	OAuth2ClientID		string
 	OAuth2ClientSecret	string
 	OAuth2Scope			string
@@ -169,12 +198,20 @@ func main() {
 		log.Fatal("Error: read config file: ", err)
 	}
 
-	// Setup routes
+	// Setup session
 	r := gin.Default()
+	store := cookie.NewStore([]byte(conf.CookieSecret))
+	r.Use(sessions.Sessions("candela", store))
+
+
+	// Setup routes
 	r.LoadHTMLGlob("../cdfrontend/*.tmpl")
 	r.Static("/css", "../cdfrontend/css")
 	r.Static("/js", "../cdfrontend/js")
 	r.StaticFile("/about", "../cdfrontend/about.tmpl")
+	r.GET("/", func(c *gin.Context) {
+		getHome(c, conf)
+	})
 	r.GET("/course", func(c *gin.Context) {
 		getCourse(c, conf)
 	})
