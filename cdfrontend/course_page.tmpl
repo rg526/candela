@@ -28,38 +28,36 @@
         </nav>
     
         <div class="container" style="margin-top:50px">
-            <h1 clsss="display-1">{{.CID}}: {{.Name}}</h1>
+           <h1 clsss="display-1">{{.Course.CID}}: {{.Course.Name}}</h1>
             <div class="container">
                 <div class="row">
-                    <div class="col-4"><b>Department: </b>{{.CID}}</div>
-                    <div class="col-4"><b>Unit: </b>{{.Units}}</div>
-                    <div class="col-4"><b>Course level: </b>{{.FCELevel}}</div>
+                    <div class="col-sm"><b>Department: </b>{{.Course.Dept}}</div>
+                    <div class="col-sm"><b>Unit: </b>{{.Course.Units}}</div>
+                    <div class="col-sm"><b>Course level: </b>{{.Course.FCELevel}}</div>
                 </div>
                 <div class="row">
-                    <div class="col-4"> <b>FCE Hour: </b>{{.FCEHours}}</div>
-                    <div class="col-4"> <b>FCE Rate: </b>{{.FCECourseRate}}</div>
+                    <div class="col-sm-4"> <b>FCE Hour: </b>{{.Course.FCEHours}}</div>
+                    <div class="col-sm-4"> <b>FCE Rate: </b>{{.Course.FCECourseRate}}</div>
                 </div> 
             </div>
+            <br>
             <div class="container">
                 <h3>Professor</h3>
+                {{ range $index, $value := .ProfArray }}
                 <div class="row">
-                    <div class="col">NAME</div>
-                    <div class="col">Rate My Professor: Num</div>
+                    <div class="col-sm-4">{{ $value.Name }}</div>
+                    <div class="col-sm-4">Rate My Professor: {{ $value.RMPRatingOverall }}</div>
                 </div>
+               {{ end }}
             </div>
+            <br>
             <div class="container">
                 <h3>Course Description</h3>
-                <p>{{.Description}}</p>
+                <p>{{.Course.Description}}</p>
             </div>
             <div class="container">
-                <div row>
-                    <div class="col-6">
-                        <b>Pre-requisite: </b>{{.Prereq}}
-                    </div>
-                    <div class="col-6">
-                        <b>Co-requisite: </b>{{.Coreq}}
-                    </div>
-                </div>
+                <p><b>Pre-requisite: </b>{{.Course.Prereq}}</p>
+                <p><b>Co-requisite: </b>{{.Course.Coreq}}</p>
             </div>  
             
             <!--Comment Box-->
