@@ -39,6 +39,18 @@ func getHome(ctx *gin.Context, conf config) {
 	ctx.HTML(http.StatusOK, "home_page.tmpl", gin.H{})
 }
 
+func getSearch(ctx *gin.Context, conf config) {
+	// AUTH REQUIRED
+	session := sessions.Default(ctx)
+	if session.Get("token") == nil {
+		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
+		return
+	}
+
+	// Main content
+	ctx.HTML(http.StatusOK, "course_list_page.tmpl", gin.H{})
+}
+
 func getCourse(ctx *gin.Context, conf config) {
 	// AUTH REQUIRED
 	session := sessions.Default(ctx)
@@ -217,6 +229,9 @@ func main() {
 	r.StaticFile("/about", "../cdfrontend/about.tmpl")
 	r.GET("/", func(c *gin.Context) {
 		getHome(c, conf)
+	})
+	r.GET("/search", func(c *gin.Context) {
+		getSearch(c, conf)
 	})
 	r.GET("/course", func(c *gin.Context) {
 		getCourse(c, conf)
