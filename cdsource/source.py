@@ -178,3 +178,12 @@ if __name__ == "__main__":
 	course_data = generate_course("F")
 	fce_data = generate_fce("fce.csv")
 	rmp_data = generate_rmp(181)
+
+	with open("course_data.json", "w") as f:
+		json.dump(course_data, f)
+
+	with open("fce_data.json", "w") as f:
+		json.dump(fce_data, f)
+
+	with open("rmp_data.json", "w") as f:
+		json.dump(rmp_data, f)
