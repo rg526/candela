@@ -46,9 +46,6 @@
 
 
             <label class="form-label" style="margin-top:15px">Units</label>
-            <div class="range">
-                <input type="range" class="form-range justify-content-center" min = "0" max="12" style="width:70%" value="100" oninput="rangeValue.innerText = this.value"/>
-            </div>
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="">
                 <label class="form-check-label">
@@ -62,7 +59,7 @@
                 </label>
               </div>
               <div class="dropdown" style="margin-top:15px">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Select Department
                 </button>
                 <ul class="dropdown-menu">
@@ -73,6 +70,18 @@
                   <li><a class="dropdown-item" href="#">Mathematics</a></li>
                   <li><a class="dropdown-item" href="#">Philosophy</a></li>
                   <li><a class="dropdown-item" href="#">Economics</a></li>
+                </ul>
+              </div>
+
+              <div class="dropdown" style="margin-top:15px">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Unit
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">0-3</a></li>
+                  <li><a class="dropdown-item" href="#">4-8</a></li>
+                  <li><a class="dropdown-item" href="#">9-12</a></li>
+                  <li><a class="dropdown-item" href="#">12+</a></li>
                 </ul>
               </div>
 
