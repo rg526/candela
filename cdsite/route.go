@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"strconv"
+	"strings"
 	"encoding/json"
 	"io/ioutil"
 
@@ -44,8 +45,16 @@ func getCourse(ctx *gin.Context, conf config) {
 		return
 	}
 
+	profName := strings.Split(course.Data.Prof, ";")
+	profArr := profName
+	for _, name := range(profName) {
+		log.Println(name)
+	}
+
 	// Generate HTML
-	ctx.HTML(http.StatusOK, "course_page.tmpl", course.Data)
+	ctx.HTML(http.StatusOK, "course_page.tmpl", gin.H{
+		"Course": course.Data,
+		"ProfArray": profArr})
 }
 
 
