@@ -169,9 +169,7 @@ func getAuthCallback(ctx *gin.Context, conf config) {
 	session.Save()
 
 	// Page
-	ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
-			"ErrorTitle": "Success",
-			"ErrorDescription": user.Token})
+	ctx.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
 
