@@ -12,32 +12,37 @@ import (
 	"net/http"
 )
 
-func getCourse(ctx *gin.Context) {
-	// Find course ID
-	var course cdmodel.Course
+type CourseResponse struct {
+	Status		string
+	Data		cdmodel.Course
+}
 
-/*	cid_query := ctx.Query("cid")
-	cid, err := strconv.Atoi(cid_query)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error": "Error: " + err.Error()})
+func getCourse(ctx *gin.Context, conf config) {
+	// Find course ID
+	var course CourseResponse
+	url := conf.CDAPIUrl + "course?cid=" + ctx.Query("cid")
+
+	// Send CDAPI request
+	res, err := http.Get(url)
+	if err != nil || res.StatusCode != http.StatusOK {
+		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{})
 		return
 	}
-	_ = course
-	_ = cid*/
-
+	err = json.NewDecoder(res.Body).Decode(&course)
+	if err != nil {
+		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{})
+		return
+	}
 
 	// Generate HTML
-	ctx.HTML(http.StatusOK, "course_page.tmpl", course)
+	ctx.HTML(http.StatusOK, "course_page.tmpl", course.Data)
 }
 
 
 type config struct {
 	Host			string
 	Port			int
-	CDEngineHost	string
-	CDEnginePort	int
+	CDAPIUrl		string
 }
 
 func main() {
@@ -58,7 +63,9 @@ func main() {
 	r.Static("/css", "../cdfrontend/css")
 	r.Static("/js", "../cdfrontend/js")
 	r.StaticFile("/about", "../cdfrontend/about.tmpl")
-	r.GET("/course", getCourse)
+	r.GET("/course", func(c *gin.Context) {
+		getCourse(c, conf)
+	})
 
 	// Run CDSITE
 	r.Run(conf.Host + ":" + strconv.Itoa(conf.Port))
