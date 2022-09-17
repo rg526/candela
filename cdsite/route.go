@@ -28,7 +28,7 @@ func getCourse(ctx *gin.Context) {
 
 
 	// Generate HTML
-	ctx.HTML(http.StatusOK, "course_page.html", course)
+	ctx.HTML(http.StatusOK, "course_page.tmpl", course)
 }
 
 
@@ -53,7 +53,7 @@ func main() {
 
 	// Setup routes
 	r := gin.Default()
-	r.LoadHTMLGlob("../cdfrontend/*.html")
+	r.LoadHTMLGlob("../cdfrontend/*.tmpl")
 	r.Static("/css", "../cdfrontend/css")
 	r.Static("/js", "../cdfrontend/js")
 	r.GET("/course", getCourse)
