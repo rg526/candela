@@ -83,11 +83,99 @@ func getCourse(ctx *gin.Context, conf config) {
 		"ProfArray": profArr})
 }
 
+func getAuth(ctx *gin.Context, conf config) {
+	// Redirect to Google
+	authVal := url.Values{}
+	authVal.Add("client_id", conf.OAuth2ClientID)
+	authVal.Add("redirect_uri", conf.OAuth2RedirectURI)
+	authVal.Add("response_type", "code")
+	authVal.Add("scope", conf.OAuth2Scope)
+	authVal.Add("hd", "andrew.cmu.edu")
+	authVal.Add("prompt", "select_account")
+	authUrl := "https://accounts.google.com/o/oauth2/v2/auth?" + authVal.Encode()
+
+	ctx.Redirect(http.StatusMovedPermanently, authUrl)
+}
+
+type AuthResponse struct {
+	AccessToken		string		`json:"access_token"`
+}
+
+type UserInfoResponse struct {
+	UID				string		`json:"id"`
+	Name			string		`json:"name"`
+	GivenName		string		`json:"given_name"`
+	FamilyName		string		`json:"family_name"`
+	Email			string		`json:"email"`
+}
+
+func getAuthCallback(ctx *gin.Context, conf config) {
+	// Get authCode
+	if ctx.Query("error") != "" {
+		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+				"ErrorTitle": "Auth Error",
+				"ErrorDescription": "Google returns " + ctx.Query("error") + "."})
+		return
+	}
+	authCode := ctx.Query("code")
+
+	// Turn to token
+	authVal := url.Values{}
+	authVal.Add("client_id", conf.OAuth2ClientID)
+	authVal.Add("client_secret", conf.OAuth2ClientSecret)
+	authVal.Add("code", authCode)
+	authVal.Add("grant_type", "authorization_code")
+	authVal.Add("redirect_uri", conf.OAuth2RedirectURI)
+	res, err := http.PostForm("https://oauth2.googleapis.com/token", authVal)
+	if err != nil {
+		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+				"ErrorTitle": "Auth Error",
+				"ErrorDescription": "Error " + err.Error() + "."})
+		return
+	}
+
+	var result AuthResponse
+	err = json.NewDecoder(res.Body).Decode(&result)
+	if err != nil {
+		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+				"ErrorTitle": "Auth Error",
+				"ErrorDescription": "Error decoding json" + err.Error() + "."})
+		return
+	}
+
+	// Get email and name
+	userVal := url.Values{}
+	userVal.Add("access_token", result.AccessToken)
+	res, err = http.Get("https://www.googleapis.com/oauth2/v1/userinfo?" + userVal.Encode())
+	if err != nil {
+		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+				"ErrorTitle": "Auth Error",
+				"ErrorDescription": "Error" + err.Error() + "."})
+		return
+	}
+	var user UserInfoResponse
+	err = json.NewDecoder(res.Body).Decode(&user)
+	if err != nil {
+		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+				"ErrorTitle": "Auth Error",
+				"ErrorDescription": "Error decoding json" + err.Error() + "."})
+		return
+	}
+
+	ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+			"ErrorTitle": "Success",
+			"ErrorDescription": user.Name + ", " + user.Email})
+}
+
 
 type config struct {
-	Host			string
-	Port			int
-	CDAPIUrl		string
+	Host				string
+	Port				int
+	CDAPIUrl			string
+	OAuth2ClientID		string
+	OAuth2ClientSecret	string
+	OAuth2Scope			string
+	OAuth2RedirectURI	string
 }
 
 func main() {
@@ -110,6 +198,12 @@ func main() {
 	r.StaticFile("/about", "../cdfrontend/about.tmpl")
 	r.GET("/course", func(c *gin.Context) {
 		getCourse(c, conf)
+	})
+	r.GET("/auth", func(c *gin.Context) {
+		getAuth(c, conf)
+	})
+	r.GET("/authCallback", func(c *gin.Context) {
+		getAuthCallback(c, conf)
 	})
 
 	// Run CDSITE
