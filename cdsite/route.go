@@ -15,6 +15,7 @@ import (
 func getCourse(ctx *gin.Context) {
 	// Find course ID
 	var course cdmodel.Course
+
 /*	cid_query := ctx.Query("cid")
 	cid, err := strconv.Atoi(cid_query)
 	if err != nil {
@@ -56,6 +57,7 @@ func main() {
 	r.LoadHTMLGlob("../cdfrontend/*.tmpl")
 	r.Static("/css", "../cdfrontend/css")
 	r.Static("/js", "../cdfrontend/js")
+	r.StaticFile("/about", "../cdfrontend/about.tmpl")
 	r.GET("/course", getCourse)
 
 	// Run CDSITE
