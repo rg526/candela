@@ -29,14 +29,14 @@ func getCourse(ctx *gin.Context, db *sql.DB) {
 	}
 
 	// Query DB
-	stmtCourse, err := db.Prepare("SELECT cid, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?")
+	stmtCourse, err := db.Prepare("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
 			"error": "Error: " + err.Error()})
 		return
 	}
-	err = stmtCourse.QueryRow(cid).Scan(&course.CID, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq, &course.FCEHours, &course.FCETeachingRate, &course.FCECourseRate, &course.FCELevel, &course.FCEStudentCount)
+	err = stmtCourse.QueryRow(cid).Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq, &course.FCEHours, &course.FCETeachingRate, &course.FCECourseRate, &course.FCELevel, &course.FCEStudentCount)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",

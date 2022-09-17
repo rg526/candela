@@ -26,12 +26,12 @@ if __name__ == "__main__":
 
 	# course table
 	for cid, course in course_data.items():
-		sql = "INSERT INTO course (cid, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+		sql = "INSERT INTO course (cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 		if cid not in fce_data:
-			val = (cid, course["description"], course["dept"], course["units"], course["prof"], course["prereq"], course["coreq"], -1.0, -1.0, -1.0, "Unknown", -1)
+			val = (cid, course["name"], course["description"], course["dept"], course["units"], course["prof"], course["prereq"], course["coreq"], -1.0, -1.0, -1.0, "Unknown", -1)
 		else:
 			fce = fce_data[cid]
-			val = (cid, course["description"], course["dept"], course["units"], course["prof"], course["prereq"], course["coreq"], fce["FCEHours"], fce["FCETeachingRate"], fce["FCECourseRate"], fce["FCELevel"], fce["FCEStudentCount"])
+			val = (cid, course["name"], course["description"], course["dept"], course["units"], course["prof"], course["prereq"], course["coreq"], fce["FCEHours"], fce["FCETeachingRate"], fce["FCECourseRate"], fce["FCELevel"], fce["FCEStudentCount"])
 		cursor.execute(sql, val)
 
 

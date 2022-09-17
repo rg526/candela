@@ -2,6 +2,7 @@ package cdmodel
 
 type Course struct {
 	CID					int
+	Name				string
 	Description			string
 	Dept				string
 	Units				float32

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	_ "candela/cdmodel"
+	"candela/cdmodel"
 
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -14,8 +14,8 @@ import (
 
 func getCourse(ctx *gin.Context) {
 	// Find course ID
-/*	var course cdmodel.Course
-	cid_query := ctx.Query("cid")
+	var course cdmodel.Course
+/*	cid_query := ctx.Query("cid")
 	cid, err := strconv.Atoi(cid_query)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -27,15 +27,16 @@ func getCourse(ctx *gin.Context) {
 	_ = cid*/
 
 
-	// TODO generate HTML
-	ctx.HTML(http.StatusOK, "course_page.html", gin.H{
-	})
+	// Generate HTML
+	ctx.HTML(http.StatusOK, "course_page.html", course)
 }
 
 
 type config struct {
-	Host	string
-	Port	int
+	Host			string
+	Port			int
+	CDEngineHost	string
+	CDEnginePort	int
 }
 
 func main() {

@@ -1,6 +1,7 @@
 USE candela;
 CREATE TABLE course (
 	cid 				INTEGER		NOT NULL PRIMARY KEY,
+	name				TEXT		NOT NULL,
 	description			MEDIUMTEXT	NOT NULL,
 	dept				TEXT		NOT NULL,
 	units				DECIMAL		NOT NULL,
