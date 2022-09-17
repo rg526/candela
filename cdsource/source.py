@@ -38,6 +38,9 @@ def generate_course(semester):
 	# Write into result dict
 	result = {}
 	for cid, course in course_full["courses"].items():
+		cid = cid[:2] + cid[3:]
+		cid = int(cid)
+
 		result[cid] = {}
 		result[cid]["name"] = (
 				course["name"]
@@ -66,13 +69,13 @@ def generate_course(semester):
 					and course["units"] != ""
 				else 0.0)
 
-		prof_list = []
+		prof_list = set()
 		if "lectures" in course:
 			for lecture in course["lectures"]:
 				if "instructors" not in lecture:
 					continue
 				for prof in lecture["instructors"]:
-					prof_list.append(__course_prof_name(prof))
+					prof_list.add(__course_prof_name(prof))
 
 		result[cid]["prof"] = ";".join(prof_list)
 
@@ -96,7 +99,7 @@ def generate_fce(filepath):
 	Return a dict
 		- key CID
 		- value: a dict
-			- key: FCEHours, FCETeachingRate, FCECourseRate, FCELevel
+			- key: FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount
 			- value: float/string/int
 	"""
 	# Read CSV file
@@ -105,7 +108,7 @@ def generate_fce(filepath):
 	reader = csv.DictReader(f)
 	for row in reader:
 		cid = row["Num"]
-		cid = cid[:2] + "-" + cid[2:]
+		cid = int(cid)
 
 		if cid not in fce_full:
 			fce_full[cid] = []
