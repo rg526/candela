@@ -172,6 +172,14 @@ func getAuthCallback(ctx *gin.Context, conf config) {
 	ctx.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
+func getLogout(ctx *gin.Context, conf config) {
+	// Remove session
+	session := sessions.Default(ctx)
+	session.Clear()
+	session.Save()
+	ctx.Redirect(http.StatusTemporaryRedirect, "/about")
+}
+
 
 type config struct {
 	Host				string
@@ -218,6 +226,9 @@ func main() {
 	})
 	r.GET("/authCallback", func(c *gin.Context) {
 		getAuthCallback(c, conf)
+	})
+	r.GET("/logout", func(c *gin.Context) {
+		getLogout(c, conf)
 	})
 
 	// Run CDSITE
