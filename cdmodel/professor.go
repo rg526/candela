@@ -3,5 +3,5 @@ package cdmodel
 type Professor struct {
 	Name				string
 	RMPRatingClass		string
-	RMPRatintOverall	float32
+	RMPRatingOverall	float32
 }

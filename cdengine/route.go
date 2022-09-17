@@ -51,6 +51,34 @@ func getCourse(ctx *gin.Context, db *sql.DB) {
 }
 
 
+func getProfessor(ctx *gin.Context, db *sql.DB) {
+	// Find course ID
+	var prof cdmodel.Professor
+	prof_name := ctx.Query("name")
+
+	// Query DB
+	stmtProf, err := db.Prepare("SELECT RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error": "Error: " + err.Error()})
+		return
+	}
+	err = stmtProf.QueryRow(prof_name).Scan(&prof.RMPRatingClass, &prof.RMPRatingOverall)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"error": "Error: " + err.Error()})
+		return
+	}
+
+	// Return result
+	ctx.JSON(http.StatusOK, gin.H{
+		"status": "OK",
+		"data": prof})
+}
+
+
 type config struct {
 	Host	string
 	Port	int
@@ -85,6 +113,9 @@ func main() {
 	r := gin.Default()
 	r.GET("/course", func(c *gin.Context) {
 		getCourse(c, db)
+	})
+	r.GET("/professor", func(c *gin.Context) {
+		getProfessor(c, db)
 	})
 
 	// Run CDENGINE
