@@ -3,8 +3,10 @@ package main
 import (
 	"log"
 	"strconv"
+	"strings"
 	"encoding/json"
 	"io/ioutil"
+	"net/url"
 
 	"candela/cdmodel"
 
@@ -12,32 +14,80 @@ import (
 	"net/http"
 )
 
-func getCourse(ctx *gin.Context) {
-	// Find course ID
-	var course cdmodel.Course
+type CourseResponse struct {
+	Status		string
+	Data		cdmodel.Course
+}
 
-/*	cid_query := ctx.Query("cid")
-	cid, err := strconv.Atoi(cid_query)
+type ProfessorResponse struct {
+	Status		string
+	Data		cdmodel.Professor
+}
+
+func getCourse(ctx *gin.Context, conf config) {
+	// Find course ID
+	var course CourseResponse
+	courseVal := url.Values{}
+	courseVal.Add("cid", ctx.Query("cid"))
+	courseUrl := conf.CDAPIUrl + "course?" + courseVal.Encode()
+
+
+	// Send CDAPI request
+	res, err := http.Get(courseUrl)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"status": "error",
-			"error": "Error: " + err.Error()})
+		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
+			"ErrorTitle": "Service Error",
+			"ErrorDescription": "Unsuccessful connection to CDEngine."})
 		return
 	}
-	_ = course
-	_ = cid*/
+	if res.StatusCode != http.StatusOK {
+		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
+			"ErrorTitle": "Invalid Request",
+			"ErrorDescription": "Your request is not valid."})
+		return
+	}
+	err = json.NewDecoder(res.Body).Decode(&course)
+	if err != nil {
+		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
+			"ErrorTitle": "Service Error",
+			"ErrorDescription": "CDEngine returns invalid response."})
+		return
+	}
 
+	// Fetch prof struct
+	profName := strings.Split(course.Data.Prof, ";")
+	var profArr []cdmodel.Professor
+	for _, name := range(profName) {
+		// Default data
+		var prof ProfessorResponse
+		prof.Data.Name = name
+		prof.Data.RMPRatingClass = "Unknown"
+		prof.Data.RMPRatingOverall = -1.0
+
+		// Build URL
+		profVal := url.Values{}
+		profVal.Add("name", name)
+		profUrl := conf.CDAPIUrl + "professor?" + profVal.Encode()
+
+		// Do request
+		res, err = http.Get(profUrl)
+		if err == nil && res.StatusCode == http.StatusOK {
+			_ = json.NewDecoder(res.Body).Decode(&prof)
+		}
+		profArr = append(profArr, prof.Data)
+	}
 
 	// Generate HTML
-	ctx.HTML(http.StatusOK, "course_page.tmpl", course)
+	ctx.HTML(http.StatusOK, "course_page.tmpl", gin.H{
+		"Course": course.Data,
+		"ProfArray": profArr})
 }
 
 
 type config struct {
 	Host			string
 	Port			int
-	CDEngineHost	string
-	CDEnginePort	int
+	CDAPIUrl		string
 }
 
 func main() {
@@ -58,7 +108,9 @@ func main() {
 	r.Static("/css", "../cdfrontend/css")
 	r.Static("/js", "../cdfrontend/js")
 	r.StaticFile("/about", "../cdfrontend/about.tmpl")
-	r.GET("/course", getCourse)
+	r.GET("/course", func(c *gin.Context) {
+		getCourse(c, conf)
+	})
 
 	// Run CDSITE
 	r.Run(conf.Host + ":" + strconv.Itoa(conf.Port))
