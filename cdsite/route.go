@@ -101,12 +101,9 @@ type AuthResponse struct {
 	AccessToken		string		`json:"access_token"`
 }
 
-type UserInfoResponse struct {
-	UID				string		`json:"id"`
-	Name			string		`json:"name"`
-	GivenName		string		`json:"given_name"`
-	FamilyName		string		`json:"family_name"`
-	Email			string		`json:"email"`
+type UserResponse struct {
+	Status			string
+	Data			cdmodel.User
 }
 
 func getAuthCallback(ctx *gin.Context, conf config) {
@@ -119,41 +116,23 @@ func getAuthCallback(ctx *gin.Context, conf config) {
 	}
 	authCode := ctx.Query("code")
 
-	// Turn to token
+	// Verify using CDEngine
 	authVal := url.Values{}
-	authVal.Add("client_id", conf.OAuth2ClientID)
-	authVal.Add("client_secret", conf.OAuth2ClientSecret)
 	authVal.Add("code", authCode)
-	authVal.Add("grant_type", "authorization_code")
-	authVal.Add("redirect_uri", conf.OAuth2RedirectURI)
-	res, err := http.PostForm("https://oauth2.googleapis.com/token", authVal)
+	res, err := http.Get(conf.CDAPIUrl + "auth?" + authVal.Encode())
 	if err != nil {
 		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
-				"ErrorTitle": "Auth Error",
-				"ErrorDescription": "Error " + err.Error() + "."})
+				"ErrorTitle": "Service Error",
+				"ErrorDescription": "Unsuccessful connection to CDEngine."})
 		return
 	}
-
-	var result AuthResponse
-	err = json.NewDecoder(res.Body).Decode(&result)
-	if err != nil {
+	if res.StatusCode != http.StatusOK {
 		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
 				"ErrorTitle": "Auth Error",
-				"ErrorDescription": "Error decoding json" + err.Error() + "."})
+				"ErrorDescription": "Invalid request."})
 		return
 	}
-
-	// Get email and name
-	userVal := url.Values{}
-	userVal.Add("access_token", result.AccessToken)
-	res, err = http.Get("https://www.googleapis.com/oauth2/v1/userinfo?" + userVal.Encode())
-	if err != nil {
-		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
-				"ErrorTitle": "Auth Error",
-				"ErrorDescription": "Error" + err.Error() + "."})
-		return
-	}
-	var user UserInfoResponse
+	var user UserResponse
 	err = json.NewDecoder(res.Body).Decode(&user)
 	if err != nil {
 		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
@@ -164,7 +143,7 @@ func getAuthCallback(ctx *gin.Context, conf config) {
 
 	ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
 			"ErrorTitle": "Success",
-			"ErrorDescription": user.Name + ", " + user.Email})
+			"ErrorDescription": user.Data.Name + ", " + user.Data.Email})
 }
 
 
