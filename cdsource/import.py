@@ -23,6 +23,8 @@ if __name__ == "__main__":
 	)
 	cursor = conn.cursor()
 
+
+	# course table
 	for cid, course in course_data.items():
 		if cid not in fce_data:
 			sql = "INSERT INTO course (cid, description, dept, units, prof, prereq, coreq) VALUES (%s, %s, %s, %s, %s, %s, %s)"
@@ -33,3 +35,10 @@ if __name__ == "__main__":
 			sql = "INSERT INTO course (cid, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
 			val = (cid, course["description"], course["dept"], course["units"], course["prof"], course["prereq"], course["coreq"], fce["FCEHours"], fce["FCETeachingRate"], fce["FCECourseRate"], fce["FCELevel"], fce["FCEStudentCount"])
 			cursor.execute(sql, val)
+
+
+	# professor table
+	for name, prof in rmp_data.items():
+		sql = "INSERT INTO professor (name, RMPRatingClass, RMPRatingOverall) VALUES (%s, %s, %s)"
+		val = (name, prof["RMPRatingClass"], prof["RMPRatingOverall"])
+		cursor.execute(sql, val)

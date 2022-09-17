@@ -1,2 +1,3 @@
 cmu-course-api
 requests
+mysql-connector-python

@@ -169,7 +169,10 @@ def generate_rmp(school_id):
 
 			result[name] = {}
 			result[name]["RMPRatingClass"] = prof["rating_class"]
-			result[name]["RMPRatingOverall"] = prof["overall_rating"]
+			try:
+				result[name]["RMPRatingOverall"] = float(prof["overall_rating"])
+			except ValueError:
+				result[name]["RMPRatingOverall"] = -1.0;
 
 		if page_obj["remaining"] == 0:
 			break
