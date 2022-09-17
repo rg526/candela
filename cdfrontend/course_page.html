@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title> Course Page </title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">CMU Course List</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="#">Search</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/about">About</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    
+        <div class="container" style="margin-top:50px">
+            <h1 clsss="display-1">{{.CID}}: {{.Name}}</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col-4"><b>Department: </b>{{.CID}}</div>
+                    <div class="col-4"><b>Unit: </b>{{.Units}}</div>
+                    <div class="col-4"><b>Course level: </b>{{.FCELevel}}</div>
+                </div>
+                <div class="row">
+                    <div class="col-4"> <b>FCE Hour: </b>{{.FCEHours}}</div>
+                    <div class="col-4"> <b>FCE Rate: </b>{{.FCECourseRate}}</div>
+                </div> 
+            </div>
+            <div class="container">
+                <h3>Professor</h3>
+                <div class="row">
+                    <div class="col">NAME</div>
+                    <div class="col">Rate My Professor: Num</div>
+                </div>
+            </div>
+            <div class="container">
+                <h3>Course Description</h3>
+                <p>{{.Description}}</p>
+            </div>
+            <div class="container">
+                <div row>
+                    <div class="col-6">
+                        <b>Pre-requisite: </b>{{.Prereq}}
+                    </div>
+                    <div class="col-6">
+                        <b>Co-requisite: </b>{{.Coreq}}
+                    </div>
+                </div>
+            </div>  
+            <footer id="footer" style="margin-top:50px;">
+                <hr>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>Made by <i>Project Candela</i></p>
+                        <p>Contact Us: project-candela (at) lists.andrew.cmu.edu<p>
+                    </div>
+                </div>
+            </footer>    
+        </div>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
