@@ -6,6 +6,7 @@ import (
 	"strings"
 	"encoding/json"
 	"io/ioutil"
+	"net/url"
 
 	"candela/cdmodel"
 
@@ -18,13 +19,21 @@ type CourseResponse struct {
 	Data		cdmodel.Course
 }
 
+type ProfessorResponse struct {
+	Status		string
+	Data		cdmodel.Professor
+}
+
 func getCourse(ctx *gin.Context, conf config) {
 	// Find course ID
 	var course CourseResponse
-	url := conf.CDAPIUrl + "course?cid=" + ctx.Query("cid")
+	courseVal := url.Values{}
+	courseVal.Add("cid", ctx.Query("cid"))
+	courseUrl := conf.CDAPIUrl + "course?" + courseVal.Encode()
+
 
 	// Send CDAPI request
-	res, err := http.Get(url)
+	res, err := http.Get(courseUrl)
 	if err != nil {
 		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
 			"ErrorTitle": "Service Error",
@@ -45,10 +54,27 @@ func getCourse(ctx *gin.Context, conf config) {
 		return
 	}
 
+	// Fetch prof struct
 	profName := strings.Split(course.Data.Prof, ";")
-	profArr := profName
+	var profArr []cdmodel.Professor
 	for _, name := range(profName) {
-		log.Println(name)
+		// Default data
+		var prof ProfessorResponse
+		prof.Data.Name = name
+		prof.Data.RMPRatingClass = "Unknown"
+		prof.Data.RMPRatingOverall = -1.0
+
+		// Build URL
+		profVal := url.Values{}
+		profVal.Add("name", name)
+		profUrl := conf.CDAPIUrl + "professor?" + profVal.Encode()
+
+		// Do request
+		res, err = http.Get(profUrl)
+		if err == nil && res.StatusCode == http.StatusOK {
+			_ = json.NewDecoder(res.Body).Decode(&prof)
+		}
+		profArr = append(profArr, prof.Data)
 	}
 
 	// Generate HTML

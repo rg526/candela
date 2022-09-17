@@ -57,14 +57,14 @@ func getProfessor(ctx *gin.Context, db *sql.DB) {
 	prof_name := ctx.Query("name")
 
 	// Query DB
-	stmtProf, err := db.Prepare("SELECT RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?")
+	stmtProf, err := db.Prepare("SELECT name, RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
 	}
-	err = stmtProf.QueryRow(prof_name).Scan(&prof.RMPRatingClass, &prof.RMPRatingOverall)
+	err = stmtProf.QueryRow(prof_name).Scan(&prof.Name, &prof.RMPRatingClass, &prof.RMPRatingOverall)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Status": "ERROR",
