@@ -49,11 +49,13 @@
             <div class="container">
                 <h3>Professor</h3>
                 {{ range $index, $value := .ProfArray }}
-                <div class="row">
-                    <div class="col-sm-4">{{ $value.Name }}</div>
-                    <div class="col-sm-4">Rate My Professor: {{ $value.RMPRatingOverall }}</div>
-                </div>
-               {{ end }}
+                    <div class="row">
+                        <div class="col-sm-4">{{ $value.Name }}</div>
+                        {{ if ge $value.RMPRatingOverall 0.0 }}
+                            <div class="col-sm-4">Rate My Professor: {{ $value.RMPRatingOverall }}</div>
+                        {{ end }}
+                    </div>
+                {{ end }}
             </div>
             <br>
             <div class="container">
