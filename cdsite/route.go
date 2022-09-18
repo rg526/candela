@@ -189,7 +189,7 @@ func getLogout(ctx *gin.Context, conf config) {
 	session := sessions.Default(ctx)
 	session.Clear()
 	session.Save()
-	ctx.Redirect(http.StatusTemporaryRedirect, "/about")
+	ctx.HTML(http.StatusOK , "logout_page.tmpl", gin.H{})
 }
 
 
