@@ -8,6 +8,7 @@ CREATE TABLE user (
 );
 
 CREATE TABLE token (
-	token				VARCHAR(128)		NOT NULL PRIMARY KEY,
-	uid					VARCHAR(128)	NOT NULL
+	token				VARCHAR(128)	NOT NULL PRIMARY KEY,
+	uid					VARCHAR(128)	NOT NULL,
+	time				TEXT			NOT NULL
 );

@@ -182,14 +182,14 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 		}
 	}
 
-	stmtInsert, err := db.Prepare("INSERT INTO token (token, uid) VALUES (?, ?)")
+	stmtInsert, err := db.Prepare("INSERT INTO token (token, uid, time) VALUES (?, ?, ?)")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
 	}
-	_, err = stmtInsert.Exec(userToken, user.UID)
+	_, err = stmtInsert.Exec(userToken, user.UID, time.Now().Unix())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Status": "ERROR",
