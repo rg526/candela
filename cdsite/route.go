@@ -125,7 +125,6 @@ func getAuth(ctx *gin.Context, conf config) {
 	authVal.Add("response_type", "code")
 	authVal.Add("scope", conf.OAuth2Scope)
 	authVal.Add("hd", "andrew.cmu.edu")
-	authVal.Add("prompt", "none")
 	authUrl := "https://accounts.google.com/o/oauth2/v2/auth?" + authVal.Encode()
 
 	ctx.Redirect(http.StatusMovedPermanently, authUrl)
