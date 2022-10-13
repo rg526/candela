@@ -112,7 +112,8 @@ func getCourse(ctx *gin.Context, conf config) {
 	}
 
 	// Generate HTML
-	ctx.HTML(http.StatusOK, "course_page.tmpl", gin.H{
+	ctx.HTML(http.StatusOK, "layout/course_page", gin.H{
+		"Title": "Course " + strconv.Itoa(course.Data.CID),
 		"Course": course.Data,
 		"ProfArray": profArr})
 }
@@ -192,6 +193,12 @@ func getLogout(ctx *gin.Context, conf config) {
 }
 
 
+func getAbout(ctx *gin.Context, conf config) {
+	// About page
+	ctx.HTML(http.StatusOK , "about.tmpl", gin.H{})
+}
+
+
 type config struct {
 	Host				string
 	Port				int
@@ -222,10 +229,9 @@ func main() {
 
 
 	// Setup routes
-	r.LoadHTMLGlob("../cdfrontend/*.tmpl")
+	r.LoadHTMLGlob("../cdfrontend/template/**/*.tmpl")
 	r.Static("/css", "../cdfrontend/css")
 	r.Static("/js", "../cdfrontend/js")
-	r.StaticFile("/about", "../cdfrontend/about.tmpl")
 	r.GET("/", func(c *gin.Context) {
 		getHome(c, conf)
 	})
@@ -243,6 +249,9 @@ func main() {
 	})
 	r.GET("/logout", func(c *gin.Context) {
 		getLogout(c, conf)
+	})
+	r.GET("/about", func(c *gin.Context) {
+		getAbout(c, conf)
 	})
 
 	// Run CDSITE

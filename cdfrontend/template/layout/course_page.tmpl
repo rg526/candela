@@ -1,0 +1,72 @@
+{{ define "layout/course_page" }}
+
+{{ template "base/header" . }}
+
+<h1 clsss="display-1">{{.Course.CID}}: {{.Course.Name}}</h1>
+<div class="container">
+	<div class="row">
+		<div class="col-sm"><b>Department: </b>{{.Course.Dept}}</div>
+		<div class="col-sm"><b>Unit: </b>{{.Course.Units}}</div>
+		<div class="col-sm"><b>Course level: </b>{{.Course.FCELevel}}</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-4"> <b>FCE Hour: </b>{{.Course.FCEHours}}</div>
+		<div class="col-sm-4"> <b>FCE Rate: </b>{{.Course.FCECourseRate}}</div>
+	</div> 
+</div>
+<br>
+<div class="container">
+	<h3>Professor</h3>
+	{{ range $index, $value := .ProfArray }}
+		<div class="row">
+			<div class="col-sm-4">{{ $value.Name }}</div>
+			{{ if ge $value.RMPRatingOverall 0.0 }}
+				<div class="col-sm-4">Rate My Professor: {{ $value.RMPRatingOverall }}</div>
+			{{ end }}
+		</div>
+	{{ end }}
+</div>
+<br>
+<div class="container">
+	<h3>Course Description</h3>
+	<p>{{.Course.Description}}</p>
+</div>
+<div class="container">
+	<p><b>Pre-requisite: </b>{{.Course.Prereq}}</p>
+	<p><b>Co-requisite: </b>{{.Course.Coreq}}</p>
+</div>  
+
+<!--Comment Box-->
+<form>
+	<fieldset>
+		<div class="form-group">
+			<label for="exampleTextarea" class="form-label mt-4">Comment Board</label>
+			<textarea class="form-control" id="exampleTextarea" rows="3" placeholder="Enter comment here"></textarea>
+		</div>
+		<button type="button" class="btn btn-primary" style="margin-top:10px">Send</button>
+	</fieldset>
+</form>
+<!--Comment Display-->
+<hr>
+<div class="card" style="margin-top:10px">
+	<div clsss="card body" href="#" style="margin-left:7.5px">Name</div>
+	<div class="container">
+		<p>Comment ..</p>
+	</div>
+</div>
+<div class="card" style="margin-top:10px">
+	<div clsss="card body" href="#" style="margin-left:7.5px">Name</div>
+	<div class="container">
+		<p>Comment...</p>
+	</div>
+</div>
+<div class="card" style="margin-top:10px">
+	<div clsss="card body" href="#" style="margin-left:7.5px">Name</div>
+	<div class="container">
+		<p>Comment...</p>
+	</div>
+</div>
+
+{{ template "base/footer" . }}
+
+{{ end }}
