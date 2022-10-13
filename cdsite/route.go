@@ -36,7 +36,8 @@ func getHome(ctx *gin.Context, conf config) {
 	}
 
 	// Main content
-	ctx.HTML(http.StatusOK, "home_page.tmpl", gin.H{})
+	ctx.HTML(http.StatusOK, "layout/home", gin.H{
+		"Title": "CMU Course List"})
 }
 
 func getSearch(ctx *gin.Context, conf config) {
@@ -48,7 +49,8 @@ func getSearch(ctx *gin.Context, conf config) {
 	}
 
 	// Main content
-	ctx.HTML(http.StatusOK, "course_list_page.tmpl", gin.H{})
+	ctx.HTML(http.StatusOK, "layout/course_search", gin.H{
+		"Title": "Course Search"})
 }
 
 func getCourse(ctx *gin.Context, conf config) {

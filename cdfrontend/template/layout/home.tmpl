@@ -1,0 +1,45 @@
+{{ define "layout/home" }}
+
+{{ template "base/header" . }}
+
+<div class="container" style="margin-top:5%; margin-left:5%">
+	<div class="row justify-content-center">
+		<div class="input-group">
+			<div class="col-8">
+				<input class="form-control" placeholder="Search by Course ID, Professor, or Keyword">
+			</div>
+			<button class="btn btn-success btn-md" style="margin-left:5px">Search</button>
+		</div>
+	</div>
+</div>
+
+<div class="alert alert-danger" role="alert" style="margin-top:20px" hidden>
+	0 result returned from search engine. (You may have invalid course id, professor, or keyword input)
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+</div>
+
+<div class="container" style="margin-top:3%;  margin-left:20%">
+	<div class="row">
+		<div class="col">
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+		</div>
+	</div>
+	<div class="row" style="margin-top:1%">
+		<div class="col">
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+		</div>
+	</div>
+	
+</div>
+
+{{ template "base/footer" . }}
+
+{{ end }}

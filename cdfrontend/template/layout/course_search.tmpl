@@ -1,0 +1,85 @@
+{{ define "layout/course_search" }}
+
+{{ template "base/header" . }}
+
+<div class="container" style="margin-top:5%">
+	<div class="row justify-content-center">
+		<div class="input-group">
+			<div class="col-8">
+				<input class="form-control" placeholder="Search by Course ID, Professor, or Keyword">
+			</div>
+			<button class="btn btn-success btn-md" style="margin-left:5px">Search</button>
+		</div>
+		
+	</div>
+</div>
+<div class="alert alert-danger" role="alert" style="margin-top:20px" hidden>
+	0 result returned from search engine. (You may have invalid course id, professor, or keyword input)
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+</div>
+
+<div class="form-check" style="margin-top:1.5%; margin-left:1%">
+	<input class="form-check-input" type="checkbox" value="">
+	<label class="form-check-label">
+	  Level: Undergraduate
+	</label>
+  </div>
+  <div class="form-check" style="margin-top:1.5%; margin-left:1%">
+	<input class="form-check-input" type="checkbox" value="">
+	<label class="form-check-label">
+	  Level: Graduate
+	</label>
+  </div>
+  <div class="dropdown" style="margin-top:1.5%; margin-left:0.5%">
+	<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+	  Select Department
+	</button>
+	<ul class="dropdown-menu">
+	  <li><a class="dropdown-item" href="#">Statistics & Data Science</a></li>
+	  <li><a class="dropdown-item" href="#">Computer Science</a></li>
+	  <li><a class="dropdown-item" href="#">Electrical & Computer Engineering</a></li>
+	  <li><a class="dropdown-item" href="#">Biology</a></li>
+	  <li><a class="dropdown-item" href="#">Mathematics</a></li>
+	  <li><a class="dropdown-item" href="#">Philosophy</a></li>
+	  <li><a class="dropdown-item" href="#">Economics</a></li>
+	</ul>
+  </div>
+
+  <div class="dropdown" style="margin-top:1.5%; margin-left:0.5%">
+	<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+	  Unit
+	</button>
+	<ul class="dropdown-menu">
+	  <li><a class="dropdown-item" href="#">0-3</a></li>
+	  <li><a class="dropdown-item" href="#">4-8</a></li>
+	  <li><a class="dropdown-item" href="#">9-12</a></li>
+	  <li><a class="dropdown-item" href="#">12+</a></li>
+	</ul>
+  </div>
+
+<hr>
+
+<div class="card" style="margin-top:1%">
+	<div clsss="card body" href="#" style="margin-left:0.75%">Course ID: Course Name</div>
+	<div class="container">
+		<p>Brief description of the course...</p>
+	</div>
+</div>
+
+<div class="card" style="margin-top:1%">
+	<div clsss="card body" href="#" style="margin-left:0.75%">Course ID: Course Name</div>
+	<div class="container">
+		<p>Brief description of the course...</p>
+	</div>
+</div>
+
+<div class="card" style="margin-top:1%">
+	<div clsss="card body" href="#" style="margin-left:0.75%">Course ID: Course Name</div>
+	<div class="container">
+		<p>Brief description of the course...</p>
+	</div>
+</div>
+
+{{ template "base/footer" . }}
+
+{{ end }}
