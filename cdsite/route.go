@@ -69,20 +69,23 @@ func getCourse(ctx *gin.Context, conf config) {
 	// Send CDAPI request
 	res, err := http.Get(courseUrl)
 	if err != nil {
-		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
+		ctx.HTML(http.StatusServiceUnavailable, "layout/error", gin.H{
+			"Title": "Error",
 			"ErrorTitle": "Service Error",
 			"ErrorDescription": "Unsuccessful connection to CDEngine."})
 		return
 	}
 	if res.StatusCode != http.StatusOK {
-		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
+		ctx.HTML(http.StatusServiceUnavailable, "layout/error", gin.H{
+			"Title": "Error",
 			"ErrorTitle": "Invalid Request",
 			"ErrorDescription": "Your request is not valid."})
 		return
 	}
 	err = json.NewDecoder(res.Body).Decode(&course)
 	if err != nil {
-		ctx.HTML(http.StatusServiceUnavailable, "error_page.tmpl", gin.H{
+		ctx.HTML(http.StatusServiceUnavailable, "layout/error", gin.H{
+			"Title": "Error",
 			"ErrorTitle": "Service Error",
 			"ErrorDescription": "CDEngine returns invalid response."})
 		return
@@ -143,7 +146,8 @@ type UserResponse struct {
 func getAuthCallback(ctx *gin.Context, conf config) {
 	// Get authCode
 	if ctx.Query("error") != "" {
-		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+		ctx.HTML(http.StatusOK, "layout/error", gin.H{
+				"Title": "Error",
 				"ErrorTitle": "Auth Error",
 				"ErrorDescription": "Google returns " + ctx.Query("error") + "."})
 		return
@@ -155,13 +159,15 @@ func getAuthCallback(ctx *gin.Context, conf config) {
 	authVal.Add("code", authCode)
 	res, err := http.Get(conf.CDAPIUrl + "auth?" + authVal.Encode())
 	if err != nil {
-		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+		ctx.HTML(http.StatusOK, "layout/error", gin.H{
+				"Title": "Error",
 				"ErrorTitle": "Service Error",
 				"ErrorDescription": "Unsuccessful connection to CDEngine."})
 		return
 	}
 	if res.StatusCode != http.StatusOK {
-		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+		ctx.HTML(http.StatusOK, "layout/error", gin.H{
+				"Title": "Error",
 				"ErrorTitle": "Auth Error",
 				"ErrorDescription": "Invalid request."})
 		return
@@ -169,7 +175,8 @@ func getAuthCallback(ctx *gin.Context, conf config) {
 	var user UserResponse
 	err = json.NewDecoder(res.Body).Decode(&user)
 	if err != nil {
-		ctx.HTML(http.StatusOK, "error_page.tmpl", gin.H{
+		ctx.HTML(http.StatusOK, "layout/error", gin.H{
+				"Title": "Error",
 				"ErrorTitle": "Auth Error",
 				"ErrorDescription": "Error decoding json" + err.Error() + "."})
 		return
@@ -189,13 +196,17 @@ func getLogout(ctx *gin.Context, conf config) {
 	session := sessions.Default(ctx)
 	session.Clear()
 	session.Save()
-	ctx.HTML(http.StatusOK , "logout_page.tmpl", gin.H{})
+	ctx.HTML(http.StatusOK, "layout/error", gin.H{
+			"Title": "Logout",
+			"ErrorTitle": "You are now logged out",
+			"ErrorDescription": "Please close your browswer window."})
 }
 
 
 func getAbout(ctx *gin.Context, conf config) {
 	// About page
-	ctx.HTML(http.StatusOK , "about.tmpl", gin.H{})
+	ctx.HTML(http.StatusOK , "layout/about", gin.H{
+		"Title": "About this website"})
 }
 
 

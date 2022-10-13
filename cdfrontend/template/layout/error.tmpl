@@ -1,0 +1,12 @@
+{{ define "layout/error" }}
+
+{{ template "base/header" . }}
+
+<div class="container">
+	<h1 clsss="display-1">{{.ErrorTitle}}</h1>
+	<p>{{.ErrorDescription}}</p>
+</div>
+
+{{ template "base/footer" . }}
+
+{{ end }}
