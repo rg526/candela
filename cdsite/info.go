@@ -9,12 +9,6 @@ import (
 // Endpoint "/"
 // Homepage
 func GetHome(ctx *gin.Context, sctx *Context) {
-	// AUTH REQUIRED
-	_, _, isAuth := VerifyUserFromSession(ctx, sctx)
-	if !isAuth {
-		return
-	}
-
 	// Main content
 	ctx.HTML(http.StatusOK, "layout/home", gin.H{
 		"Title": "CMU Course List"})

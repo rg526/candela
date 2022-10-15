@@ -2,84 +2,12 @@ package cdsite
 
 import (
 	_ "log"
-	"encoding/json"
 	"encoding/base64"
 	"net/url"
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/sessions"
-
-	"candela/cdmodel"
 )
-
-
-// Verify a user from session cookie "token"
-// Return token, user object, isAuth
-func VerifyUserFromSession(ctx *gin.Context, sctx *Context) (string, cdmodel.User, bool) {
-	// Get token from session
-	session := sessions.Default(ctx)
-	token := session.Get("token")
-	if token == nil {
-		ctx.Redirect(http.StatusTemporaryRedirect, "/auth" +
-				"?ret=" +
-				base64.URLEncoding.EncodeToString([]byte(
-					ctx.Request.URL.Path)))
-		return "", cdmodel.User{}, false
-	}
-
-	// Find user by token
-	userUrl := sctx.Conf.CDAPIUrl + "user"
-	req, err := http.NewRequest("GET", userUrl, nil)
-	if err != nil {
-		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
-			"Title": "Error",
-			"ErrorTitle": "Service Error",
-			"ErrorDescription": "Connection error: " + err.Error()})
-		return "", cdmodel.User{}, false
-	}
-	req.Header.Add("Authorization", token.(string))
-
-	// Send CDAPI request
-	var userResp struct {
-		Status		string
-		Data		cdmodel.User
-	}
-	res, err := sctx.Client.Do(req)
-	if err != nil {
-		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
-			"Title": "Error",
-			"ErrorTitle": "Service Error",
-			"ErrorDescription": "Unsuccessful connection to CDEngine."})
-		return "", cdmodel.User{}, false
-	}
-	if res.StatusCode == http.StatusUnauthorized {
-		ctx.Redirect(http.StatusTemporaryRedirect, "/auth" +
-				"?ret=" +
-				base64.URLEncoding.EncodeToString([]byte(
-					ctx.Request.URL.Path)))
-		return "", cdmodel.User{}, false
-	}
-	if res.StatusCode != http.StatusOK {
-		var msg map[string]interface{}
-		json.NewDecoder(res.Body).Decode(&msg)
-		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
-			"Title": "Error",
-			"ErrorTitle": "Service Error",
-			"ErrorDescription": "CDEngine error: " + msg["Error"].(string)})
-		return "", cdmodel.User{}, false
-	}
-	err = json.NewDecoder(res.Body).Decode(&userResp)
-	if err != nil {
-		ctx.HTML(http.StatusInternalServerError, "layout/error", gin.H{
-			"Title": "Error",
-			"ErrorTitle": "Service Error",
-			"ErrorDescription": "Decode error: " + err.Error()})
-		return "", cdmodel.User{}, false
-	}
-
-	// Return user struct
-	return token.(string), userResp.Data, true
-}
 
 
 // Endpoint "auth"
@@ -117,28 +45,9 @@ func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	// Verify using CDEngine
 	authVal := url.Values{}
 	authVal.Add("code", authCode)
-	res, err := http.Get(sctx.Conf.CDAPIUrl + "auth?" + authVal.Encode())
-	if err != nil {
-		ctx.HTML(http.StatusOK, "layout/error", gin.H{
-				"Title": "Error",
-				"ErrorTitle": "Service Error",
-				"ErrorDescription": "Unsuccessful connection to CDEngine."})
-		return
-	}
-	if res.StatusCode != http.StatusOK {
-		ctx.HTML(http.StatusOK, "layout/error", gin.H{
-				"Title": "Error",
-				"ErrorTitle": "Auth Error",
-				"ErrorDescription": "Invalid request."})
-		return
-	}
 	var userResp map[string]interface{}
-	err = json.NewDecoder(res.Body).Decode(&userResp)
-	if err != nil {
-		ctx.HTML(http.StatusOK, "layout/error", gin.H{
-				"Title": "Error",
-				"ErrorTitle": "Auth Error",
-				"ErrorDescription": "Error decoding json" + err.Error() + "."})
+	isSuccess := CDRequest(ctx, sctx, "/auth", authVal, false, &userResp)
+	if !isSuccess {
 		return
 	}
 
