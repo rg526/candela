@@ -47,6 +47,9 @@ func main() {
 	r.GET("/auth", func(c *gin.Context) {
 		cdengine.GetAuth(c, db, conf)
 	})
+	r.GET("/user", func(c *gin.Context) {
+		cdengine.GetUser(c, db, conf)
+	})
 
 	// Run CDENGINE
 	r.Run(conf.Host + ":" + strconv.Itoa(conf.Port))

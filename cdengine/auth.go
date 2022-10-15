@@ -9,30 +9,63 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
-	
+
 	"candela/cdmodel"
 )
 
-func VerifyToken(token string, db *sql.DB) (string, string, error) {
+func VerifyToken(token string, db *sql.DB) (cdmodel.User, error) {
+	var user cdmodel.User
 	// Check if token exists
 	// Query DB
 	stmtToken, err := db.Prepare("SELECT uid, time FROM token WHERE token = ?")
 	if err != nil {
-		return "", "", err
+		return user, err
 	}
 
 	// Record UID and time
 	var uid, time string
 	err = stmtToken.QueryRow(token).Scan(&uid, &time)
 	if err != nil {
-		return "", "", err
+		return user, err
+	}
+
+	// Query DB for user
+	stmtUser, err := db.Prepare("SELECT uid, name, givenName, familyName, Email FROM user WHERE UID = ?")
+	if err != nil {
+		return user, err
+	}
+	err = stmtUser.QueryRow(uid).Scan(&user.UID, &user.Name, &user.GivenName, &user.FamilyName, &user.Email)
+	if err != nil {
+		return user, err
 	}
 
 	// Return result
-	return uid, time, nil
+	return user, nil
 }
 
 
+// Endpoint "/user"
+// Get current user info
+func GetUser(ctx *gin.Context, db *sql.DB, conf Config) {
+	// Verify token
+	token := ctx.Query("token")
+	user, err := VerifyToken(token, db)
+    if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+        return
+    }
+
+	// Return result
+	ctx.JSON(http.StatusOK, gin.H{
+		"Status": "OK",
+		"Data": user})
+}
+
+
+// Endpoint "/auth"
+// Authenticate with a OAuth code
 func GetAuth(ctx *gin.Context, db *sql.DB, conf Config) {
 	// Verify code
 	authCode := ctx.Query("code")

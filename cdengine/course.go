@@ -6,10 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
-	
+
 	"candela/cdmodel"
 )
 
+// Endpoint "/course"
+// Get course detailed info
 func GetCourse(ctx *gin.Context, db *sql.DB, conf Config) {
 	// Find course ID
 	var course cdmodel.Course
@@ -45,6 +47,8 @@ func GetCourse(ctx *gin.Context, db *sql.DB, conf Config) {
 }
 
 
+// Endpoint "/professor"
+// Get professor detailed info
 func GetProfessor(ctx *gin.Context, db *sql.DB, conf Config) {
 	// Find course ID
 	var prof cdmodel.Professor
