@@ -34,6 +34,14 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
+	if courseResp.Data.CID == 0 {
+		ctx.HTML(http.StatusBadRequest, "layout/error", gin.H{
+			"Title": "Error",
+			"ErrorTitle": "No such course",
+			"ErrorDescription": "Course " + cid + " not found"})
+		return
+	}
+
 	// Fetch prof struct
 	profName := strings.Split(courseResp.Data.Prof, ";")
 	var profArr []cdmodel.Professor
