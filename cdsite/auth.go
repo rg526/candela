@@ -9,6 +9,7 @@ import (
 	"github.com/gin-contrib/sessions"
 )
 
+
 func GetAuth(ctx *gin.Context, conf Config) {
 	// Redirect to Google
 	authVal := url.Values{}
@@ -22,14 +23,6 @@ func GetAuth(ctx *gin.Context, conf Config) {
 	ctx.Redirect(http.StatusMovedPermanently, authUrl)
 }
 
-type AuthResponse struct {
-	AccessToken		string		`json:"access_token"`
-}
-
-type UserResponse struct {
-	Status			string
-	Token			string
-}
 
 func GetAuthCallback(ctx *gin.Context, conf Config) {
 	// Get authCode
@@ -60,8 +53,8 @@ func GetAuthCallback(ctx *gin.Context, conf Config) {
 				"ErrorDescription": "Invalid request."})
 		return
 	}
-	var user UserResponse
-	err = json.NewDecoder(res.Body).Decode(&user)
+	var userResp map[string]interface{}
+	err = json.NewDecoder(res.Body).Decode(&userResp)
 	if err != nil {
 		ctx.HTML(http.StatusOK, "layout/error", gin.H{
 				"Title": "Error",
@@ -72,7 +65,7 @@ func GetAuthCallback(ctx *gin.Context, conf Config) {
 
 	// Set cookie
 	session := sessions.Default(ctx)
-	session.Set("token", user.Token)
+	session.Set("token", userResp["Token"].(string))
 	session.Save()
 
 	// Page
