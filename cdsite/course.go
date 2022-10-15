@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/sessions"
 
 	"candela/cdmodel"
 )
@@ -17,10 +16,8 @@ import (
 // Search for a list of course, given search params
 func GetSearch(ctx *gin.Context, sctx *Context) {
 	// AUTH REQUIRED
-	session := sessions.Default(ctx)
-	token := session.Get("token")
-	if token == nil {
-		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
+	_, _, isAuth := VerifyUserFromSession(ctx, sctx)
+	if !isAuth {
 		return
 	}
 
