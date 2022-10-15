@@ -156,49 +156,31 @@ func GetAuth(ctx *gin.Context, ectx *Context) {
 	// Generate token
 	userToken := uuid.New().String()
 
-	// Test if user exists
-	stmtCheck, err := ectx.DB.Prepare("SELECT uid FROM user WHERE uid = ?")
+	// Insert user
+	stmtInsertUser, err := ectx.DB.Prepare("INSERT IGNORE INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
 	}
-	rows, err := stmtCheck.Query(user.UID)
+	_, err = stmtInsertUser.Exec(user.UID, user.Name, user.GivenName ,user.FamilyName, user.Email)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
 	}
-	defer rows.Close()
-	if !rows.Next() {
-		// Insert user
-		stmtInsert, err := ectx.DB.Prepare("INSERT INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)")
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
-			return
-		}
-		_, err = stmtInsert.Exec(user.UID, user.Name, user.GivenName ,user.FamilyName, user.Email)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
-			return
-		}
-	}
 
 	// Insert token
-	stmtInsert, err := ectx.DB.Prepare("INSERT INTO token (token, uid, time) VALUES (?, ?, ?)")
+	stmtInsertToken, err := ectx.DB.Prepare("INSERT INTO token (token, uid, time) VALUES (?, ?, ?)")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
 	}
-	_, err = stmtInsert.Exec(userToken, user.UID, time.Now().Unix())
+	_, err = stmtInsertToken.Exec(userToken, user.UID, time.Now().Unix())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Status": "ERROR",
