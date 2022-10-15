@@ -32,8 +32,12 @@
 	<p>{{.Course.Description}}</p>
 </div>
 <div class="container">
+	{{ if ne .Course.Prereq "" }}
 	<p><b>Pre-requisite: </b>{{.Course.Prereq}}</p>
+	{{ end }}
+	{{ if ne .Course.Coreq "" }}
 	<p><b>Co-requisite: </b>{{.Course.Coreq}}</p>
+	{{ end }}
 </div>  
 
 <!--Comment Box-->
