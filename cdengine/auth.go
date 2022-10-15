@@ -171,6 +171,7 @@ func GetAuth(ctx *gin.Context, ectx *Context) {
 			"Error": "Error: " + err.Error()})
 		return
 	}
+	defer rows.Close()
 	if !rows.Next() {
 		// Insert user
 		stmtInsert, err := ectx.DB.Prepare("INSERT INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)")
