@@ -4,17 +4,15 @@ import (
 	"strconv"
 	"net/http"
 	"github.com/gin-gonic/gin"
-	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 
 	"candela/cdmodel"
 )
 
 // Endpoint "/course"
 // Get course detailed info
-func GetCourse(ctx *gin.Context, db *sql.DB, conf Config) {
+func GetCourse(ctx *gin.Context, ectx *Context) {
 	// Verify token
-	_, err := VerifyTokenFromCtx(ctx, db)
+	_, err := VerifyTokenFromCtx(ctx, ectx)
 	if err != nil {
 		return
 	}
@@ -31,7 +29,7 @@ func GetCourse(ctx *gin.Context, db *sql.DB, conf Config) {
 	}
 
 	// Query DB
-	stmtCourse, err := db.Prepare("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?")
+	stmtCourse, err := ectx.DB.Prepare("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -55,9 +53,9 @@ func GetCourse(ctx *gin.Context, db *sql.DB, conf Config) {
 
 // Endpoint "/professor"
 // Get professor detailed info
-func GetProfessor(ctx *gin.Context, db *sql.DB, conf Config) {
+func GetProfessor(ctx *gin.Context, ectx *Context) {
 	// Verify token
-	_, err := VerifyTokenFromCtx(ctx, db)
+	_, err := VerifyTokenFromCtx(ctx, ectx)
 	if err != nil {
 		return
 	}
@@ -67,7 +65,7 @@ func GetProfessor(ctx *gin.Context, db *sql.DB, conf Config) {
 	prof_name := ctx.Query("name")
 
 	// Query DB
-	stmtProf, err := db.Prepare("SELECT name, RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?")
+	stmtProf, err := ectx.DB.Prepare("SELECT name, RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
