@@ -19,7 +19,7 @@ func GetCourse(ctx *gin.Context, ectx *Context) {
 
 	// Find course ID
 	var course cdmodel.Course
-	cid_query := ctx.Query("cid")
+	cid_query := ctx.Param("cid")
 	cid, err := strconv.Atoi(cid_query)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -62,7 +62,7 @@ func GetProfessor(ctx *gin.Context, ectx *Context) {
 
 	// Find course ID
 	var prof cdmodel.Professor
-	prof_name := ctx.Query("name")
+	prof_name := ctx.Param("name")
 
 	// Query DB
 	stmtProf, err := ectx.DB.Prepare("SELECT name, RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?")

@@ -13,10 +13,10 @@ func main() {
 
 	// Setup routes
 	r := gin.Default()
-	r.GET("/course", func(c *gin.Context) {
+	r.GET("/course/:cid", func(c *gin.Context) {
 		cdengine.GetCourse(c, &engineCtx)
 	})
-	r.GET("/professor", func(c *gin.Context) {
+	r.GET("/professor/:name", func(c *gin.Context) {
 		cdengine.GetProfessor(c, &engineCtx)
 	})
 	r.GET("/auth", func(c *gin.Context) {
