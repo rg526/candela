@@ -29,16 +29,14 @@ func GetSearch(ctx *gin.Context, sctx *Context) {
 
 func GetCourse(ctx *gin.Context, sctx *Context) {
 	// AUTH REQUIRED
-	session := sessions.Default(ctx)
-	token := session.Get("token")
-	if token == nil {
-		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
+	token, _, isAuth := VerifyUserFromSession(ctx, sctx)
+	if !isAuth {
 		return
 	}
 
 	// Find course ID
 	courseVal := url.Values{}
-	courseVal.Add("token", token.(string))
+	courseVal.Add("token", token)
 	courseVal.Add("cid", ctx.Query("cid"))
 	courseUrl := sctx.Conf.CDAPIUrl + "course?" + courseVal.Encode()
 
@@ -90,7 +88,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 
 		// Build URL
 		profVal := url.Values{}
-		profVal.Add("token", token.(string))
+		profVal.Add("token", token)
 		profVal.Add("name", name)
 		profUrl := sctx.Conf.CDAPIUrl + "professor?" + profVal.Encode()
 
