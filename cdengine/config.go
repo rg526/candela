@@ -19,6 +19,7 @@ type Config struct {
 	OAuth2ClientSecret	string
 	OAuth2Scope			string
 	OAuth2RedirectURI	string
+	MaxSearchResult		int
 }
 
 type Context struct {

@@ -25,6 +25,9 @@ func main() {
 	r.GET("/user", func(c *gin.Context) {
 		cdengine.GetUser(c, &engineCtx)
 	})
+	r.GET("/search", func(c *gin.Context) {
+		cdengine.GetSearch(c, &engineCtx)
+	})
 
 	// Run CDENGINE
 	r.Run(engineCtx.Conf.Host + ":" + strconv.Itoa(engineCtx.Conf.Port))
