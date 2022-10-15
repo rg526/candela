@@ -13,7 +13,7 @@ import (
 	"candela/cdmodel"
 )
 
-func GetSearch(ctx *gin.Context, conf Config) {
+func GetSearch(ctx *gin.Context, sctx *Context) {
 	// AUTH REQUIRED
 	session := sessions.Default(ctx)
 	token := session.Get("token")
@@ -27,7 +27,7 @@ func GetSearch(ctx *gin.Context, conf Config) {
 		"Title": "Course Search"})
 }
 
-func GetCourse(ctx *gin.Context, conf Config) {
+func GetCourse(ctx *gin.Context, sctx *Context) {
 	// AUTH REQUIRED
 	session := sessions.Default(ctx)
 	token := session.Get("token")
@@ -40,7 +40,7 @@ func GetCourse(ctx *gin.Context, conf Config) {
 	courseVal := url.Values{}
 	courseVal.Add("token", token.(string))
 	courseVal.Add("cid", ctx.Query("cid"))
-	courseUrl := conf.CDAPIUrl + "course?" + courseVal.Encode()
+	courseUrl := sctx.Conf.CDAPIUrl + "course?" + courseVal.Encode()
 
 
 	// Send CDAPI request
@@ -92,7 +92,7 @@ func GetCourse(ctx *gin.Context, conf Config) {
 		profVal := url.Values{}
 		profVal.Add("token", token.(string))
 		profVal.Add("name", name)
-		profUrl := conf.CDAPIUrl + "professor?" + profVal.Encode()
+		profUrl := sctx.Conf.CDAPIUrl + "professor?" + profVal.Encode()
 
 		// Do request
 		res, err = http.Get(profUrl)

@@ -1,10 +1,7 @@
 package main
 
 import (
-	"log"
 	"strconv"
-	"encoding/json"
-	"io/ioutil"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -14,49 +11,39 @@ import (
 
 
 func main() {
-	// Read config file
-	conf_content, err := ioutil.ReadFile("config.json")
-	if err != nil {
-		log.Fatal("Error: open config file: ", err)
-	}
-	var conf cdsite.Config
-	err = json.Unmarshal(conf_content, &conf)
-	if err != nil {
-		log.Fatal("Error: read config file: ", err)
-	}
+	siteCtx := cdsite.InitContext("config.json")
 
 	// Setup session
 	r := gin.Default()
-	store := cookie.NewStore([]byte(conf.CookieSecret))
+	store := cookie.NewStore([]byte(siteCtx.Conf.CookieSecret))
 	r.Use(sessions.Sessions("candela", store))
-
 
 	// Setup routes
 	r.LoadHTMLGlob("../../cdfrontend/template/**/*.tmpl")
 	r.Static("/css", "../../cdfrontend/css")
 	r.Static("/js", "../../cdfrontend/js")
 	r.GET("/", func(c *gin.Context) {
-		cdsite.GetHome(c, conf)
+		cdsite.GetHome(c, &siteCtx)
 	})
 	r.GET("/search", func(c *gin.Context) {
-		cdsite.GetSearch(c, conf)
+		cdsite.GetSearch(c, &siteCtx)
 	})
 	r.GET("/course", func(c *gin.Context) {
-		cdsite.GetCourse(c, conf)
+		cdsite.GetCourse(c, &siteCtx)
 	})
 	r.GET("/auth", func(c *gin.Context) {
-		cdsite.GetAuth(c, conf)
+		cdsite.GetAuth(c, &siteCtx)
 	})
 	r.GET("/authCallback", func(c *gin.Context) {
-		cdsite.GetAuthCallback(c, conf)
+		cdsite.GetAuthCallback(c, &siteCtx)
 	})
 	r.GET("/logout", func(c *gin.Context) {
-		cdsite.GetLogout(c, conf)
+		cdsite.GetLogout(c, &siteCtx)
 	})
 	r.GET("/about", func(c *gin.Context) {
-		cdsite.GetAbout(c, conf)
+		cdsite.GetAbout(c, &siteCtx)
 	})
 
 	// Run CDSITE
-	r.Run(conf.Host + ":" + strconv.Itoa(conf.Port))
+	r.Run(siteCtx.Conf.Host + ":" + strconv.Itoa(siteCtx.Conf.Port))
 }

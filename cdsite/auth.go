@@ -10,13 +10,13 @@ import (
 )
 
 
-func GetAuth(ctx *gin.Context, conf Config) {
+func GetAuth(ctx *gin.Context, sctx *Context) {
 	// Redirect to Google
 	authVal := url.Values{}
-	authVal.Add("client_id", conf.OAuth2ClientID)
-	authVal.Add("redirect_uri", conf.OAuth2RedirectURI)
+	authVal.Add("client_id", sctx.Conf.OAuth2ClientID)
+	authVal.Add("redirect_uri", sctx.Conf.OAuth2RedirectURI)
 	authVal.Add("response_type", "code")
-	authVal.Add("scope", conf.OAuth2Scope)
+	authVal.Add("scope", sctx.Conf.OAuth2Scope)
 	authVal.Add("hd", "andrew.cmu.edu")
 	authUrl := "https://accounts.google.com/o/oauth2/v2/auth?" + authVal.Encode()
 
@@ -24,7 +24,7 @@ func GetAuth(ctx *gin.Context, conf Config) {
 }
 
 
-func GetAuthCallback(ctx *gin.Context, conf Config) {
+func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	// Get authCode
 	if ctx.Query("error") != "" {
 		ctx.HTML(http.StatusOK, "layout/error", gin.H{
@@ -38,7 +38,7 @@ func GetAuthCallback(ctx *gin.Context, conf Config) {
 	// Verify using CDEngine
 	authVal := url.Values{}
 	authVal.Add("code", authCode)
-	res, err := http.Get(conf.CDAPIUrl + "auth?" + authVal.Encode())
+	res, err := http.Get(sctx.Conf.CDAPIUrl + "auth?" + authVal.Encode())
 	if err != nil {
 		ctx.HTML(http.StatusOK, "layout/error", gin.H{
 				"Title": "Error",
@@ -72,7 +72,7 @@ func GetAuthCallback(ctx *gin.Context, conf Config) {
 	ctx.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
-func GetLogout(ctx *gin.Context, conf Config) {
+func GetLogout(ctx *gin.Context, sctx *Context) {
 	// Remove session
 	session := sessions.Default(ctx)
 	session.Clear()
