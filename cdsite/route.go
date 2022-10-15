@@ -17,16 +17,6 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 )
 
-type CourseResponse struct {
-	Status		string
-	Data		cdmodel.Course
-}
-
-type ProfessorResponse struct {
-	Status		string
-	Data        cdmodel.Professor
-}
-
 func getHome(ctx *gin.Context, conf config) {
 	// AUTH REQUIRED
 	session := sessions.Default(ctx)
@@ -65,7 +55,6 @@ func getCourse(ctx *gin.Context, conf config) {
 	}
 
 	// Find course ID
-	var course CourseResponse
 	courseVal := url.Values{}
 	courseVal.Add("token", token.(string))
 	courseVal.Add("cid", ctx.Query("cid"))
@@ -73,27 +62,34 @@ func getCourse(ctx *gin.Context, conf config) {
 
 
 	// Send CDAPI request
+	var course struct {
+		Status		string
+		Data		cdmodel.Course
+	}
 	res, err := http.Get(courseUrl)
 	if err != nil {
-		ctx.HTML(http.StatusServiceUnavailable, "layout/error", gin.H{
+		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
 			"Title": "Error",
 			"ErrorTitle": "Service Error",
 			"ErrorDescription": "Unsuccessful connection to CDEngine."})
 		return
 	}
 	if res.StatusCode != http.StatusOK {
-		ctx.HTML(http.StatusServiceUnavailable, "layout/error", gin.H{
+		var msg map[string]interface{}
+		json.NewDecoder(res.Body).Decode(&msg)
+		ctx.HTML(http.StatusBadRequest, "layout/error", gin.H{
 			"Title": "Error",
 			"ErrorTitle": "Invalid Request",
-			"ErrorDescription": "Your request is not valid."})
+			"ErrorDescription": msg["Error"].(string)})
 		return
 	}
+
 	err = json.NewDecoder(res.Body).Decode(&course)
 	if err != nil {
-		ctx.HTML(http.StatusServiceUnavailable, "layout/error", gin.H{
+		ctx.HTML(http.StatusInternalServerError, "layout/error", gin.H{
 			"Title": "Error",
 			"ErrorTitle": "Service Error",
-			"ErrorDescription": "CDEngine returns invalid response."})
+			"ErrorDescription": "Decode error: " + err.Error()})
 		return
 	}
 
@@ -102,7 +98,10 @@ func getCourse(ctx *gin.Context, conf config) {
 	var profArr []cdmodel.Professor
 	for _, name := range(profName) {
 		// Default data
-		var prof ProfessorResponse
+		var prof struct {
+			Status string
+			Data cdmodel.Professor
+		}
 		prof.Data.Name = name
 		prof.Data.RMPRatingClass = "Unknown"
 		prof.Data.RMPRatingOverall = -1.0
