@@ -6,8 +6,6 @@ import (
 	"net/url"
 	"net/http"
 	"github.com/gin-gonic/gin"
-	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 
 	"candela/cdmodel"
@@ -15,11 +13,11 @@ import (
 
 
 // Verify if a token is valid
-func VerifyToken(token string, db *sql.DB) (cdmodel.User, error) {
+func VerifyToken(token string, ectx *Context) (cdmodel.User, error) {
 	var user cdmodel.User
 	// Check if token exists
 	// Query DB
-	stmtToken, err := db.Prepare("SELECT uid, time FROM token WHERE token = ?")
+	stmtToken, err := ectx.DB.Prepare("SELECT uid, time FROM token WHERE token = ?")
 	if err != nil {
 		return user, err
 	}
@@ -32,7 +30,7 @@ func VerifyToken(token string, db *sql.DB) (cdmodel.User, error) {
 	}
 
 	// Query DB for user
-	stmtUser, err := db.Prepare("SELECT uid, name, givenName, familyName, Email FROM user WHERE UID = ?")
+	stmtUser, err := ectx.DB.Prepare("SELECT uid, name, givenName, familyName, Email FROM user WHERE UID = ?")
 	if err != nil {
 		return user, err
 	}
@@ -47,23 +45,23 @@ func VerifyToken(token string, db *sql.DB) (cdmodel.User, error) {
 
 
 // Verify if a token is valid, from context
-func VerifyTokenFromCtx(ctx *gin.Context, db *sql.DB) (cdmodel.User, error) {
+func VerifyTokenFromCtx(ctx *gin.Context, ectx *Context) (cdmodel.User, error) {
 	token := ctx.Query("token")
-	user, err := VerifyToken(token, db)
-    if err != nil {
+	user, err := VerifyToken(token, ectx)
+	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
-    }
+	}
 	return user, err
 }
 
 
 // Endpoint "/user"
 // Get current user info
-func GetUser(ctx *gin.Context, db *sql.DB, conf Config) {
+func GetUser(ctx *gin.Context, ectx *Context) {
 	// Verify token
-	user, err := VerifyTokenFromCtx(ctx, db)
+	user, err := VerifyTokenFromCtx(ctx, ectx)
 	if err != nil {
 		return
 	}
@@ -77,67 +75,67 @@ func GetUser(ctx *gin.Context, db *sql.DB, conf Config) {
 
 // Endpoint "/auth"
 // Authenticate with a OAuth code
-func GetAuth(ctx *gin.Context, db *sql.DB, conf Config) {
+func GetAuth(ctx *gin.Context, ectx *Context) {
 	// Verify code
 	authCode := ctx.Query("code")
 
 	// Turn to OAuth token
-    authVal := url.Values{}
-    authVal.Add("client_id", conf.OAuth2ClientID)
-    authVal.Add("client_secret", conf.OAuth2ClientSecret)
-    authVal.Add("code", authCode)
-    authVal.Add("grant_type", "authorization_code")
-    authVal.Add("redirect_uri", conf.OAuth2RedirectURI)
-    res, err := http.PostForm("https://oauth2.googleapis.com/token", authVal)
-    if err != nil {
+	authVal := url.Values{}
+	authVal.Add("client_id", ectx.Conf.OAuth2ClientID)
+	authVal.Add("client_secret", ectx.Conf.OAuth2ClientSecret)
+	authVal.Add("code", authCode)
+	authVal.Add("grant_type", "authorization_code")
+	authVal.Add("redirect_uri", ectx.Conf.OAuth2RedirectURI)
+	res, err := http.PostForm("https://oauth2.googleapis.com/token", authVal)
+	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
-        return
-    }
-    if res.StatusCode != http.StatusOK {
+		return
+	}
+	if res.StatusCode != http.StatusOK {
 		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + res.Status})
-        return
-    }
+		return
+	}
 
 	// Decode token
 	var authResp map[string]interface{}
-    err = json.NewDecoder(res.Body).Decode(&authResp)
-    if err != nil {
+	err = json.NewDecoder(res.Body).Decode(&authResp)
+	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
-        return
-    }
+		return
+	}
 
-    // Get email and name
-    userVal := url.Values{}
-    userVal.Add("access_token", authResp["access_token"].(string))
-    res, err = http.Get("https://www.googleapis.com/oauth2/v1/userinfo?" + userVal.Encode())
-    if err != nil {
+	// Get email and name
+	userVal := url.Values{}
+	userVal.Add("access_token", authResp["access_token"].(string))
+	res, err = http.Get("https://www.googleapis.com/oauth2/v1/userinfo?" + userVal.Encode())
+	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
-        return
-    }
-    if res.StatusCode != http.StatusOK {
+		return
+	}
+	if res.StatusCode != http.StatusOK {
 		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + res.Status})
-        return
-    }
+		return
+	}
 
 	// Decode email and name
-    var userResp map[string]interface{}
-    err = json.NewDecoder(res.Body).Decode(&userResp)
-    if err != nil {
+	var userResp map[string]interface{}
+	err = json.NewDecoder(res.Body).Decode(&userResp)
+	if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
-        return
-    }
+		return
+	}
 
 	// Generate user structure
 	var user cdmodel.User
@@ -151,7 +149,7 @@ func GetAuth(ctx *gin.Context, db *sql.DB, conf Config) {
 	userToken := uuid.New().String()
 
 	// Test if user exists
-	stmtCheck, err := db.Prepare("SELECT uid FROM user WHERE uid = ?")
+	stmtCheck, err := ectx.DB.Prepare("SELECT uid FROM user WHERE uid = ?")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -167,7 +165,7 @@ func GetAuth(ctx *gin.Context, db *sql.DB, conf Config) {
 	}
 	if !rows.Next() {
 		// Insert user
-		stmtInsert, err := db.Prepare("INSERT INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)")
+		stmtInsert, err := ectx.DB.Prepare("INSERT INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)")
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"Status": "ERROR",
@@ -184,7 +182,7 @@ func GetAuth(ctx *gin.Context, db *sql.DB, conf Config) {
 	}
 
 	// Insert token
-	stmtInsert, err := db.Prepare("INSERT INTO token (token, uid, time) VALUES (?, ?, ?)")
+	stmtInsert, err := ectx.DB.Prepare("INSERT INTO token (token, uid, time) VALUES (?, ?, ?)")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
