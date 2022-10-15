@@ -13,6 +13,8 @@ import (
 	"candela/cdmodel"
 )
 
+
+// Verify if a token is valid
 func VerifyToken(token string, db *sql.DB) (cdmodel.User, error) {
 	var user cdmodel.User
 	// Check if token exists
@@ -44,18 +46,27 @@ func VerifyToken(token string, db *sql.DB) (cdmodel.User, error) {
 }
 
 
-// Endpoint "/user"
-// Get current user info
-func GetUser(ctx *gin.Context, db *sql.DB, conf Config) {
-	// Verify token
+// Verify if a token is valid, from context
+func VerifyTokenFromCtx(ctx *gin.Context, db *sql.DB) (cdmodel.User, error) {
 	token := ctx.Query("token")
 	user, err := VerifyToken(token, db)
     if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
-        return
     }
+	return user, err
+}
+
+
+// Endpoint "/user"
+// Get current user info
+func GetUser(ctx *gin.Context, db *sql.DB, conf Config) {
+	// Verify token
+	user, err := VerifyTokenFromCtx(ctx, db)
+	if err != nil {
+		return
+	}
 
 	// Return result
 	ctx.JSON(http.StatusOK, gin.H{

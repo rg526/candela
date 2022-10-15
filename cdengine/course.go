@@ -13,6 +13,12 @@ import (
 // Endpoint "/course"
 // Get course detailed info
 func GetCourse(ctx *gin.Context, db *sql.DB, conf Config) {
+	// Verify token
+	_, err := VerifyTokenFromCtx(ctx, db)
+	if err != nil {
+		return
+	}
+
 	// Find course ID
 	var course cdmodel.Course
 	cid_query := ctx.Query("cid")
@@ -50,6 +56,12 @@ func GetCourse(ctx *gin.Context, db *sql.DB, conf Config) {
 // Endpoint "/professor"
 // Get professor detailed info
 func GetProfessor(ctx *gin.Context, db *sql.DB, conf Config) {
+	// Verify token
+	_, err := VerifyTokenFromCtx(ctx, db)
+	if err != nil {
+		return
+	}
+
 	// Find course ID
 	var prof cdmodel.Professor
 	prof_name := ctx.Query("name")
