@@ -38,10 +38,7 @@ func GetCourse(ctx *gin.Context, ectx *Context) {
 	}
 	err = stmtCourse.QueryRow(cid).Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq, &course.FCEHours, &course.FCETeachingRate, &course.FCECourseRate, &course.FCELevel, &course.FCEStudentCount)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
+		// Course not found
 	}
 
 	// Return result
@@ -74,10 +71,7 @@ func GetProfessor(ctx *gin.Context, ectx *Context) {
 	}
 	err = stmtProf.QueryRow(prof_name).Scan(&prof.Name, &prof.RMPRatingClass, &prof.RMPRatingOverall)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
+		// Prof not found
 	}
 
 	// Return result

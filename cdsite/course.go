@@ -3,9 +3,7 @@ package cdsite
 import (
 	"strconv"
 	"strings"
-	"encoding/json"
 	"net/http"
-	"net/url"
 	"github.com/gin-gonic/gin"
 
 	"candela/cdmodel"
@@ -25,40 +23,37 @@ func GetSearch(ctx *gin.Context, sctx *Context) {
 func GetCourse(ctx *gin.Context, sctx *Context) {
 	// Find course ID
 	cid := ctx.Param("cid")
-	courseUrl := "/course/" + cid
 
 	// Send CDAPI request
 	var courseResp struct {
 		Status		string
 		Data		cdmodel.Course
 	}
-	CDRequest(ctx, sctx, courseUrl, url.Values{}, true, &courseResp)
+	isSuccess := CDRequest(ctx, sctx, "/course/" + cid, nil, true, &courseResp)
+	if !isSuccess {
+		return
+	}
 
 	// Fetch prof struct
 	profName := strings.Split(courseResp.Data.Prof, ";")
 	var profArr []cdmodel.Professor
 	for _, name := range(profName) {
-		// Default data
-		var prof struct {
+		var profResp struct {
 			Status string
 			Data cdmodel.Professor
 		}
-		prof.Data.Name = name
-		prof.Data.RMPRatingClass = "Unknown"
-		prof.Data.RMPRatingOverall = -1.0
-
-		// Build URL
-		profUrl := sctx.Conf.CDAPIUrl + "/professor/" + name
-
-		// Do request
-		req, err := http.NewRequest("GET", profUrl, nil)
-		if err != nil {
-			res, err := sctx.Client.Do(req)
-			if err == nil && res.StatusCode == http.StatusOK {
-				_ = json.NewDecoder(res.Body).Decode(&prof)
-			}
+		isSuccess := CDRequest(ctx, sctx, "/professor/" + name, nil, true, &profResp)
+		if !isSuccess {
+			return
 		}
-		profArr = append(profArr, prof.Data)
+
+		// Default data
+		if profResp.Data.Name == "" {
+			profResp.Data.Name = name
+			profResp.Data.RMPRatingClass = "Unknown"
+			profResp.Data.RMPRatingOverall = -1.0
+		}
+		profArr = append(profArr, profResp.Data)
 	}
 
 	// Generate HTML
