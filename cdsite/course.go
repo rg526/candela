@@ -37,7 +37,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 	// Find course ID
 	courseVal := url.Values{}
 	courseVal.Add("token", token)
-	courseVal.Add("cid", ctx.Query("cid"))
+	courseVal.Add("cid", ctx.Param("cid"))
 	courseUrl := sctx.Conf.CDAPIUrl + "course?" + courseVal.Encode()
 
 

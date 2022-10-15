@@ -28,7 +28,7 @@ func main() {
 	r.GET("/search", func(c *gin.Context) {
 		cdsite.GetSearch(c, &siteCtx)
 	})
-	r.GET("/course", func(c *gin.Context) {
+	r.GET("/course/:cid", func(c *gin.Context) {
 		cdsite.GetCourse(c, &siteCtx)
 	})
 	r.GET("/auth", func(c *gin.Context) {

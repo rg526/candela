@@ -1,7 +1,9 @@
 package cdsite
 
 import (
+	_ "log"
 	"encoding/json"
+	"encoding/base64"
 	"net/url"
 	"net/http"
 	"github.com/gin-gonic/gin"
@@ -16,7 +18,10 @@ func VerifyUserFromSession(ctx *gin.Context, sctx *Context) (string, cdmodel.Use
 	session := sessions.Default(ctx)
 	token := session.Get("token")
 	if token == nil {
-		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
+		ctx.Redirect(http.StatusTemporaryRedirect, "/auth" +
+				"?ret=" +
+				base64.URLEncoding.EncodeToString([]byte(
+					ctx.Request.URL.Path)))
 		return "", cdmodel.User{}, false
 	}
 
@@ -39,7 +44,10 @@ func VerifyUserFromSession(ctx *gin.Context, sctx *Context) (string, cdmodel.Use
 		return "", cdmodel.User{}, false
 	}
 	if res.StatusCode == http.StatusUnauthorized {
-		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
+		ctx.Redirect(http.StatusTemporaryRedirect, "/auth" +
+				"?ret=" +
+				base64.URLEncoding.EncodeToString([]byte(
+					ctx.Request.URL.Path)))
 		return "", cdmodel.User{}, false
 	}
 	if res.StatusCode != http.StatusOK {
@@ -66,10 +74,13 @@ func VerifyUserFromSession(ctx *gin.Context, sctx *Context) (string, cdmodel.Use
 
 
 func GetAuth(ctx *gin.Context, sctx *Context) {
+	retPath := ctx.Query("ret")
+
 	// Redirect to Google
 	authVal := url.Values{}
 	authVal.Add("client_id", sctx.Conf.OAuth2ClientID)
 	authVal.Add("redirect_uri", sctx.Conf.OAuth2RedirectURI)
+	authVal.Add("state", retPath)
 	authVal.Add("response_type", "code")
 	authVal.Add("scope", sctx.Conf.OAuth2Scope)
 	authVal.Add("hd", "andrew.cmu.edu")
@@ -124,7 +135,16 @@ func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	session.Save()
 
 	// Page
-	ctx.Redirect(http.StatusTemporaryRedirect, "/")
+	retPath := ctx.Query("state")
+	data, err := base64.URLEncoding.DecodeString(retPath)
+	if err != nil {
+		ctx.HTML(http.StatusOK, "layout/error", gin.H{
+				"Title": "Error",
+				"ErrorTitle": "Auth Error",
+				"ErrorDescription": "Error decoding state " + err.Error() + "."})
+		return
+	}
+	ctx.Redirect(http.StatusTemporaryRedirect, string(data))
 }
 
 func GetLogout(ctx *gin.Context, sctx *Context) {
