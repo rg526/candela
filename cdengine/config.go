@@ -1,5 +1,9 @@
 package cdengine
 
+import (
+	"database/sql"
+)
+
 type Config struct {
 	Host				string
 	Port				int
@@ -10,4 +14,9 @@ type Config struct {
 	OAuth2ClientSecret	string
 	OAuth2Scope			string
 	OAuth2RedirectURI	string
+}
+
+type Context struct {
+	DB					*sql.DB
+	Conf				Config
 }
