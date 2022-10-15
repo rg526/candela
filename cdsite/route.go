@@ -30,7 +30,8 @@ type ProfessorResponse struct {
 func getHome(ctx *gin.Context, conf config) {
 	// AUTH REQUIRED
 	session := sessions.Default(ctx)
-	if session.Get("token") == nil {
+	token := session.Get("token")
+	if token == nil {
 		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
 		return
 	}
@@ -43,7 +44,8 @@ func getHome(ctx *gin.Context, conf config) {
 func getSearch(ctx *gin.Context, conf config) {
 	// AUTH REQUIRED
 	session := sessions.Default(ctx)
-	if session.Get("token") == nil {
+	token := session.Get("token")
+	if token == nil {
 		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
 		return
 	}
@@ -56,7 +58,8 @@ func getSearch(ctx *gin.Context, conf config) {
 func getCourse(ctx *gin.Context, conf config) {
 	// AUTH REQUIRED
 	session := sessions.Default(ctx)
-	if session.Get("token") == nil {
+	token := session.Get("token")
+	if token == nil {
 		ctx.Redirect(http.StatusTemporaryRedirect, "/auth")
 		return
 	}
@@ -64,6 +67,7 @@ func getCourse(ctx *gin.Context, conf config) {
 	// Find course ID
 	var course CourseResponse
 	courseVal := url.Values{}
+	courseVal.Add("token", token.(string))
 	courseVal.Add("cid", ctx.Query("cid"))
 	courseUrl := conf.CDAPIUrl + "course?" + courseVal.Encode()
 
@@ -105,6 +109,7 @@ func getCourse(ctx *gin.Context, conf config) {
 
 		// Build URL
 		profVal := url.Values{}
+		profVal.Add("token", token.(string))
 		profVal.Add("name", name)
 		profUrl := conf.CDAPIUrl + "professor?" + profVal.Encode()
 
