@@ -45,15 +45,23 @@ func VerifyToken(token string, ectx *Context) (cdmodel.User, error) {
 
 
 // Verify if a token is valid, from context
-func VerifyTokenFromCtx(ctx *gin.Context, ectx *Context) (cdmodel.User, error) {
-	token := ctx.Query("token")
+func VerifyTokenFromCtx(ctx *gin.Context, ectx *Context) (cdmodel.User, bool) {
+	tokenArr := ctx.Request.Header["Authorization"]
+	if len(tokenArr) == 0 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: No token in request header"})
+		return cdmodel.User{}, false
+	}
+	token := tokenArr[0]
 	user, err := VerifyToken(token, ectx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
+		return cdmodel.User{}, false
 	}
-	return user, err
+	return user, true
 }
 
 
@@ -61,8 +69,8 @@ func VerifyTokenFromCtx(ctx *gin.Context, ectx *Context) (cdmodel.User, error) {
 // Get current user info
 func GetUser(ctx *gin.Context, ectx *Context) {
 	// Verify token
-	user, err := VerifyTokenFromCtx(ctx, ectx)
-	if err != nil {
+	user, isAuth := VerifyTokenFromCtx(ctx, ectx)
+	if !isAuth {
 		return
 	}
 

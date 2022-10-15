@@ -2,6 +2,7 @@ package cdsite
 
 import (
 	"log"
+	"net/http"
 	"io/ioutil"
 	"encoding/json"
 )
@@ -19,6 +20,7 @@ type Config struct {
 
 type Context struct {
 	Conf				Config
+	Client				*http.Client
 }
 
 // Init CDSite context
@@ -34,6 +36,9 @@ func InitContext(confPath string) Context {
 	if err != nil {
 		log.Fatal("Error: read config file: ", err)
 	}
+
+	// http client
+	ctx.Client = &http.Client{}
 
 	return ctx
 }

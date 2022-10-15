@@ -12,8 +12,8 @@ import (
 // Get course detailed info
 func GetCourse(ctx *gin.Context, ectx *Context) {
 	// Verify token
-	_, err := VerifyTokenFromCtx(ctx, ectx)
-	if err != nil {
+	_, isAuth := VerifyTokenFromCtx(ctx, ectx)
+	if !isAuth {
 		return
 	}
 
@@ -55,8 +55,8 @@ func GetCourse(ctx *gin.Context, ectx *Context) {
 // Get professor detailed info
 func GetProfessor(ctx *gin.Context, ectx *Context) {
 	// Verify token
-	_, err := VerifyTokenFromCtx(ctx, ectx)
-	if err != nil {
+	_, isAuth := VerifyTokenFromCtx(ctx, ectx)
+	if !isAuth {
 		return
 	}
 

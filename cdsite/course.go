@@ -1,12 +1,10 @@
 package cdsite
 
 import (
-
 	"strconv"
 	"strings"
 	"encoding/json"
 	"net/http"
-	"net/url"
 	"github.com/gin-gonic/gin"
 
 	"candela/cdmodel"
@@ -38,9 +36,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 
 	// Find course ID
 	cid := ctx.Param("cid")
-	courseVal := url.Values{}
-	courseVal.Add("token", token)
-	courseUrl := sctx.Conf.CDAPIUrl + "course/" + cid + "/?" + courseVal.Encode()
+	courseUrl := sctx.Conf.CDAPIUrl + "course/" + cid
 
 
 	// Send CDAPI request
@@ -48,7 +44,16 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		Status		string
 		Data		cdmodel.Course
 	}
-	res, err := http.Get(courseUrl)
+	req, err := http.NewRequest("GET", courseUrl, nil)
+	if err != nil {
+		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
+			"Title": "Error",
+			"ErrorTitle": "Service Error",
+			"ErrorDescription": "Connection error: " + err.Error()})
+		return
+	}
+	req.Header.Add("Authorization", token)
+	res, err := sctx.Client.Do(req)
 	if err != nil {
 		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
 			"Title": "Error",
@@ -89,14 +94,15 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		prof.Data.RMPRatingOverall = -1.0
 
 		// Build URL
-		profVal := url.Values{}
-		profVal.Add("token", token)
-		profUrl := sctx.Conf.CDAPIUrl + "professor/" + name + "/?" + profVal.Encode()
+		profUrl := sctx.Conf.CDAPIUrl + "professor/" + name
 
 		// Do request
-		res, err = http.Get(profUrl)
-		if err == nil && res.StatusCode == http.StatusOK {
-			_ = json.NewDecoder(res.Body).Decode(&prof)
+		req, err := http.NewRequest("GET", profUrl, nil)
+		if err != nil {
+			res, err = sctx.Client.Do(req)
+			if err == nil && res.StatusCode == http.StatusOK {
+				_ = json.NewDecoder(res.Body).Decode(&prof)
+			}
 		}
 		profArr = append(profArr, prof.Data)
 	}

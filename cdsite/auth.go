@@ -28,16 +28,23 @@ func VerifyUserFromSession(ctx *gin.Context, sctx *Context) (string, cdmodel.Use
 	}
 
 	// Find user by token
-	userVal := url.Values{}
-	userVal.Add("token", token.(string))
-	userUrl := sctx.Conf.CDAPIUrl + "user?" + userVal.Encode()
+	userUrl := sctx.Conf.CDAPIUrl + "user"
+	req, err := http.NewRequest("GET", userUrl, nil)
+	if err != nil {
+		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
+			"Title": "Error",
+			"ErrorTitle": "Service Error",
+			"ErrorDescription": "Connection error: " + err.Error()})
+		return "", cdmodel.User{}, false
+	}
+	req.Header.Add("Authorization", token.(string))
 
 	// Send CDAPI request
 	var userResp struct {
 		Status		string
 		Data		cdmodel.User
 	}
-	res, err := http.Get(userUrl)
+	res, err := sctx.Client.Do(req)
 	if err != nil {
 		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
 			"Title": "Error",
