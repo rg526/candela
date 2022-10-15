@@ -13,6 +13,8 @@ import (
 	"candela/cdmodel"
 )
 
+// Endpoint "/search"
+// Search for a list of course, given search params
 func GetSearch(ctx *gin.Context, sctx *Context) {
 	// AUTH REQUIRED
 	session := sessions.Default(ctx)
@@ -27,6 +29,9 @@ func GetSearch(ctx *gin.Context, sctx *Context) {
 		"Title": "Course Search"})
 }
 
+
+// Endpoint "/course"
+// Get detailed information about a course
 func GetCourse(ctx *gin.Context, sctx *Context) {
 	// AUTH REQUIRED
 	token, _, isAuth := VerifyUserFromSession(ctx, sctx)

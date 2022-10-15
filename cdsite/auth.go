@@ -13,6 +13,8 @@ import (
 )
 
 
+// Verify a user from session cookie "token"
+// Return token, user object, isAuth
 func VerifyUserFromSession(ctx *gin.Context, sctx *Context) (string, cdmodel.User, bool) {
 	// Get token from session
 	session := sessions.Default(ctx)
@@ -73,6 +75,8 @@ func VerifyUserFromSession(ctx *gin.Context, sctx *Context) (string, cdmodel.Use
 }
 
 
+// Endpoint "auth"
+// Authenticate new user
 func GetAuth(ctx *gin.Context, sctx *Context) {
 	retPath := ctx.Query("ret")
 
@@ -90,6 +94,8 @@ func GetAuth(ctx *gin.Context, sctx *Context) {
 }
 
 
+// Endpoint "/authCallback"
+// Callback from authentication
 func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	// Get authCode
 	if ctx.Query("error") != "" {
@@ -147,6 +153,9 @@ func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	ctx.Redirect(http.StatusTemporaryRedirect, string(data))
 }
 
+
+// Endpoint "/logout"
+// Clears current session
 func GetLogout(ctx *gin.Context, sctx *Context) {
 	// Remove session
 	session := sessions.Default(ctx)

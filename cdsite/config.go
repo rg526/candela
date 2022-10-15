@@ -21,6 +21,7 @@ type Context struct {
 	Conf				Config
 }
 
+// Init CDSite context
 func InitContext(confPath string) Context {
 	var ctx Context
 
