@@ -38,7 +38,7 @@ func verifyToken(token string, db *sql.DB) (string, string, error) {
 	return uid, time, nil
 }
 
-func getCourse(ctx *gin.Context, db *sql.DB, conf config) {
+func getCourse(ctx *gin.Context, db *sql.DB, conf Config) {
 	// Find course ID
 	var course cdmodel.Course
 	cid_query := ctx.Query("cid")
@@ -73,7 +73,7 @@ func getCourse(ctx *gin.Context, db *sql.DB, conf config) {
 }
 
 
-func getProfessor(ctx *gin.Context, db *sql.DB, conf config) {
+func getProfessor(ctx *gin.Context, db *sql.DB, conf Config) {
 	// Find course ID
 	var prof cdmodel.Professor
 	prof_name := ctx.Query("name")
@@ -101,7 +101,7 @@ func getProfessor(ctx *gin.Context, db *sql.DB, conf config) {
 }
 
 
-func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
+func getAuth(ctx *gin.Context, db *sql.DB, conf Config) {
 	// Verify code
 	authCode := ctx.Query("code")
 
@@ -230,7 +230,7 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 }
 
 
-type config struct {
+type Config struct {
 	Host				string
 	Port				int
 	DBUser				string
@@ -248,7 +248,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Error: open config file: ", err)
 	}
-	var conf config
+	var conf Config
 	err = json.Unmarshal(conf_content, &conf)
 	if err != nil {
 		log.Fatal("Error: read config file: ", err)
