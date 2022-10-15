@@ -19,6 +19,25 @@ import (
 	"github.com/google/uuid"
 )
 
+func verifyToken(token string, db *sql.DB) (string, string, error) {
+	// Check if token exists
+	// Query DB
+	stmtToken, err := db.Prepare("SELECT uid, time FROM token WHERE token = ?")
+	if err != nil {
+		return "", "", err
+	}
+
+	// Record UID and time
+	var uid, time string
+	err = stmtToken.QueryRow(token).Scan(&uid, &time)
+	if err != nil {
+		return "", "", err
+	}
+
+	// Return result
+	return uid, time, nil
+}
+
 func getCourse(ctx *gin.Context, db *sql.DB, conf config) {
 	// Find course ID
 	var course cdmodel.Course
@@ -34,7 +53,7 @@ func getCourse(ctx *gin.Context, db *sql.DB, conf config) {
 	// Query DB
 	stmtCourse, err := db.Prepare("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?")
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
@@ -62,7 +81,7 @@ func getProfessor(ctx *gin.Context, db *sql.DB, conf config) {
 	// Query DB
 	stmtProf, err := db.Prepare("SELECT name, RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?")
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
@@ -98,7 +117,7 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 	// Verify code
 	authCode := ctx.Query("code")
 
-	// Turn to token
+	// Turn to OAuth token
     authVal := url.Values{}
     authVal.Add("client_id", conf.OAuth2ClientID)
     authVal.Add("client_secret", conf.OAuth2ClientSecret)
@@ -107,7 +126,7 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
     authVal.Add("redirect_uri", conf.OAuth2RedirectURI)
     res, err := http.PostForm("https://oauth2.googleapis.com/token", authVal)
     if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
         return
@@ -116,7 +135,7 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 	var result AuthResponse
     err = json.NewDecoder(res.Body).Decode(&result)
     if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
         return
@@ -127,7 +146,7 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
     userVal.Add("access_token", result.AccessToken)
     res, err = http.Get("https://www.googleapis.com/oauth2/v1/userinfo?" + userVal.Encode())
     if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
         return
@@ -135,12 +154,13 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
     var userResp UserInfoResponse
     err = json.NewDecoder(res.Body).Decode(&userResp)
     if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
         return
     }
 
+	// Generate user structure
 	var user cdmodel.User
 	user.UID = userResp.UID
 	user.Name = userResp.Name
@@ -151,9 +171,10 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 	// Generate token
 	userToken := uuid.New().String()
 
+	// Test if user exists
 	stmtCheck, err := db.Prepare("SELECT uid FROM user WHERE uid = ?")
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
@@ -166,9 +187,10 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 		return
 	}
 	if !rows.Next() {
+		// Insert user
 		stmtInsert, err := db.Prepare("INSERT INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)")
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
+			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"Status": "ERROR",
 				"Error": "Error: " + err.Error()})
 			return
@@ -182,9 +204,10 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 		}
 	}
 
+	// Insert token
 	stmtInsert, err := db.Prepare("INSERT INTO token (token, uid, time) VALUES (?, ?, ?)")
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
@@ -197,9 +220,10 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 		return
 	}
 
+	// Return token
 	ctx.JSON(http.StatusOK, gin.H{
 		"Status": "OK",
-		"token": userToken})
+		"Token": userToken})
 }
 
 
