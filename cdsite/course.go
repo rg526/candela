@@ -35,10 +35,10 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 	}
 
 	// Find course ID
+	cid := ctx.Param("cid")
 	courseVal := url.Values{}
 	courseVal.Add("token", token)
-	courseVal.Add("cid", ctx.Param("cid"))
-	courseUrl := sctx.Conf.CDAPIUrl + "course?" + courseVal.Encode()
+	courseUrl := sctx.Conf.CDAPIUrl + "course/" + cid + "/?" + courseVal.Encode()
 
 
 	// Send CDAPI request
@@ -89,8 +89,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		// Build URL
 		profVal := url.Values{}
 		profVal.Add("token", token)
-		profVal.Add("name", name)
-		profUrl := sctx.Conf.CDAPIUrl + "professor?" + profVal.Encode()
+		profUrl := sctx.Conf.CDAPIUrl + "professor/" + name + "/?" + profVal.Encode()
 
 		// Do request
 		res, err = http.Get(profUrl)
