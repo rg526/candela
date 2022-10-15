@@ -101,18 +101,6 @@ func getProfessor(ctx *gin.Context, db *sql.DB, conf config) {
 }
 
 
-type AuthResponse struct {
-    AccessToken     string      `json:"access_token"`
-}
-
-type UserInfoResponse struct {
-    UID             string      `json:"id"`
-    Name            string      `json:"name"`
-    GivenName       string      `json:"given_name"`
-    FamilyName      string      `json:"family_name"`
-    Email           string      `json:"email"`
-}
-
 func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 	// Verify code
 	authCode := ctx.Query("code")
@@ -131,9 +119,16 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 			"Error": "Error: " + err.Error()})
         return
     }
+    if res.StatusCode != http.StatusOK {
+		ctx.JSON(http.StatusBadGateway, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + res.Status})
+        return
+    }
 
-	var result AuthResponse
-    err = json.NewDecoder(res.Body).Decode(&result)
+	// Decode token
+	var authResp map[string]interface{}
+    err = json.NewDecoder(res.Body).Decode(&authResp)
     if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{
 			"Status": "ERROR",
@@ -143,7 +138,7 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 
     // Get email and name
     userVal := url.Values{}
-    userVal.Add("access_token", result.AccessToken)
+    userVal.Add("access_token", authResp["access_token"].(string))
     res, err = http.Get("https://www.googleapis.com/oauth2/v1/userinfo?" + userVal.Encode())
     if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{
@@ -151,7 +146,15 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 			"Error": "Error: " + err.Error()})
         return
     }
-    var userResp UserInfoResponse
+    if res.StatusCode != http.StatusOK {
+		ctx.JSON(http.StatusBadGateway, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + res.Status})
+        return
+    }
+
+	// Decode email and name
+    var userResp map[string]interface{}
     err = json.NewDecoder(res.Body).Decode(&userResp)
     if err != nil {
 		ctx.JSON(http.StatusBadGateway, gin.H{
@@ -162,11 +165,11 @@ func getAuth(ctx *gin.Context, db *sql.DB, conf config) {
 
 	// Generate user structure
 	var user cdmodel.User
-	user.UID = userResp.UID
-	user.Name = userResp.Name
-	user.GivenName = userResp.GivenName
-	user.FamilyName = userResp.FamilyName
-	user.Email = userResp.Email
+	user.UID = userResp["id"].(string)
+	user.Name = userResp["name"].(string)
+	user.GivenName = userResp["given_name"].(string)
+	user.FamilyName = userResp["family_name"].(string)
+	user.Email = userResp["email"].(string)
 
 	// Generate token
 	userToken := uuid.New().String()
