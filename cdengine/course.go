@@ -1,6 +1,8 @@
 package cdengine
 
 import (
+	"time"
+	"strconv"
 	"net/http"
 	"github.com/gin-gonic/gin"
 
@@ -116,9 +118,18 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 				"Error": "Error: " + err.Error()})
 			return
 		}
+		// Protect UID
 		comment.Self = commentUID == user.UID
 		comment.Anonymous = commentAnonymous == 1
 		comment.Time = commentTime // TODO: convert to readable time
+
+		// Convert time from unix ts (string) into readable string
+		commentTimeUnix, err := strconv.ParseInt(commentTime, 10, 64)
+		if err != nil {
+			comment.Time = err.Error()
+		} else {
+			comment.Time = time.Unix(commentTimeUnix, 0).String()
+		}
 
 		commentArr = append(commentArr, comment)
 	}
