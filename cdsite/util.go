@@ -2,7 +2,7 @@ package cdsite
 
 import (
 	"io"
-	"strings"
+	"bytes"
 	"encoding/json"
 	"encoding/base64"
 	"net/url"
@@ -14,7 +14,7 @@ import (
 // Request to CDEngine
 func CDRequest(ctx *gin.Context, sctx *Context,
 		reqType string,
-		path string, value url.Values, useToken bool,
+		path string, value map[string]string, useToken bool,
 		result any) bool {
 
 	// Prepare request value
@@ -22,9 +22,22 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 	var reqBody io.Reader
 
 	if (reqType == "GET") {
-		reqUrl += "?" + value.Encode()
+		urlValue := url.Values{}
+		for key, elem := range value {
+			urlValue.Add(key, elem)
+		}
+		reqUrl += "?" + urlValue.Encode()
 	} else if (reqType == "POST") {
-		reqBody = strings.NewReader(value.Encode())
+		var buf bytes.Buffer
+		err := json.NewEncoder(&buf).Encode(value)
+		if err != nil {
+			ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
+				"Title": "Error",
+				"ErrorTitle": "Service Error",
+				"ErrorDescription": "Connection error: " + err.Error()})
+			return false
+		}
+		reqBody = &buf
 	}
 
 	req, err := http.NewRequest("GET", reqUrl, reqBody)

@@ -43,8 +43,8 @@ func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	authCode := ctx.Query("code")
 
 	// Verify using CDEngine
-	authVal := url.Values{}
-	authVal.Add("code", authCode)
+	authVal := map[string]string {
+		"code": authCode}
 	var userResp map[string]interface{}
 	isSuccess := CDRequest(ctx, sctx, "GET", "/auth", authVal, false, &userResp)
 	if !isSuccess {
