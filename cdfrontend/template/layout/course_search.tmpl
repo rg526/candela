@@ -59,26 +59,15 @@
 
 <hr>
 
+{{ range $index, $course := .CourseArray }}
 <div class="card" style="margin-top:1%">
-	<div clsss="card body" href="#" style="margin-left:0.75%">Course ID: Course Name</div>
+	<div clsss="card body" href="#" style="margin-left:0.75%"> {{ printf "%05d" $course.CID }}: {{ $course.Name }}</div>
 	<div class="container">
-		<p>Brief description of the course...</p>
+		<p>{{ $course.Description }}</p>
 	</div>
 </div>
 
-<div class="card" style="margin-top:1%">
-	<div clsss="card body" href="#" style="margin-left:0.75%">Course ID: Course Name</div>
-	<div class="container">
-		<p>Brief description of the course...</p>
-	</div>
-</div>
-
-<div class="card" style="margin-top:1%">
-	<div clsss="card body" href="#" style="margin-left:0.75%">Course ID: Course Name</div>
-	<div class="container">
-		<p>Brief description of the course...</p>
-	</div>
-</div>
+{{ end }}
 
 {{ template "base/footer" . }}
 

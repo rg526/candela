@@ -9,14 +9,6 @@ import (
 	"candela/cdmodel"
 )
 
-// Endpoint "/search"
-// Search for a list of course, given search params
-func GetSearch(ctx *gin.Context, sctx *Context) {
-	// Main content
-	ctx.HTML(http.StatusOK, "layout/course_search", gin.H{
-		"Title": "Course Search"})
-}
-
 
 // Endpoint "/course"
 // Get detailed information about a course
