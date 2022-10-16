@@ -46,7 +46,7 @@ func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	authVal := url.Values{}
 	authVal.Add("code", authCode)
 	var userResp map[string]interface{}
-	isSuccess := CDRequest(ctx, sctx, "/auth", authVal, false, &userResp)
+	isSuccess := CDRequest(ctx, sctx, "GET", "/auth", authVal, false, &userResp)
 	if !isSuccess {
 		return
 	}
