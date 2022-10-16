@@ -2,7 +2,7 @@
 
 {{ template "base/header" . }}
 
-<h1 clsss="display-1">{{printf "%05d" .Course.CID}}: {{.Course.Name}}</h1>
+<h1 clsss="display-1">{{ .Course.CID }}: {{ .Course.Name }}</h1>
 <div class="container">
 	<div class="row">
 		<div class="col-sm"><b>Department: </b>{{.Course.Dept}}</div>

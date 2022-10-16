@@ -61,11 +61,11 @@
 	<div class="row">
 		{{ range $index, $course := .CourseArray }}
 		<div class="col-lg-4">
-			<a href="/course/{{ printf "%05d" $course.CID }}" style="display: block; text-decoration: none;">
+			<a href="/course/{{ $course.CID }}" style="display: block; text-decoration: none;">
 			<span class="card text-white bg-primary mb-3" style="margin-top:25px;">
-				<div class="card-header" style="font-weight: bold;font-size: 120%;">{{ printf "%05d" $course.CID }}: {{ $course.Name }}</div >
+				<div class="card-header" style="font-weight: bold;font-size: 120%;">{{ $course.CID }}: {{ $course.Name }}</div >
 				<div class="card-body" style="margin-left:0.75%">
-<!--					<h4 class="card-title">{{ printf "%05d" $course.CID }}: {{ $course.Name }}</h4> -->
+<!--					<h4 class="card-title">{{ $course.CID }}: {{ $course.Name }}</h4> -->
 					<p class="card-text">{{ $course.Description }}</p>
 				</div>
 			</span>

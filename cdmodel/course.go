@@ -1,7 +1,7 @@
 package cdmodel
 
 type Course struct {
-	CID					int
+	CID					string
 	Name				string
 	Description			string
 	Dept				string
