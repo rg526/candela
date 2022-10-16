@@ -55,9 +55,20 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		profArr = append(profArr, profResp.Data)
 	}
 
+	// Load comments
+	var commentResp struct {
+		Status		string
+		Data		[]cdmodel.Comment
+	}
+	isSuccess = CDRequest(ctx, sctx, "GET", "/course/" + cid + "/comment", nil, true, &commentResp)
+	if !isSuccess {
+		return
+	}
+
 	// Generate HTML
 	ctx.HTML(http.StatusOK, "layout/course_page", gin.H{
 		"Title": "Course " + courseResp.Data.CID,
 		"Course": courseResp.Data,
-		"ProfArray": profArr})
+		"ProfArray": profArr,
+		"CommentArray": commentResp.Data})
 }

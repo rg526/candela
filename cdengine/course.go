@@ -118,9 +118,14 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 				"Error": "Error: " + err.Error()})
 			return
 		}
-		// Protect UID
+		// Protect UID/Anonymous
 		comment.Self = commentUID == user.UID
-		comment.Anonymous = commentAnonymous == 1
+		if (commentAnonymous == 1) {
+			comment.Author = "Anonymous"
+			if (comment.Self) {
+				comment.Author = "Anonymous (self)"
+			}
+		}
 		comment.Time = commentTime // TODO: convert to readable time
 
 		// Convert time from unix ts (string) into readable string
