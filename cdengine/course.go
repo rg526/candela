@@ -71,3 +71,60 @@ func GetProfessor(ctx *gin.Context, ectx *Context) {
 		"Status": "OK",
 		"Data": prof})
 }
+
+
+// Endpoint "/course/comment"
+// Get comments related to a course
+func GetCourseComment(ctx *gin.Context, ectx *Context) {
+	// Verify token
+	user, isAuth := VerifyTokenFromCtx(ctx, ectx)
+	if !isAuth {
+		return
+	}
+
+	// Find course ID
+	cid := ctx.Param("cid")
+
+	// Query DB
+	stmtComment, err := ectx.DB.Prepare("SELECT commentID, content, time, anonymous, comment.uid, user.name FROM comment INNER JOIN user ON comment.uid = user.uid WHERE cid = ?")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+		return
+	}
+	rows, err := stmtComment.Query(cid)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	// Append comments to array
+	var commentArr []cdmodel.Comment
+	for rows.Next() {
+		var comment cdmodel.Comment
+		var commentTime, commentUID string
+		var commentAnonymous int
+		err = rows.Scan(&comment.CommentID, &comment.Content, &commentTime,
+			&commentAnonymous, &commentUID, &comment.Author)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+		comment.Self = commentUID == user.UID
+		comment.Anonymous = commentAnonymous == 1
+		comment.Time = commentTime // TODO: convert to readable time
+
+		commentArr = append(commentArr, comment)
+	}
+
+	// Return result
+	ctx.JSON(http.StatusOK, gin.H{
+		"Status": "OK",
+		"Data": commentArr})
+}
