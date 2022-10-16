@@ -11,6 +11,7 @@ import (
 // Request body:
 // - CID (string)
 // - Content (string)
+// - Anonymous (bool)
 func PutComment(ctx *gin.Context, ectx *Context) {
 	// Verify token
 	user, isAuth := VerifyTokenFromCtx(ctx, ectx)
@@ -22,6 +23,7 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 	var reqBody struct {
 		CID			string
 		Content		string
+		Anonymous	bool
 	}
 	err := ctx.BindJSON(&reqBody)
 	if err != nil {
@@ -32,14 +34,18 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 	}
 
 	// Do query
-	stmtComment, err := ectx.DB.Prepare("INSERT INTO comment (cid, uid, content, time) VALUES (?, ?, ?, ?)")
+	stmtComment, err := ectx.DB.Prepare("INSERT INTO comment (cid, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
 	}
-	_, err = stmtComment.Exec(reqBody.CID, user.UID, reqBody.Content, time.Now().Unix())
+	isAnonymous := 0
+	if reqBody.Anonymous {
+		isAnonymous = 1
+	}
+	_, err = stmtComment.Exec(reqBody.CID, user.UID, reqBody.Content, time.Now().Unix(), isAnonymous)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -57,6 +63,7 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 // Request body:
 // - CID (string)
 // - Content (string)
+// - Anonymous (bool)
 func PostComment(ctx *gin.Context, ectx *Context) {
 	// Verify token
 	user, isAuth := VerifyTokenFromCtx(ctx, ectx)
@@ -71,6 +78,7 @@ func PostComment(ctx *gin.Context, ectx *Context) {
 	var reqBody struct {
 		CID			string
 		Content		string
+		Anonymous	bool
 	}
 	err := ctx.BindJSON(&reqBody)
 	if err != nil {
@@ -81,14 +89,18 @@ func PostComment(ctx *gin.Context, ectx *Context) {
 	}
 
 	// Do query
-	stmtComment, err := ectx.DB.Prepare("UPDATE comment SET cid = ?, content = ?, time = ? WHERE commentID = ? AND uid = ?")
+	stmtComment, err := ectx.DB.Prepare("UPDATE comment SET cid = ?, content = ?, time = ?, anonymous = ? WHERE commentID = ? AND uid = ?")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
 	}
-	_, err = stmtComment.Exec(reqBody.CID, reqBody.Content, time.Now().Unix(), commentID, user.UID)
+	isAnonymous := 0
+	if reqBody.Anonymous {
+		isAnonymous = 1
+	}
+	_, err = stmtComment.Exec(reqBody.CID, reqBody.Content, time.Now().Unix(), isAnonymous, commentID, user.UID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
