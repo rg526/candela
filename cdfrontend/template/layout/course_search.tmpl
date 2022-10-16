@@ -57,17 +57,17 @@
 	</ul>
   </div>
 
-<hr>
 
-{{ range $index, $course := .CourseArray }}
-<div class="card" style="margin-top:1%">
-	<div clsss="card body" href="#" style="margin-left:0.75%"> {{ printf "%05d" $course.CID }}: {{ $course.Name }}</div>
-	<div class="container">
-		<p>{{ $course.Description }}</p>
+<div style="margin-top:40px;">
+	{{ range $index, $course := .CourseArray }}
+	<div class="card" style="margin-top:25px;">
+		<div clsss="card body" href="#" style="margin-left:0.75%"> {{ printf "%05d" $course.CID }}: {{ $course.Name }}</div>
+		<div class="container">
+			<p>{{ $course.Description }}</p>
+		</div>
 	</div>
+	{{ end }}
 </div>
-
-{{ end }}
 
 {{ template "base/footer" . }}
 
