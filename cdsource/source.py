@@ -39,7 +39,7 @@ def generate_course(semester):
 	result = {}
 	for cid, course in course_full["courses"].items():
 		cid = cid[:2] + cid[3:]
-		cid = int(cid)
+		cid = str(cid)
 
 		result[cid] = {}
 		result[cid]["name"] = (
@@ -108,7 +108,7 @@ def generate_fce(filepath):
 	reader = csv.DictReader(f)
 	for row in reader:
 		cid = row["Num"]
-		cid = int(cid)
+		cid = str(cid)
 
 		if cid not in fce_full:
 			fce_full[cid] = []

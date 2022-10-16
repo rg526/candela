@@ -1,7 +1,6 @@
 package cdsite
 
 import (
-	"strconv"
 	"strings"
 	"net/http"
 	"github.com/gin-gonic/gin"
@@ -26,7 +25,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
-	if courseResp.Data.CID == 0 {
+	if courseResp.Data.CID == "" {
 		ctx.HTML(http.StatusBadRequest, "layout/error", gin.H{
 			"Title": "Error",
 			"ErrorTitle": "No such course",
@@ -58,7 +57,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 
 	// Generate HTML
 	ctx.HTML(http.StatusOK, "layout/course_page", gin.H{
-		"Title": "Course " + strconv.Itoa(courseResp.Data.CID),
+		"Title": "Course " + courseResp.Data.CID,
 		"Course": courseResp.Data,
 		"ProfArray": profArr})
 }

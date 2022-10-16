@@ -1,6 +1,6 @@
 USE candela;
 CREATE TABLE course (
-	cid 				INTEGER		NOT NULL PRIMARY KEY,
+	cid 				VARCHAR(128)	NOT NULL PRIMARY KEY,
 	name				TEXT		NOT NULL,
 	description			MEDIUMTEXT	NOT NULL,
 	dept				TEXT		NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE course (
 );
 
 CREATE TABLE professor (
-	name				VARCHAR(256)	NOT NULL PRIMARY KEY,
+	name				VARCHAR(128)	NOT NULL PRIMARY KEY,
 	RMPRatingClass		TEXT			NOT NULL,
 	RMPRatingOverall	DECIMAL			NOT NULL
 );
