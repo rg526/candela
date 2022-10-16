@@ -5,7 +5,8 @@ CREATE TABLE comment (
 	cid					VARCHAR(128)	NOT NULL,
 	uid					VARCHAR(128)	NOT NULL,
 	content				MEDIUMTEXT		NOT NULL,
-	time				TEXT			NOT NULL
+	time				TEXT			NOT NULL,
+	anonymous			INT				NOT NULL
 );
 
 CREATE TABLE comment_reply (
@@ -13,7 +14,8 @@ CREATE TABLE comment_reply (
 	commentID			INT				NOT NULL,
 	uid					VARCHAR(128)	NOT NULL,
 	content				MEDIUMTEXT		NOT NULL,
-	time				TEXT			NOT NULL
+	time				TEXT			NOT NULL,
+	anonymous			INT				NOT NULL
 );
 
 CREATE TABLE comment_response (
