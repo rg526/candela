@@ -29,6 +29,17 @@ func main() {
 		cdengine.GetSearch(c, &engineCtx)
 	})
 
+	// comment
+	r.PUT("/comment", func(c *gin.Context) {
+		cdengine.PutComment(c, &engineCtx)
+	})
+	r.POST("/comment/:commentID", func(c *gin.Context) {
+		cdengine.PostComment(c, &engineCtx)
+	})
+	r.DELETE("/comment/:commentID", func(c *gin.Context) {
+		cdengine.DeleteComment(c, &engineCtx)
+	})
+
 	// Run CDENGINE
 	r.Run(engineCtx.Conf.Host + ":" + strconv.Itoa(engineCtx.Conf.Port))
 }
