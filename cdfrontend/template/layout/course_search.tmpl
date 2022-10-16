@@ -2,7 +2,9 @@
 
 {{ template "base/header" . }}
 
-<div class="container" style="margin-top:5%">
+<h3>Search</h3>
+
+<div class="container" style="margin-top: 30px;">
 	<div class="row justify-content-center">
 		<div class="input-group">
 			<div class="col-8">
@@ -10,52 +12,49 @@
 			</div>
 			<button class="btn btn-success btn-md" style="margin-left:5px">Search</button>
 		</div>
-		
 	</div>
 </div>
+
+
 <div class="alert alert-danger" role="alert" style="margin-top:20px" hidden>
 	0 result returned from search engine. (You may have invalid course id, professor, or keyword input)
 	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 </div>
 
-<div class="form-check" style="margin-top:1.5%; margin-left:1%">
-	<input class="form-check-input" type="checkbox" value="">
-	<label class="form-check-label">
-	  Level: Undergraduate
-	</label>
-  </div>
-  <div class="form-check" style="margin-top:1.5%; margin-left:1%">
-	<input class="form-check-input" type="checkbox" value="">
-	<label class="form-check-label">
-	  Level: Graduate
-	</label>
-  </div>
-  <div class="dropdown" style="margin-top:1.5%; margin-left:0.5%">
-	<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-	  Select Department
-	</button>
-	<ul class="dropdown-menu">
-	  <li><a class="dropdown-item" href="#">Statistics & Data Science</a></li>
-	  <li><a class="dropdown-item" href="#">Computer Science</a></li>
-	  <li><a class="dropdown-item" href="#">Electrical & Computer Engineering</a></li>
-	  <li><a class="dropdown-item" href="#">Biology</a></li>
-	  <li><a class="dropdown-item" href="#">Mathematics</a></li>
-	  <li><a class="dropdown-item" href="#">Philosophy</a></li>
-	  <li><a class="dropdown-item" href="#">Economics</a></li>
-	</ul>
-  </div>
 
-  <div class="dropdown" style="margin-top:1.5%; margin-left:0.5%">
-	<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-	  Unit
-	</button>
-	<ul class="dropdown-menu">
-	  <li><a class="dropdown-item" href="#">0-3</a></li>
-	  <li><a class="dropdown-item" href="#">4-8</a></li>
-	  <li><a class="dropdown-item" href="#">9-12</a></li>
-	  <li><a class="dropdown-item" href="#">12+</a></li>
+<form>
+	<ul class="nav nav-pills" style="margin-top: 10px;">
+		<li class="nav-item btn-group" style="margin-top:8px; margin-left:10px;">
+			<input type="checkbox" class="btn-check" id="btncheck1" checked="" autocomplete="off">
+			<label class="btn btn-primary" for="btncheck1">Undergraduate</label>
+			<input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
+			<label class="btn btn-primary" for="btncheck2">Graduate</label>
+		</li>
+
+		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
+			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Department</button>
+			<ul class="dropdown-menu">
+				<li><a class="dropdown-item active" href="#">Statistics & Data Science</a></li>
+				<li><a class="dropdown-item" href="#">Computer Science</a></li>
+				<li><a class="dropdown-item" href="#">Electrical & Computer Engineering</a></li>
+				<li><a class="dropdown-item" href="#">Biology</a></li>
+				<li><a class="dropdown-item" href="#">Mathematics</a></li>
+				<li><a class="dropdown-item" href="#">Philosophy</a></li>
+				<li><a class="dropdown-item" href="#">Economics</a></li>
+			</ul>
+		</li>
+
+		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
+			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Unit</button>
+			<ul class="dropdown-menu">
+				<li><a class="dropdown-item" href="#">0-3</a></li>
+				<li><a class="dropdown-item" href="#">4-8</a></li>
+				<li><a class="dropdown-item active" href="#">9-12</a></li>
+				<li><a class="dropdown-item" href="#">12+</a></li>
+			</ul>
+		</li>
 	</ul>
-  </div>
+</form>
 
 
 <div style="margin-top:40px;">
@@ -63,8 +62,9 @@
 		{{ range $index, $course := .CourseArray }}
 		<div class="col-lg-4">
 			<div class="card text-white bg-primary mb-3" style="margin-top:25px;">
+				<div class="card-header" style="font-weight: bold;font-size: 120%;">{{ printf "%05d" $course.CID }}: {{ $course.Name }}</div >
 				<div class="card-body" style="margin-left:0.75%">
-					<h4 class="card-title">{{ printf "%05d" $course.CID }}: {{ $course.Name }}</h4>
+<!--					<h4 class="card-title">{{ printf "%05d" $course.CID }}: {{ $course.Name }}</h4> -->
 					<p class="card-text">{{ $course.Description }}</p>
 				</div>
 			</div>
