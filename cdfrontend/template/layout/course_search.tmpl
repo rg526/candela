@@ -59,14 +59,18 @@
 
 
 <div style="margin-top:40px;">
-	{{ range $index, $course := .CourseArray }}
-	<div class="card" style="margin-top:25px;">
-		<div clsss="card body" href="#" style="margin-left:0.75%"> {{ printf "%05d" $course.CID }}: {{ $course.Name }}</div>
-		<div class="container">
-			<p>{{ $course.Description }}</p>
+	<div class="row">
+		{{ range $index, $course := .CourseArray }}
+		<div class="col-lg-4">
+			<div class="card text-white bg-primary mb-3" style="margin-top:25px;">
+				<div class="card-body" style="margin-left:0.75%">
+					<h4 class="card-title">{{ printf "%05d" $course.CID }}: {{ $course.Name }}</h4>
+					<p class="card-text">{{ $course.Description }}</p>
+				</div>
+			</div>
 		</div>
+		{{ end }}
 	</div>
-	{{ end }}
 </div>
 
 {{ template "base/footer" . }}
