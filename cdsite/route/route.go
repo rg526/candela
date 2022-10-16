@@ -35,7 +35,7 @@ func main() {
 	r.GET("/auth", func(c *gin.Context) {
 		cdsite.GetAuth(c, &siteCtx)
 	})
-	r.GET("/authCallback", func(c *gin.Context) {
+	r.GET("/auth/callback", func(c *gin.Context) {
 		cdsite.GetAuthCallback(c, &siteCtx)
 	})
 	r.GET("/logout", func(c *gin.Context) {
