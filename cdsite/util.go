@@ -14,7 +14,7 @@ import (
 // Request to CDEngine
 func CDRequest(ctx *gin.Context, sctx *Context,
 		reqType string,
-		path string, value map[string]string, useToken bool,
+		path string, value map[string]interface{}, useToken bool,
 		result any) bool {
 
 	// Prepare request value
@@ -24,7 +24,7 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 	if (reqType == "GET") {
 		urlValue := url.Values{}
 		for key, elem := range value {
-			urlValue.Add(key, elem)
+			urlValue.Add(key, elem.(string))
 		}
 		reqUrl += "?" + urlValue.Encode()
 	} else if (reqType == "POST") {
