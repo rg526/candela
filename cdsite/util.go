@@ -77,3 +77,7 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 
 	return true
 }
+
+func TmplTruncDesc(desc string) string {
+	return desc
+}
