@@ -2,6 +2,7 @@ package cdengine
 
 import (
 	"time"
+	"html"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )
@@ -45,7 +46,8 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
-	_, err = stmtComment.Exec(reqBody.CID, user.UID, reqBody.Content, time.Now().Unix(), isAnonymous)
+	escapeContent := html.EscapeString(reqBody.Content)
+	_, err = stmtComment.Exec(reqBody.CID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -100,7 +102,8 @@ func PostComment(ctx *gin.Context, ectx *Context) {
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
-	_, err = stmtComment.Exec(reqBody.CID, reqBody.Content, time.Now().Unix(), isAnonymous, commentID, user.UID)
+	escapeContent := html.EscapeString(reqBody.Content)
+	_, err = stmtComment.Exec(reqBody.CID, escapeContent, time.Now().Unix(), isAnonymous, commentID, user.UID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
