@@ -1,6 +1,8 @@
 package cdsite
 
 import (
+	"io"
+	"strings"
 	"encoding/json"
 	"encoding/base64"
 	"net/url"
@@ -11,12 +13,21 @@ import (
 
 // Request to CDEngine
 func CDRequest(ctx *gin.Context, sctx *Context,
+		reqType string,
 		path string, value url.Values, useToken bool,
 		result any) bool {
 
-	// Prepare request
-	reqUrl := sctx.Conf.CDAPIUrl + path + "?" + value.Encode()
-	req, err := http.NewRequest("GET", reqUrl, nil)
+	// Prepare request value
+	reqUrl := sctx.Conf.CDAPIUrl + path
+	var reqBody io.Reader
+
+	if (reqType == "GET") {
+		reqUrl += "?" + value.Encode()
+	} else if (reqType == "POST") {
+		reqBody = strings.NewReader(value.Encode())
+	}
+
+	req, err := http.NewRequest("GET", reqUrl, reqBody)
 	if err != nil {
 		ctx.HTML(http.StatusInternalServerError, "layout/error", gin.H{
 			"Title": "Error",

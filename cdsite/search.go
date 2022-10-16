@@ -25,7 +25,7 @@ func GetSearch(ctx *gin.Context, sctx *Context) {
 		Data		[]cdmodel.Course
 	}
 	// Execute search
-	isSuccess := CDRequest(ctx, sctx, "/search", nil, true, &courseArrResp)
+	isSuccess := CDRequest(ctx, sctx, "GET", "/search", nil, true, &courseArrResp)
 	if !isSuccess {
 		return
 	}

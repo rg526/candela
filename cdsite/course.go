@@ -20,7 +20,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		Status		string
 		Data		cdmodel.Course
 	}
-	isSuccess := CDRequest(ctx, sctx, "/course/" + cid, nil, true, &courseResp)
+	isSuccess := CDRequest(ctx, sctx, "GET", "/course/" + cid, nil, true, &courseResp)
 	if !isSuccess {
 		return
 	}
@@ -41,7 +41,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 			Status string
 			Data cdmodel.Professor
 		}
-		isSuccess := CDRequest(ctx, sctx, "/professor/" + name, nil, true, &profResp)
+		isSuccess := CDRequest(ctx, sctx, "GET", "/professor/" + name, nil, true, &profResp)
 		if !isSuccess {
 			return
 		}
