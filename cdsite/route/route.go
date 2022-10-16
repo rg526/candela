@@ -22,6 +22,7 @@ func main() {
 	r.LoadHTMLGlob("../../cdfrontend/template/**/*.tmpl")
 	r.Static("/css", "../../cdfrontend/css")
 	r.Static("/js", "../../cdfrontend/js")
+	r.StaticFile("/robots.txt", "../../cdfrontend/resource/robots.txt")
 	r.GET("/", func(c *gin.Context) {
 		cdsite.GetHome(c, &siteCtx)
 	})

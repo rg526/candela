@@ -1,7 +1,6 @@
 package cdengine
 
 import (
-	"strconv"
 	"net/http"
 	"github.com/gin-gonic/gin"
 
@@ -19,14 +18,7 @@ func GetCourse(ctx *gin.Context, ectx *Context) {
 
 	// Find course ID
 	var course cdmodel.Course
-	cid_query := ctx.Param("cid")
-	cid, err := strconv.Atoi(cid_query)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
+	cid:= ctx.Param("cid")
 
 	// Query DB
 	stmtCourse, err := ectx.DB.Prepare("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?")
