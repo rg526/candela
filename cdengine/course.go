@@ -150,7 +150,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 			if err != nil {
 				comment.Time = err.Error()
 			} else {
-				comment.Time = time.Unix(commentTimeUnix, 0).String()
+				comment.Time = time.Unix(commentTimeUnix, 0).Format("2006-01-02 15:04")
 			}
 
 			// Protect Anonymous
@@ -176,7 +176,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 			if err != nil {
 				reply.Time = err.Error()
 			} else {
-				reply.Time = time.Unix(replyTimeUnix, 0).String()
+				reply.Time = time.Unix(replyTimeUnix, 0).Format("2006-01-02 15:04")
 			}
 
 			// Protect Anonymous
