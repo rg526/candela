@@ -55,14 +55,23 @@
 	</fieldset>
 </form>
 
-{{ range $index, $value := .CommentArray }}
+{{ range $comment := .CommentArray }}
 <div class="card" style="margin-top:10px">
-	<div class="card-title" style="margin-left:7.5px">{{ $value.Author }}</div>
+	<div class="card-title" style="margin-left:7.5px">{{ $comment.Author }}</div>
 	<div class="card-body">
-		{{ $value.Content }}
-		{{ $value.Time }}
+		<p>{{ $comment.Content }}</p>
+		<p>{{ $comment.Time }}</p>
 	</div>
 </div>
+{{ range $reply := $comment.Replies }}
+<div class="card" style="margin-top:5px; margin-left: 30px;">
+	<div class="card-title" style="margin-left:7.5px">{{ $reply.Author }}</div>
+	<div class="card-body">
+		<p>{{ $reply.Content }}</p>
+		<p>{{ $reply.Time }}</p>
+	</div>
+</div>
+{{ end }}
 {{ end }}
 
 {{ template "base/footer" . }}
