@@ -24,16 +24,16 @@ func GetCourse(ctx *gin.Context, ectx *Context) {
 	cid:= ctx.Param("cid")
 
 	// Query DB
-	stmtCourse, err := ectx.DB.Prepare("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?")
-	if err != nil {
+	err := ectx.DB.
+		QueryRow("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?",
+			cid).
+		Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq, &course.FCEHours, &course.FCETeachingRate, &course.FCECourseRate, &course.FCELevel, &course.FCEStudentCount)
+
+	if err != nil && err != sql.ErrNoRows {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
-	}
-	err = stmtCourse.QueryRow(cid).Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq, &course.FCEHours, &course.FCETeachingRate, &course.FCECourseRate, &course.FCELevel, &course.FCEStudentCount)
-	if err != nil {
-		// Course not found
 	}
 
 	// Return result
@@ -57,16 +57,16 @@ func GetProfessor(ctx *gin.Context, ectx *Context) {
 	prof_name := ctx.Param("name")
 
 	// Query DB
-	stmtProf, err := ectx.DB.Prepare("SELECT name, RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?")
-	if err != nil {
+
+	err := ectx.DB.
+		QueryRow("SELECT name, RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?",
+			prof_name).
+		Scan(&prof.Name, &prof.RMPRatingClass, &prof.RMPRatingOverall)
+	if err != nil && err != sql.ErrNoRows {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
-	}
-	err = stmtProf.QueryRow(prof_name).Scan(&prof.Name, &prof.RMPRatingClass, &prof.RMPRatingOverall)
-	if err != nil {
-		// Prof not found
 	}
 
 	// Return result
@@ -89,7 +89,8 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 	cid := ctx.Param("cid")
 
 	// Query DB
-	stmtComment, err := ectx.DB.Prepare(`SELECT
+	rows, err := ectx.DB.
+		Query(`SELECT
 		comment.commentID, comment.content, comment.time, comment.anonymous, comment.uid, user_comment.name,
 		reply.replyID, reply.content, reply.time, reply.anonymous, reply.uid, user_reply.name
 		FROM comment
@@ -100,14 +101,8 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 		LEFT JOIN user AS user_reply
 		ON reply.uid = user_reply.uid
 		WHERE cid = ?
-		ORDER BY comment.commentID ASC`)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
-	rows, err := stmtComment.Query(cid)
+		ORDER BY comment.commentID ASC`,
+			cid)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",

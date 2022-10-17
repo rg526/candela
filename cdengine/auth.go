@@ -18,24 +18,21 @@ func VerifyToken(token string, ectx *Context) (cdmodel.User, error) {
 	var user cdmodel.User
 	// Check if token exists
 	// Query DB
-	stmtToken, err := ectx.DB.Prepare("SELECT uid, time FROM token WHERE token = ?")
-	if err != nil {
-		return user, err
-	}
-
 	// Record UID and time
 	var uid, time string
-	err = stmtToken.QueryRow(token).Scan(&uid, &time)
+	err := ectx.DB.
+		QueryRow("SELECT uid, time FROM token WHERE token = ?",
+			token).
+		Scan(&uid, &time)
 	if err != nil {
 		return user, err
 	}
 
 	// Query DB for user
-	stmtUser, err := ectx.DB.Prepare("SELECT uid, name, givenName, familyName, Email FROM user WHERE UID = ?")
-	if err != nil {
-		return user, err
-	}
-	err = stmtUser.QueryRow(uid).Scan(&user.UID, &user.Name, &user.GivenName, &user.FamilyName, &user.Email)
+	err = ectx.DB.
+		QueryRow("SELECT uid, name, givenName, familyName, Email FROM user WHERE UID = ?",
+			uid).
+		Scan(&user.UID, &user.Name, &user.GivenName, &user.FamilyName, &user.Email)
 	if err != nil {
 		return user, err
 	}
@@ -164,32 +161,22 @@ func GetAuth(ctx *gin.Context, ectx *Context) {
 	userToken := uuid.New().String()
 
 	// Insert user
-	stmtInsertUser, err := ectx.DB.Prepare("INSERT IGNORE INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)")
+	_, err = ectx.DB.
+		Exec("INSERT IGNORE INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)",
+			user.UID, user.Name, user.GivenName ,user.FamilyName, user.Email)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
-	_, err = stmtInsertUser.Exec(user.UID, user.Name, user.GivenName ,user.FamilyName, user.Email)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
 	}
 
 	// Insert token
-	stmtInsertToken, err := ectx.DB.Prepare("INSERT INTO token (token, uid, time) VALUES (?, ?, ?)")
+	_, err = ectx.DB.
+		Exec("INSERT INTO token (token, uid, time) VALUES (?, ?, ?)",
+			userToken, user.UID, time.Now().Unix())
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
-	_, err = stmtInsertToken.Exec(userToken, user.UID, time.Now().Unix())
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return
