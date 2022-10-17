@@ -305,9 +305,34 @@ func PostCommentResponse(ctx *gin.Context, ectx *Context) {
 
 	if (reqBody.Like) {
 		// Insert row into comment_response
-		_, err = ectx.DB.
-			Exec("INSERT INTO comment_response (commentID, uid, time) VALUES (?, ?, ?)",
-				commentID, user.UID, time.Now().Unix())
+		tx, err := ectx.DB.Begin()
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+		defer tx.Rollback()
+		_, err = tx.
+			Exec(`IF NOT EXISTS (
+					SELECT uid FROM comment_response
+					WHERE uid = ? AND commentID = ?
+				) THEN
+					INSERT INTO comment_response (commentID, uid, time)
+					VALUES (?, ?, ?);
+					UPDATE comment SET score = score + 1
+					WHERE commentID = ?;
+				END IF`,
+					user.UID, commentID,
+					commentID, user.UID, time.Now().Unix(),
+					commentID)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+		err = tx.Commit()
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"Status": "ERROR",
@@ -316,9 +341,34 @@ func PostCommentResponse(ctx *gin.Context, ectx *Context) {
 		}
 	} else {
 		// Delete from comment_response
-		_, err = ectx.DB.
-			Exec("DELETE FROM comment_response WHERE commentID = ? AND uid = ?",
-				commentID, user.UID)
+		tx, err := ectx.DB.Begin()
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+		defer tx.Rollback()
+		_, err = tx.
+			Exec(`IF EXISTS (
+					SELECT uid FROM comment_response
+					WHERE uid = ? AND commentID = ?
+				) THEN
+					DELETE FROM comment_response
+					WHERE commentID = ? AND uid = ?;
+					UPDATE comment SET score = score - 1
+					WHERE commentID = ?;
+				END IF`,
+					user.UID, commentID,
+					commentID, user.UID,
+					commentID)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+		err = tx.Commit()
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"Status": "ERROR",

@@ -6,7 +6,8 @@ CREATE TABLE comment (
 	uid					VARCHAR(128)	NOT NULL,
 	content				MEDIUMTEXT		NOT NULL,
 	time				TEXT			NOT NULL,
-	anonymous			INT				NOT NULL
+	anonymous			INT				NOT NULL,
+	score				INT				NOT NULL DEFAULT 0
 );
 
 CREATE TABLE comment_reply (
