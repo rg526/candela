@@ -138,3 +138,25 @@ func DeleteCommentReply(ctx *gin.Context, sctx *Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"Status": "OK"})
 }
+
+// Endpoint "/comment/:commentID/respond" (POST)
+// Respond to a comment
+func PostCommentResponse(ctx *gin.Context, sctx *Context) {
+	var reqBody map[string]interface{}
+	err := ctx.BindJSON(&reqBody)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+		return
+	}
+
+	commentID := ctx.Param("commentID")
+	isSuccess := CDRequest(ctx, sctx, "POST", "/comment/" + commentID + "/respond", reqBody, true, nil)
+	if !isSuccess {
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"Status": "OK"})
+}

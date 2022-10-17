@@ -65,6 +65,10 @@ func main() {
 	r.DELETE("/commentReply/:replyID", func(c *gin.Context) {
 		cdsite.DeleteCommentReply(c, &siteCtx)
 	})
+	// commentResponse
+	r.POST("/comment/:commentID/respond", func(c *gin.Context) {
+		cdsite.PostCommentResponse(c, &siteCtx)
+	})
 
 	// Run CDSITE
 	r.Run(siteCtx.Conf.Host + ":" + strconv.Itoa(siteCtx.Conf.Port))

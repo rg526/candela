@@ -301,3 +301,73 @@ func DeleteCommentReply(ctx *gin.Context, ectx *Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"Status": "OK"})
 }
+
+
+
+// Comment responses
+
+// Endpoint "/comment/:commentID/respond"
+// Respond to a given comment
+// Request body:
+// - Like (bool)
+func PostCommentResponse(ctx *gin.Context, ectx *Context) {
+	// Verify token
+	user, isAuth := VerifyTokenFromCtx(ctx, ectx)
+	if !isAuth {
+		return
+	}
+
+	// Get comment ID
+	commentID := ctx.Param("commentID")
+
+	// Get request body
+	var reqBody struct {
+		Like		bool
+	}
+
+	err := ctx.BindJSON(&reqBody)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+		return
+	}
+
+	if (reqBody.Like) {
+		// Insert row into comment_response
+		stmtResponse, err := ectx.DB.Prepare("INSERT INTO comment_response (commentID, uid, time) VALUES (?, ?, ?);")
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+		_, err = stmtResponse.Exec(commentID, user.UID, time.Now().Unix())
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+	} else {
+		// Delete from comment_response
+		stmtResponse, err := ectx.DB.Prepare("DELETE FROM comment_response WHERE commentID = ? AND uid = ?")
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+		_, err = stmtResponse.Exec(commentID, user.UID)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"Status": "ERROR",
+				"Error": "Error: " + err.Error()})
+			return
+		}
+	}
+
+	// Return result
+	ctx.JSON(http.StatusOK, gin.H{
+		"Status": "OK"})
+}
