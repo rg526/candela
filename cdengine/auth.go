@@ -46,23 +46,19 @@ func VerifyToken(token string, ectx *Context) (cdmodel.User, error) {
 func VerifyTokenFromCtx(ctx *gin.Context, ectx *Context) (cdmodel.User, bool) {
 	tokenArr := ctx.Request.Header["Authorization"]
 	if len(tokenArr) == 0 {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: No token in request header"})
+		ReportErrorFromString(ctx, http.StatusUnauthorized,
+			"Error: No token in request header")
 		return cdmodel.User{}, false
 	}
 	token := tokenArr[0]
 	user, err := VerifyToken(token, ectx)
 	if err == sql.ErrNoRows {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportErrorFromString(ctx, http.StatusUnauthorized,
+			"Error: Token invalid")
 		return cdmodel.User{}, false
 	}
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return cdmodel.User{}, false
 	}
 	return user, true
@@ -100,15 +96,12 @@ func GetAuth(ctx *gin.Context, ectx *Context) {
 	authVal.Add("redirect_uri", ectx.Conf.OAuth2RedirectURI)
 	res, err := http.PostForm("https://oauth2.googleapis.com/token", authVal)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusBadGateway, err)
 		return
 	}
 	if res.StatusCode != http.StatusOK {
-		ctx.JSON(http.StatusBadGateway, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + res.Status})
+		ReportErrorFromString(ctx, http.StatusBadGateway,
+			"Error: " + res.Status)
 		return
 	}
 
@@ -116,9 +109,7 @@ func GetAuth(ctx *gin.Context, ectx *Context) {
 	var authResp map[string]interface{}
 	err = json.NewDecoder(res.Body).Decode(&authResp)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusBadGateway, err)
 		return
 	}
 
@@ -127,15 +118,12 @@ func GetAuth(ctx *gin.Context, ectx *Context) {
 	userVal.Add("access_token", authResp["access_token"].(string))
 	res, err = http.Get("https://www.googleapis.com/oauth2/v1/userinfo?" + userVal.Encode())
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusBadGateway, err)
 		return
 	}
 	if res.StatusCode != http.StatusOK {
-		ctx.JSON(http.StatusBadGateway, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + res.Status})
+		ReportErrorFromString(ctx, http.StatusBadGateway,
+			"Error: " + res.Status)
 		return
 	}
 
@@ -143,9 +131,7 @@ func GetAuth(ctx *gin.Context, ectx *Context) {
 	var userResp map[string]interface{}
 	err = json.NewDecoder(res.Body).Decode(&userResp)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusBadGateway, err)
 		return
 	}
 
@@ -165,9 +151,7 @@ func GetAuth(ctx *gin.Context, ectx *Context) {
 		Exec("INSERT IGNORE INTO user (uid, name, givenName, familyName, Email) VALUES (?, ?, ?, ?, ?)",
 			user.UID, user.Name, user.GivenName ,user.FamilyName, user.Email)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -176,9 +160,7 @@ func GetAuth(ctx *gin.Context, ectx *Context) {
 		Exec("INSERT INTO token (token, uid, time) VALUES (?, ?, ?)",
 			userToken, user.UID, time.Now().Unix())
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
