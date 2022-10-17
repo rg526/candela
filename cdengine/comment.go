@@ -30,9 +30,7 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 	}
 	err := ctx.BindJSON(&reqBody)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -46,9 +44,7 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 		Exec("INSERT INTO comment (cid, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)",
 			reqBody.CID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -82,9 +78,7 @@ func PostComment(ctx *gin.Context, ectx *Context) {
 	}
 	err := ctx.BindJSON(&reqBody)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -98,9 +92,7 @@ func PostComment(ctx *gin.Context, ectx *Context) {
 		Exec("UPDATE comment SET cid = ?, content = ?, time = ?, anonymous = ? WHERE commentID = ? AND uid = ?",
 			reqBody.CID, escapeContent, time.Now().Unix(), isAnonymous, commentID, user.UID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -128,9 +120,7 @@ func DeleteComment(ctx *gin.Context, ectx *Context) {
 		Exec("DELETE FROM comment WHERE commentID = ? AND uid = ?",
 			commentID, user.UID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -163,9 +153,7 @@ func PutCommentReply(ctx *gin.Context, ectx *Context) {
 	}
 	err := ctx.BindJSON(&reqBody)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -179,9 +167,7 @@ func PutCommentReply(ctx *gin.Context, ectx *Context) {
 		Exec("INSERT INTO comment_reply (commentID, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)",
 			reqBody.CommentID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -215,9 +201,7 @@ func PostCommentReply(ctx *gin.Context, ectx *Context) {
 	}
 	err := ctx.BindJSON(&reqBody)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -231,9 +215,7 @@ func PostCommentReply(ctx *gin.Context, ectx *Context) {
 		Exec("UPDATE comment_reply SET commentID = ?, content = ?, time = ?, anonymous = ? WHERE replyID = ? AND uid = ?",
 			reqBody.CommentID, escapeContent, time.Now().Unix(), isAnonymous, replyID, user.UID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -261,9 +243,7 @@ func DeleteCommentReply(ctx *gin.Context, ectx *Context) {
 		Exec("DELETE FROM comment_reply WHERE replyID = ? AND uid = ?",
 			replyID, user.UID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -297,9 +277,7 @@ func PostCommentResponse(ctx *gin.Context, ectx *Context) {
 
 	err := ctx.BindJSON(&reqBody)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -307,9 +285,7 @@ func PostCommentResponse(ctx *gin.Context, ectx *Context) {
 		// Insert row into comment_response
 		tx, err := ectx.DB.Begin()
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
+			ReportError(ctx, http.StatusInternalServerError, err)
 			return
 		}
 		defer tx.Rollback()
@@ -327,25 +303,19 @@ func PostCommentResponse(ctx *gin.Context, ectx *Context) {
 					commentID, user.UID, time.Now().Unix(),
 					commentID)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
+			ReportError(ctx, http.StatusInternalServerError, err)
 			return
 		}
 		err = tx.Commit()
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
+			ReportError(ctx, http.StatusInternalServerError, err)
 			return
 		}
 	} else {
 		// Delete from comment_response
 		tx, err := ectx.DB.Begin()
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
+			ReportError(ctx, http.StatusInternalServerError, err)
 			return
 		}
 		defer tx.Rollback()
@@ -363,16 +333,12 @@ func PostCommentResponse(ctx *gin.Context, ectx *Context) {
 					commentID, user.UID,
 					commentID)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
+			ReportError(ctx, http.StatusInternalServerError, err)
 			return
 		}
 		err = tx.Commit()
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
+			ReportError(ctx, http.StatusInternalServerError, err)
 			return
 		}
 	}

@@ -30,9 +30,7 @@ func GetCourse(ctx *gin.Context, ectx *Context) {
 		Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq, &course.FCEHours, &course.FCETeachingRate, &course.FCECourseRate, &course.FCELevel, &course.FCEStudentCount)
 
 	if err != nil && err != sql.ErrNoRows {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -63,9 +61,7 @@ func GetProfessor(ctx *gin.Context, ectx *Context) {
 			prof_name).
 		Scan(&prof.Name, &prof.RMPRatingClass, &prof.RMPRatingOverall)
 	if err != nil && err != sql.ErrNoRows {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -104,9 +100,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 		ORDER BY comment.commentID ASC`,
 			cid)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
+		ReportError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 	defer rows.Close()
@@ -135,9 +129,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 			&commentQuery.Anonymous, &commentQuery.UID, &commentQuery.Author,
 			&replyQuery.ReplyID, &replyQuery.Content, &replyQuery.Time, &replyQuery.Anonymous, &replyQuery.UID, &replyQuery.Author)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
+			ReportError(ctx, http.StatusInternalServerError, err)
 			return
 		}
 
