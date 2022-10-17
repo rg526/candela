@@ -5,6 +5,7 @@ import (
 	"time"
 	"net/url"
 	"net/http"
+	"database/sql"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
@@ -55,8 +56,14 @@ func VerifyTokenFromCtx(ctx *gin.Context, ectx *Context) (cdmodel.User, bool) {
 	}
 	token := tokenArr[0]
 	user, err := VerifyToken(token, ectx)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"Status": "ERROR",
+			"Error": "Error: " + err.Error()})
+		return cdmodel.User{}, false
+	}
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
 			"Error": "Error: " + err.Error()})
 		return cdmodel.User{}, false
