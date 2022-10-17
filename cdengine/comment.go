@@ -37,19 +37,14 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 	}
 
 	// Do query
-	stmtComment, err := ectx.DB.Prepare("INSERT INTO comment (cid, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
 	isAnonymous := 0
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
 	escapeContent := html.EscapeString(reqBody.Content)
-	_, err = stmtComment.Exec(reqBody.CID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
+	_, err = ectx.DB.
+		Exec("INSERT INTO comment (cid, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)",
+			reqBody.CID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -94,19 +89,14 @@ func PostComment(ctx *gin.Context, ectx *Context) {
 	}
 
 	// Do query
-	stmtComment, err := ectx.DB.Prepare("UPDATE comment SET cid = ?, content = ?, time = ?, anonymous = ? WHERE commentID = ? AND uid = ?")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
 	isAnonymous := 0
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
 	escapeContent := html.EscapeString(reqBody.Content)
-	_, err = stmtComment.Exec(reqBody.CID, escapeContent, time.Now().Unix(), isAnonymous, commentID, user.UID)
+	_, err = ectx.DB.
+		Exec("UPDATE comment SET cid = ?, content = ?, time = ?, anonymous = ? WHERE commentID = ? AND uid = ?",
+			reqBody.CID, escapeContent, time.Now().Unix(), isAnonymous, commentID, user.UID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -134,14 +124,9 @@ func DeleteComment(ctx *gin.Context, ectx *Context) {
 	commentID := ctx.Param("commentID")
 
 	// Do query
-	stmtComment, err := ectx.DB.Prepare("DELETE FROM comment WHERE commentID = ? AND uid = ?")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
-	_, err = stmtComment.Exec(commentID, user.UID)
+	_, err := ectx.DB.
+		Exec("DELETE FROM comment WHERE commentID = ? AND uid = ?",
+			commentID, user.UID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -185,19 +170,14 @@ func PutCommentReply(ctx *gin.Context, ectx *Context) {
 	}
 
 	// Do query
-	stmtComment, err := ectx.DB.Prepare("INSERT INTO comment_reply (commentID, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
 	isAnonymous := 0
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
 	escapeContent := html.EscapeString(reqBody.Content)
-	_, err = stmtComment.Exec(reqBody.CommentID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
+	_, err = ectx.DB.
+		Exec("INSERT INTO comment_reply (commentID, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)",
+			reqBody.CommentID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -242,19 +222,14 @@ func PostCommentReply(ctx *gin.Context, ectx *Context) {
 	}
 
 	// Do query
-	stmtComment, err := ectx.DB.Prepare("UPDATE comment_reply SET commentID = ?, content = ?, time = ?, anonymous = ? WHERE replyID = ? AND uid = ?")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
 	isAnonymous := 0
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
 	escapeContent := html.EscapeString(reqBody.Content)
-	_, err = stmtComment.Exec(reqBody.CommentID, escapeContent, time.Now().Unix(), isAnonymous, replyID, user.UID)
+	_, err = ectx.DB.
+		Exec("UPDATE comment_reply SET commentID = ?, content = ?, time = ?, anonymous = ? WHERE replyID = ? AND uid = ?",
+			reqBody.CommentID, escapeContent, time.Now().Unix(), isAnonymous, replyID, user.UID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -282,14 +257,9 @@ func DeleteCommentReply(ctx *gin.Context, ectx *Context) {
 	replyID := ctx.Param("replyID")
 
 	// Do query
-	stmtComment, err := ectx.DB.Prepare("DELETE FROM comment_reply WHERE replyID = ? AND uid = ?")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
-	_, err = stmtComment.Exec(replyID, user.UID)
+	_, err := ectx.DB.
+		Exec("DELETE FROM comment_reply WHERE replyID = ? AND uid = ?",
+			replyID, user.UID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
@@ -335,14 +305,9 @@ func PostCommentResponse(ctx *gin.Context, ectx *Context) {
 
 	if (reqBody.Like) {
 		// Insert row into comment_response
-		stmtResponse, err := ectx.DB.Prepare("INSERT INTO comment_response (commentID, uid, time) VALUES (?, ?, ?);")
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
-			return
-		}
-		_, err = stmtResponse.Exec(commentID, user.UID, time.Now().Unix())
+		_, err = ectx.DB.
+			Exec("INSERT INTO comment_response (commentID, uid, time) VALUES (?, ?, ?)",
+				commentID, user.UID, time.Now().Unix())
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"Status": "ERROR",
@@ -351,14 +316,9 @@ func PostCommentResponse(ctx *gin.Context, ectx *Context) {
 		}
 	} else {
 		// Delete from comment_response
-		stmtResponse, err := ectx.DB.Prepare("DELETE FROM comment_response WHERE commentID = ? AND uid = ?")
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"Status": "ERROR",
-				"Error": "Error: " + err.Error()})
-			return
-		}
-		_, err = stmtResponse.Exec(commentID, user.UID)
+		_, err = ectx.DB.
+			Exec("DELETE FROM comment_response WHERE commentID = ? AND uid = ?",
+				commentID, user.UID)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"Status": "ERROR",

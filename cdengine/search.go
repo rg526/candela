@@ -20,15 +20,9 @@ func GetSearch(ctx *gin.Context, ectx *Context) {
 	var courseArr []cdmodel.Course
 
 	// Query DB
-	stmtCourse, err := ectx.DB.Prepare("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course LIMIT ?")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"Status": "ERROR",
-			"Error": "Error: " + err.Error()})
-		return
-	}
-
-	rows, err := stmtCourse.Query(ectx.Conf.MaxSearchResult)
+	rows, err := ectx.DB.
+		Query("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course LIMIT ?",
+			ectx.Conf.MaxSearchResult)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Status": "ERROR",
