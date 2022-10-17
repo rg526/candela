@@ -97,7 +97,8 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 		LEFT JOIN user AS user_reply
 		ON reply.uid = user_reply.uid
 		WHERE cid = ?
-		ORDER BY comment.score DESC, comment.commentID ASC`,
+		ORDER BY comment.score DESC, comment.commentID ASC,
+			reply.replyID ASC`,
 			cid)
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
