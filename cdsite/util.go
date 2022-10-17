@@ -27,7 +27,7 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 			urlValue.Add(key, elem.(string))
 		}
 		reqUrl += "?" + urlValue.Encode()
-	} else if (reqType == "POST") {
+	} else if (reqType == "POST" || reqType == "PUT") {
 		var buf bytes.Buffer
 		err := json.NewEncoder(&buf).Encode(value)
 		if err != nil {
