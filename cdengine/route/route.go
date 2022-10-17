@@ -43,6 +43,30 @@ func main() {
 		cdengine.DeleteComment(c, &engineCtx)
 	})
 
+	// commentReply
+	r.PUT("/commentReply", func(c *gin.Context) {
+		cdengine.PutCommentReply(c, &engineCtx)
+	})
+	r.POST("/commentReply/:replyID", func(c *gin.Context) {
+		cdengine.PostCommentReply(c, &engineCtx)
+	})
+	r.DELETE("/commentReply/:replyID", func(c *gin.Context) {
+		cdengine.DeleteCommentReply(c, &engineCtx)
+	})
+
+	/*
+	// commentResponse
+	r.PUT("/commentResponse", func(c *gin.Context) {
+		cdengine.PutCommentResponse(c, &engineCtx)
+	})
+	r.POST("/commentResponse/:responseID", func(c *gin.Context) {
+		cdengine.PostCommentResponse(c, &engineCtx)
+	})
+	r.DELETE("/commentResponse/:responseID", func(c *gin.Context) {
+		cdengine.DeleteCommentResponse(c, &engineCtx)
+	})
+	*/
+
 	// Run CDENGINE
 	r.Run(engineCtx.Conf.Host + ":" + strconv.Itoa(engineCtx.Conf.Port))
 }
