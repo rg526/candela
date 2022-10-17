@@ -87,7 +87,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 	// Query DB
 	rows, err := ectx.DB.
 		Query(`SELECT
-		comment.commentID, comment.content, comment.time, comment.anonymous, comment.uid, user_comment.name,
+		comment.commentID, comment.content, comment.time, comment.anonymous, comment.uid, comment.score, user_comment.name,
 		reply.replyID, reply.content, reply.time, reply.anonymous, reply.uid, user_reply.name
 		FROM comment
 		LEFT JOIN comment_reply AS reply
@@ -114,6 +114,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 			Time			string
 			Anonymous		int
 			UID				string
+			Score			int
 			Author			string
 		}
 		var replyQuery struct {
@@ -126,7 +127,8 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 		}
 
 		err = rows.Scan(&commentQuery.CommentID, &commentQuery.Content, &commentQuery.Time,
-			&commentQuery.Anonymous, &commentQuery.UID, &commentQuery.Author,
+			&commentQuery.Anonymous, &commentQuery.UID, &commentQuery.Score,
+			&commentQuery.Author,
 			&replyQuery.ReplyID, &replyQuery.Content, &replyQuery.Time, &replyQuery.Anonymous, &replyQuery.UID, &replyQuery.Author)
 		if err != nil {
 			ReportError(ctx, http.StatusInternalServerError, err)
@@ -140,6 +142,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 			comment.CommentID = commentQuery.CommentID
 			comment.Content = commentQuery.Content
 			comment.Self = commentQuery.UID == user.UID
+			comment.Score = commentQuery.Score
 
 			// Convert time from unix ts (string) into readable string
 			commentTimeUnix, err := strconv.ParseInt(commentQuery.Time, 10, 64)

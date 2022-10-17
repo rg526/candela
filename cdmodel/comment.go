@@ -7,6 +7,7 @@ type Comment struct {
 	Author			string
 	Self			bool
 	Replies			[]CommentReply
+	Score			int
 }
 
 type CommentReply struct {

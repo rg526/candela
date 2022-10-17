@@ -61,6 +61,7 @@
 	<div class="card-body">
 		<p>{{ $comment.Content }}</p>
 		<p>{{ $comment.Time }}</p>
+		<p>{{ $comment.Score }}</p>
 	</div>
 </div>
 {{ range $reply := $comment.Replies }}
