@@ -45,6 +45,18 @@ func main() {
 		cdsite.GetAbout(c, &siteCtx)
 	})
 
+	// comment
+	r.PUT("/comment", func(c *gin.Context) {
+		cdsite.PutComment(c, &siteCtx)
+	})
+	r.POST("/comment/:commentID", func(c *gin.Context) {
+		cdsite.PostComment(c, &siteCtx)
+	})
+	r.DELETE("/comment/:commentID", func(c *gin.Context) {
+		cdsite.DeleteComment(c, &siteCtx)
+	})
+
+
 	// Run CDSITE
 	r.Run(siteCtx.Conf.Host + ":" + strconv.Itoa(siteCtx.Conf.Port))
 }

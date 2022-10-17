@@ -40,7 +40,7 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 		reqBody = &buf
 	}
 
-	req, err := http.NewRequest("GET", reqUrl, reqBody)
+	req, err := http.NewRequest(reqType, reqUrl, reqBody)
 	if err != nil {
 		ctx.HTML(http.StatusInternalServerError, "layout/error", gin.H{
 			"Title": "Error",
@@ -90,6 +90,10 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 	}
 
 	// Decode request
+	if result == nil {
+		// Skip decode
+		return true
+	}
 	err = json.NewDecoder(res.Body).Decode(result)
 	if err != nil {
 		ctx.HTML(http.StatusInternalServerError, "layout/error", gin.H{
