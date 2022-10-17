@@ -61,7 +61,7 @@
 	<div class="card-body">
 		<p>{{ $comment.Content }}</p>
 		<p>{{ $comment.Time }}</p>
-		<p>{{ $comment.Score }}</p>
+		<p><i class="fa fa-thumbs-up"></i>&nbsp;{{ $comment.Score }}</p>
 	</div>
 </div>
 {{ range $reply := $comment.Replies }}
