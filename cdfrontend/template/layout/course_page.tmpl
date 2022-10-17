@@ -29,14 +29,14 @@
 <br>
 <div class="container">
 	<h3>Course Description</h3>
-	<p>{{.Course.Description}}</p>
+	<div>{{.Course.Description}}</div>
 </div>
 <div class="container">
 	{{ if ne .Course.Prereq "" }}
-	<p><b>Pre-requisite: </b>{{.Course.Prereq}}</p>
+	<div><b>Pre-requisite: </b>{{.Course.Prereq}}</div>
 	{{ end }}
 	{{ if ne .Course.Coreq "" }}
-	<p><b>Co-requisite: </b>{{.Course.Coreq}}</p>
+	<div><b>Co-requisite: </b>{{.Course.Coreq}}</div>
 	{{ end }}
 </div>  
 
@@ -44,14 +44,17 @@
 <h4 style="margin-top: 30px;">Related Pages</h4>
 
 {{ range $page := .PageArray }}
-<div>
-	{{ $page.Title }} (<a href="{{ $page.Link }}" style="text-decoration: none;">{{ $page.Link }}</a>)
-</div>
-<figure class="bg-light" style="border-left: .30rem solid #720dff;">
-	<div style="margin-left: 15px;">
-		{{ $page.Content }}
+<div style="margin-bottom: 20px;">
+	<div>
+		<a href="{{ $page.Link }}" style="text-decoration: none;">{{ $page.Title }}</a>
+		<small class="text-muted">{{ $page.Link }}</small>
 	</div>
-</figure>
+	<figure class="bg-light" style="border-left: .30rem solid #720dff;">
+		<div style="margin-left: 15px;">
+			{{ $page.Content }}
+		</div>
+	</figure>
+</div>
 {{ end }}
 
 <div>
