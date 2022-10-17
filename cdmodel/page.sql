@@ -6,5 +6,5 @@ CREATE TABLE page (
 	title				TEXT			NOT NULL,
 	link				TEXT			NOT NULL,
 	content				MEDIUMTEXT		NOT NULL,
-	priority			INT				NOT NULL
+	priority			INT				NOT NULL DEFAULT 0
 );

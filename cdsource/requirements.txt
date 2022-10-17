@@ -1,3 +1,4 @@
 cmu-course-api
 requests
 mysql-connector-python
+goose3

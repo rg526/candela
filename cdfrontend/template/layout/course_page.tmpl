@@ -40,6 +40,24 @@
 	{{ end }}
 </div>  
 
+<!--Related Pages-->
+<h4 style="margin-top: 30px;">Related Pages</h4>
+
+{{ range $page := .PageArray }}
+<div>
+	{{ $page.Title }} (<a href="{{ $page.Link }}" style="text-decoration: none;">{{ $page.Link }}</a>)
+</div>
+<figure class="bg-light" style="border-left: .30rem solid #720dff;">
+	<div style="margin-left: 15px;">
+		{{ $page.Content }}
+	</div>
+</figure>
+{{ end }}
+
+<div>
+Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" style="text-decoration: none;">form</a> to add a website!
+</div>
+
 
 <!--Comment Box-->
 <h3 style="margin-top: 60px;">Comments</h3>

@@ -72,7 +72,7 @@ func GetProfessor(ctx *gin.Context, ectx *Context) {
 }
 
 
-// Endpoint "/course/comment"
+// Endpoint "/course/:cid/comment"
 // Get comments related to a course
 func GetCourseComment(ctx *gin.Context, ectx *Context) {
 	// Verify token
@@ -197,4 +197,46 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"Status": "OK",
 		"Data": commentArr})
+}
+
+// Endpoint "/course/:cid/comment"
+// Get pages related to a course
+func GetCoursePage(ctx *gin.Context, ectx *Context) {
+	// Verify token
+	_, isAuth := VerifyTokenFromCtx(ctx, ectx)
+	if !isAuth {
+		return
+	}
+
+	// Find course ID
+	cid := ctx.Param("cid")
+
+	// Query DB
+	rows, err := ectx.DB.
+		Query(`SELECT title, link, content FROM page
+			WHERE cid = ?
+			ORDER BY priority DESC, pageID ASC`,
+			cid)
+	if err != nil {
+		ReportError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	defer rows.Close()
+
+	// Append comments to array
+	var pageArr []cdmodel.Page
+	for rows.Next() {
+		var page cdmodel.Page
+		err = rows.Scan(&page.Title, &page.Link, &page.Content)
+		if err != nil {
+			ReportError(ctx, http.StatusInternalServerError, err)
+			return
+		}
+		pageArr = append(pageArr, page)
+	}
+
+	// Return result
+	ctx.JSON(http.StatusOK, gin.H{
+		"Status": "OK",
+		"Data": pageArr})
 }

@@ -19,6 +19,9 @@ func main() {
 	r.GET("/course/:cid/comment", func(c *gin.Context) {
 		cdengine.GetCourseComment(c, &engineCtx)
 	})
+	r.GET("/course/:cid/page", func(c *gin.Context) {
+		cdengine.GetCoursePage(c, &engineCtx)
+	})
 	r.GET("/professor/:name", func(c *gin.Context) {
 		cdengine.GetProfessor(c, &engineCtx)
 	})
