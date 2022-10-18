@@ -51,11 +51,12 @@
 	</div>
 	<figure class="bg-light" style="border-left: .30rem solid #720dff;">
 		<div style="margin-left: 15px;">
+			{{ $maxLength := 500 }}
 			{{ $length := len $page.Content }}
-			{{ if le $length 200 }}
+			{{ if le $length $maxLength }}
 				{{ $page.Content }}
 			{{ else }}
-				{{ slice $page.Content 0 200 }}<span id="page-{{ $index }}-less">...</span><span id="page-{{ $index }}-more" hidden>{{ slice $page.Content 200 }}</span>
+				{{ slice $page.Content 0 $maxLength }}<span id="page-{{ $index }}-less">...</span><span id="page-{{ $index }}-more" hidden>{{ slice $page.Content $maxLength }}</span>
 				<a href="javascript:void(0)" onclick="pageContentToggle('page-{{ $index }}');" id="page-{{ $index }}-toggle" style="text-decoration: none;">More</a>
 			{{ end }}
 		</div>
