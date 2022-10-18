@@ -43,7 +43,7 @@
 <!--Related Pages-->
 <h4 style="margin-top: 30px;">Related Pages</h4>
 
-{{ range $page := .PageArray }}
+{{ range $index, $page := .PageArray }}
 <div style="margin-bottom: 20px;">
 	<div>
 		<a href="{{ $page.Link }}" style="text-decoration: none;">{{ $page.Title }}</a>
@@ -51,7 +51,13 @@
 	</div>
 	<figure class="bg-light" style="border-left: .30rem solid #720dff;">
 		<div style="margin-left: 15px;">
-			{{ $page.Content }}
+			{{ $length := len $page.Content }}
+			{{ if le $length 200 }}
+				{{ $page.Content }}
+			{{ else }}
+				{{ slice $page.Content 0 200 }}<span id="page-{{ $index }}-less">...</span><span id="page-{{ $index }}-more" hidden>{{ slice $page.Content 200 }}</span>
+				<a href="javascript:void(0)" onclick="pageContentToggle('page-{{ $index }}');" id="page-{{ $index }}-toggle" style="text-decoration: none;">More</a>
+			{{ end }}
 		</div>
 	</figure>
 </div>
@@ -118,6 +124,17 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 </div>
 {{ end }}
 {{ end }}
+
+<script>
+function pageContentToggle(name) {
+	elemLess = document.getElementById(name + "-less");
+	elemMore = document.getElementById(name + "-more");
+	elemToggle = document.getElementById(name + "-toggle");
+	elemLess.hidden = !elemLess.hidden;
+	elemMore.hidden = !elemMore.hidden;
+	elemToggle.innerHTML = elemToggle.innerHTML == "More" ? "Less" : "More";
+}
+</script>
 
 {{ template "base/footer" . }}
 
