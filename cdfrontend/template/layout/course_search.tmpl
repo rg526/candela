@@ -2,17 +2,18 @@
 
 {{ template "base/header" . }}
 
-<h3>Search</h3>
+<h2 style="margin-left:7.5px">Search</h2>
 
-<div class="container" style="margin-top: 30px;">
+<div class="container" style="margin-top: 25px;">
 	<div class="row justify-content-center">
 		<div class="input-group">
 			<div class="col-8">
 				<input class="form-control" placeholder="Search by Course ID, Professor, or Keyword">
 			</div>
-			<button class="btn btn-success btn-md" style="margin-left:5px">Search</button>
+			<button class="btn btn-success btn-md" style="margin-left:5px" onclick="search()">Search</button>
 		</div>
 	</div>
+	<a href="javascript:void(0)" style="margin-top:12px; text-decoration:none;" onclick="disappear()" id="advance-mode">Advanced Search</a>
 </div>
 
 
@@ -22,7 +23,7 @@
 </div>
 
 
-<form>
+<div id="advance-element" style="display:none;">
 	<ul class="nav nav-pills" style="margin-top: 10px;">
 		<li class="nav-item btn-group" style="margin-top:8px; margin-left:10px;">
 			<input type="checkbox" class="btn-check" id="btncheck1" checked="" autocomplete="off">
@@ -32,29 +33,29 @@
 		</li>
 
 		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
-			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Department</button>
+			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="true">Department</button>
 			<ul class="dropdown-menu">
-				<li><a class="dropdown-item active" href="#">Statistics & Data Science</a></li>
-				<li><a class="dropdown-item" href="#">Computer Science</a></li>
-				<li><a class="dropdown-item" href="#">Electrical & Computer Engineering</a></li>
-				<li><a class="dropdown-item" href="#">Biology</a></li>
-				<li><a class="dropdown-item" href="#">Mathematics</a></li>
-				<li><a class="dropdown-item" href="#">Philosophy</a></li>
-				<li><a class="dropdown-item" href="#">Economics</a></li>
+				<li><a class="dropdown-item" id="statid" onclick="toggle('statid')">Statistics & Data Science</a></li>
+				<li><a class="dropdown-item" id="csid" onclick="toggle('csid')">Computer Science</a></li>
+				<li><a class="dropdown-item" id="eceid" onclick="toggle('eceid')">Electrical & Computer Engineering</a></li>
+				<li><a class="dropdown-item" id="bioid" onclick="toggle('bioid')">Biology</a></li>
+				<li><a class="dropdown-item" id="mathid" onclick="toggle('mathid')">Mathematics</a></li>
+				<li><a class="dropdown-item" id="phiid" onclick="toggle('phiid')">Philosophy</a></li>
+				<li><a class="dropdown-item" id="econid" onclick="toggle('econid')">Economics</a></li>
 			</ul>
 		</li>
 
 		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
-			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Unit</button>
+			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="deep" onclick="advance('deep')">Unit</button>
 			<ul class="dropdown-menu">
-				<li><a class="dropdown-item" href="#">0-3</a></li>
-				<li><a class="dropdown-item" href="#">4-8</a></li>
-				<li><a class="dropdown-item active" href="#">9-12</a></li>
-				<li><a class="dropdown-item" href="#">12+</a></li>
+				<li><a class="dropdown-item" href="#" id="unit3" onclick="toggle('unit3')">0-3</a></li>
+				<li><a class="dropdown-item" href="#" id="unit8" onclick="toggle('unit8')">4-8</a></li>
+				<li><a class="dropdown-item" href="#" id="unit12" onclick="toggle('unit12')">9-12</a></li>
+				<li><a class="dropdown-item" href="#" id="unit+" onclick="toggle('unit+')">12+</a></li>
 			</ul>
 		</li>
 	</ul>
-</form>
+</div>
 
 
 <div style="margin-top:40px;">
@@ -74,6 +75,53 @@
 		{{ end }}
 	</div>
 </div>
+
+<div class="modal" style="display:none;" id="modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Modal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="disappear()">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-body" id="save">
+        <p>Modal body text goes here.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="saved()">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disappear()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var display = false;
+function disappear(){
+	if(display){
+    	document.getElementById("advance-element").style.display = "none";
+		document.getElementById("advance-mode").innerHTML = "Advanced Search"
+		document.getElementById("advance-mode").style = "text-decoration:none;";
+		display = false;
+	}else{
+    	document.getElementById("advance-element").style.display = "block";
+		display = true;
+		document.getElementById("advance-mode").innerHTML = "Hide";
+		document.getElementById("advance-mode").style = "text-decoration:underline;";
+  	}
+}
+function saved(){
+	document.getElementById("save").innerHTML = "Content Saved.";
+}
+function toggle(id){
+	var element = document.getElementById(id)
+	element.classList.toggle("active")
+}
+function search(){
+	window.location.replace("http://localhost:8001/course/15213");
+}
+</script>
 
 {{ template "base/footer" . }}
 
