@@ -5,7 +5,22 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title> {{ .Title }} </title>
-        <link href="/css/bootstrap.min.css" rel="stylesheet">
+		<script>
+var themeID = "theme-css"
+if (!document.getElementById(themeID)) {
+	var head  = document.getElementsByTagName('head')[0];
+	var link  = document.createElement('link');
+	link.id   = themeID;
+	link.rel  = "stylesheet";
+	link.type = "text/css";
+	if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+		link.href = "/css/dark.css";
+	} else {
+		link.href = "/css/light.css";
+	}
+	head.appendChild(link);
+}
+		</script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     </head>
 
