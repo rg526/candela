@@ -62,12 +62,18 @@
 		{{ range $index, $course := .CourseArray }}
 		<div class="col-lg-4">
 			<!-- <a href="/course/{{ $course.CID }}" style="display: block; text-decoration: none;"> -->
-			<a href="#" style="display: block; text-decoration: none;" onclick="modalOpen()">
+			<a href="#" style="display: block; text-decoration: none;" onclick="modalOpen('course-{{ $index }}')">
 			<span class="card text-white bg-primary mb-3" style="margin-top:25px;">
-				<div class="card-header" style="font-weight: bold;font-size: 120%;">{{ $course.CID }}: {{ $course.Name }}</div >
+				<div class="card-header" style="font-weight: bold;font-size: 120%;">{{ $course.CID }}: {{ $course.Name }}</div>
 				<div class="card-body" style="margin-left:0.75%">
 <!--					<h4 class="card-title">{{ $course.CID }}: {{ $course.Name }}</h4> -->
-					<p class="card-text">{{ $course.Description }}</p>
+					{{ $maxLength := 300 }}
+					{{ $length := len $course.Description }}
+					{{ if le $length $maxLength }}
+						<span class="card-text">{{ $course.Description }}</span>
+					{{ else }}
+						<span class="card-text">{{ slice $course.Description 0 $maxLength }}...</span>
+					{{ end }}
 				</div>
 			</span>
 			</a>
@@ -97,6 +103,18 @@
     	</div>
   	</div>
 </div>
+
+
+<!-- Hidden course info -->
+<span style="display: none;">
+	{{ range $index, $course := .CourseArray }}
+	<span id="course-{{ $index }}-elem">
+		<span id="course-{{ $index }}-cid">{{ $course.CID }}</span>
+		<span id="course-{{ $index }}-units">{{ $course.Units }}</span>
+		<span id="course-{{ $index }}-description">{{ $course.Description }}</span>
+	</span>
+	{{ end }}
+</span>
 
 
 <script>
