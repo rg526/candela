@@ -50,10 +50,8 @@ func GetAuth(ctx *gin.Context, sctx *Context) {
 func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	// Get authCode
 	if ctx.Query("error") != "" {
-		ctx.HTML(http.StatusOK, "layout/error", gin.H{
-				"Title": "Error",
-				"ErrorTitle": "Auth Error",
-				"ErrorDescription": "Google returns " + ctx.Query("error") + "."})
+		ReportErrorFromString(ctx, http.StatusBadGateway,
+			"Auth Error", "Google returns " + ctx.Query("error") + ".")
 		return
 	}
 	authCode := ctx.Query("code")
@@ -76,10 +74,8 @@ func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	retPath := ctx.Query("state")
 	data, err := base64.URLEncoding.DecodeString(retPath)
 	if err != nil {
-		ctx.HTML(http.StatusOK, "layout/error", gin.H{
-				"Title": "Error",
-				"ErrorTitle": "Auth Error",
-				"ErrorDescription": "Error decoding state " + err.Error() + "."})
+		ReportErrorFromString(ctx, http.StatusInternalServerError,
+			"Auth Error", "Error decoding state " + err.Error() + ".")
 		return
 	}
 	ctx.Redirect(http.StatusTemporaryRedirect, string(data))

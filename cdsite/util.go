@@ -11,6 +11,22 @@ import (
 	"github.com/gin-contrib/sessions"
 )
 
+
+func ReportError(ctx *gin.Context, code int, title string, err error) {
+	ctx.HTML(code, "layout/error", gin.H{
+		"Title": "Error",
+		"ErrorTitle": title,
+		"ErrorDescription": "Error: " + err.Error()})
+}
+
+func ReportErrorFromString(ctx *gin.Context, code int, title string, msg string) {
+	ctx.HTML(code, "layout/error", gin.H{
+		"Title": "Error",
+		"ErrorTitle": title,
+		"ErrorDescription": msg})
+}
+
+
 // Request to CDEngine
 func CDRequest(ctx *gin.Context, sctx *Context,
 		reqType string,
@@ -31,10 +47,8 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 		var buf bytes.Buffer
 		err := json.NewEncoder(&buf).Encode(value)
 		if err != nil {
-			ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
-				"Title": "Error",
-				"ErrorTitle": "Service Error",
-				"ErrorDescription": "Connection error: " + err.Error()})
+			ReportErrorFromString(ctx, http.StatusInternalServerError,
+				"Service Error", "Connection error: " + err.Error())
 			return false
 		}
 		reqBody = &buf
@@ -42,10 +56,8 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 
 	req, err := http.NewRequest(reqType, reqUrl, reqBody)
 	if err != nil {
-		ctx.HTML(http.StatusInternalServerError, "layout/error", gin.H{
-			"Title": "Error",
-			"ErrorTitle": "Service Error",
-			"ErrorDescription": "Connection error: " + err.Error()})
+		ReportErrorFromString(ctx, http.StatusInternalServerError,
+			"Service Error", "Connection error: " + err.Error())
 		return false
 	}
 
@@ -66,10 +78,8 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 	// Do request
 	res, err := sctx.Client.Do(req)
 	if err != nil {
-		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
-			"Title": "Error",
-			"ErrorTitle": "Service Error",
-			"ErrorDescription": "Connection error: " + err.Error()})
+		ReportErrorFromString(ctx, http.StatusBadGateway,
+			"Service Error", "Connection error: " + err.Error())
 		return false
 	}
 	if res.StatusCode == http.StatusUnauthorized {
@@ -82,10 +92,8 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 	if res.StatusCode != http.StatusOK {
 		var msg map[string]interface{}
 		json.NewDecoder(res.Body).Decode(&msg)
-		ctx.HTML(http.StatusBadGateway, "layout/error", gin.H{
-			"Title": "Error",
-			"ErrorTitle": "Service Error",
-			"ErrorDescription": "CDEngine error: " + msg["Error"].(string)})
+		ReportErrorFromString(ctx, http.StatusBadGateway,
+			"Service Error", "CDEngine error: " + msg["Error"].(string))
 		return false
 	}
 
@@ -96,10 +104,8 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 	}
 	err = json.NewDecoder(res.Body).Decode(result)
 	if err != nil {
-		ctx.HTML(http.StatusInternalServerError, "layout/error", gin.H{
-			"Title": "Error",
-			"ErrorTitle": "Service Error",
-			"ErrorDescription": "Decode error: " + err.Error()})
+		ReportErrorFromString(ctx, http.StatusInternalServerError,
+			"Service Error", "Decode error: " + err.Error())
 		return false
 	}
 

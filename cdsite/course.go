@@ -32,10 +32,8 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 	}
 
 	if courseResp.Data.CID == "" {
-		ctx.HTML(http.StatusBadRequest, "layout/error", gin.H{
-			"Title": "Error",
-			"ErrorTitle": "No such course",
-			"ErrorDescription": "Course " + cid + " not found"})
+		ReportErrorFromString(ctx, http.StatusBadRequest,
+			"No such course", "Course " + cid + " not found")
 		return
 	}
 
