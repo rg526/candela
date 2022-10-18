@@ -21,7 +21,7 @@ func GetSearch(ctx *gin.Context, ectx *Context) {
 
 	// Query DB
 	rows, err := ectx.DB.
-		Query("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course LIMIT ?",
+		Query("SELECT cid, name, description, dept, units, prof, prereq, coreq  FROM course LIMIT ?",
 			ectx.Conf.MaxSearchResult)
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
@@ -32,7 +32,7 @@ func GetSearch(ctx *gin.Context, ectx *Context) {
 	// Append course to array
 	for rows.Next() {
 		var course cdmodel.Course
-		err = rows.Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq, &course.FCEHours, &course.FCETeachingRate, &course.FCECourseRate, &course.FCELevel, &course.FCEStudentCount)
+		err = rows.Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq)
 		if err != nil {
 			ReportError(ctx, http.StatusInternalServerError, err)
 			return
