@@ -10,10 +10,13 @@ type Course struct {
 
 	Prereq				string
 	Coreq				string
+}
 
-	FCEHours			float32
-	FCETeachingRate		float32
-	FCECourseRate		float32
-	FCELevel			string
-	FCEStudentCount		int
+type FCE struct {
+	CID					string
+	Hours				float32
+	TeachingRate		float32
+	CourseRate			float32
+	Level				string
+	StudentCount		int
 }

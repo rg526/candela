@@ -21,13 +21,13 @@ func GetCourse(ctx *gin.Context, ectx *Context) {
 
 	// Find course ID
 	var course cdmodel.Course
-	cid:= ctx.Param("cid")
+	cid := ctx.Param("cid")
 
 	// Query DB
 	err := ectx.DB.
-		QueryRow("SELECT cid, name, description, dept, units, prof, prereq, coreq, FCEHours, FCETeachingRate, FCECourseRate, FCELevel, FCEStudentCount FROM course WHERE cid = ?",
+		QueryRow("SELECT cid, name, description, dept, units, prof, prereq, coreq FROM course WHERE cid = ?",
 			cid).
-		Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq, &course.FCEHours, &course.FCETeachingRate, &course.FCECourseRate, &course.FCELevel, &course.FCEStudentCount)
+		Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq)
 
 	if err != nil && err != sql.ErrNoRows {
 		ReportError(ctx, http.StatusInternalServerError, err)
@@ -69,6 +69,37 @@ func GetProfessor(ctx *gin.Context, ectx *Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"Status": "OK",
 		"Data": prof})
+}
+
+
+// Endpoint "/course/:cid/fce"
+// Get FCE data for a course
+func GetCourseFCE(ctx *gin.Context, ectx *Context) {
+	// Verify token
+	_, isAuth := VerifyTokenFromCtx(ctx, ectx)
+	if !isAuth {
+		return
+	}
+
+	// Find course ID
+	var fce cdmodel.FCE
+	cid := ctx.Param("cid")
+
+	// Query DB
+	err := ectx.DB.
+		QueryRow("SELECT cid, hours, teachingRate, courseRate, level, studentCount FROM fce WHERE cid = ?",
+			cid).
+		Scan(&fce.CID, &fce.Hours, &fce.TeachingRate, &fce.CourseRate, &fce.Level, &fce.StudentCount)
+
+	if err != nil && err != sql.ErrNoRows {
+		ReportError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	// Return result
+	ctx.JSON(http.StatusOK, gin.H{
+		"Status": "OK",
+		"Data": fce})
 }
 
 
