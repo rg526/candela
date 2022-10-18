@@ -19,14 +19,14 @@ func main() {
 	r.GET("/course/:cid/fce", func(c *gin.Context) {
 		cdengine.GetCourseFCE(c, &engineCtx)
 	})
+	r.GET("/course/:cid/prof", func(c *gin.Context) {
+		cdengine.GetCourseProf(c, &engineCtx)
+	})
 	r.GET("/course/:cid/comment", func(c *gin.Context) {
 		cdengine.GetCourseComment(c, &engineCtx)
 	})
 	r.GET("/course/:cid/page", func(c *gin.Context) {
 		cdengine.GetCoursePage(c, &engineCtx)
-	})
-	r.GET("/professor/:name", func(c *gin.Context) {
-		cdengine.GetProfessor(c, &engineCtx)
 	})
 	r.GET("/auth", func(c *gin.Context) {
 		cdengine.GetAuth(c, &engineCtx)

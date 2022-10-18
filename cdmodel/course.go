@@ -6,11 +6,11 @@ type Course struct {
 	Description			string
 	Dept				string
 	Units				float32
-	Prof				string
 
 	Prereq				string
 	Coreq				string
 }
+
 
 type FCE struct {
 	CID					string
