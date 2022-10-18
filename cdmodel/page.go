@@ -1,7 +1,11 @@
 package cdmodel
 
+import (
+	"html/template"
+)
+
 type Page struct {
 	Title			string
 	Link			string
-	Content			string
+	Content			template.HTML
 }

@@ -31,6 +31,11 @@ link = page_data["URL"]
 article = g.extract(url = link)
 priority = page_data.get("Priority", 0)
 
+# Reinsert newlines
+content_arr = str(article.cleaned_text).split("\n")
+content_arr = [x for x in content_arr if x != "" and not x.isspace()]
+content = '<br>'.join(content_arr)
+
 sql = "INSERT INTO page (cid, title, link, content, priority) VALUES (%s, %s, %s, %s, %s)"
-val = (cid, article.title, link, article.cleaned_text, priority)
+val = (cid, article.title, link, content, priority)
 cursor.execute(sql, val)
