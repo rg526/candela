@@ -59,6 +59,16 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		profArr = append(profArr, profResp.Data)
 	}
 
+	// Load FCE
+	var fceResp struct {
+		Status		string
+		Data		cdmodel.FCE
+	}
+	isSuccess = CDRequest(ctx, sctx, "GET", "/course/" + cid + "/fce", nil, true, &fceResp)
+	if !isSuccess {
+		return
+	}
+
 	// Load pages
 	var pageResp struct {
 		Status		string
@@ -84,6 +94,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		"Title": "Course " + courseResp.Data.CID,
 		"Course": courseResp.Data,
 		"ProfArray": profArr,
+		"FCE": fceResp.Data,
 		"PageArray": pageResp.Data,
 		"CommentArray": commentResp.Data})
 }
