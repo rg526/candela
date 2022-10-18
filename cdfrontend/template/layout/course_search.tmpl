@@ -13,7 +13,7 @@
 			<button class="btn btn-success btn-md" style="margin-left:5px" onclick="search()">Search</button>
 		</div>
 	</div>
-	<a href="javascript:void(0)" style="margin-top:12px; text-decoration:none;" onclick="disappear()" id="advance-mode">Advanced Search</a>
+	<a href="javascript:void(0)" style="margin-top:12px; text-decoration:none;" id="advance-mode" onclick="disappear()">Advanced Search</a>
 </div>
 
 
@@ -23,7 +23,7 @@
 </div>
 
 
-<div id="advance-element" style="display:none;">
+<div style="display:none;" id="advance-element">
 	<ul class="nav nav-pills" style="margin-top: 10px;">
 		<li class="nav-item btn-group" style="margin-top:8px; margin-left:10px;">
 			<input type="checkbox" class="btn-check" id="btncheck1" checked="" autocomplete="off">
@@ -46,7 +46,7 @@
 		</li>
 
 		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
-			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="deep" onclick="advance('deep')">Unit</button>
+			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Unit</button>
 			<ul class="dropdown-menu">
 				<li><a class="dropdown-item" href="#" id="unit3" onclick="toggle('unit3')">0-3</a></li>
 				<li><a class="dropdown-item" href="#" id="unit8" onclick="toggle('unit8')">4-8</a></li>
@@ -57,12 +57,12 @@
 	</ul>
 </div>
 
-
 <div style="margin-top:40px;">
 	<div class="row">
 		{{ range $index, $course := .CourseArray }}
 		<div class="col-lg-4">
-			<a href="/course/{{ $course.CID }}" style="display: block; text-decoration: none;">
+			<!-- <a href="/course/{{ $course.CID }}" style="display: block; text-decoration: none;"> -->
+			<a href="#" style="display: block; text-decoration: none;" onclick="modalOpen()">
 			<span class="card text-white bg-primary mb-3" style="margin-top:25px;">
 				<div class="card-header" style="font-weight: bold;font-size: 120%;">{{ $course.CID }}: {{ $course.Name }}</div >
 				<div class="card-body" style="margin-left:0.75%">
@@ -77,30 +77,33 @@
 </div>
 
 <div class="modal" style="display:none;" id="modal">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Modal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="disappear()">
-          <span aria-hidden="true"></span>
-        </button>
-      </div>
-      <div class="modal-body" id="save">
-        <p>Modal body text goes here.</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="saved()">Save changes</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="disappear()">Close</button>
-      </div>
-    </div>
-  </div>
+  	<div class="modal-dialog" role="document">
+    	<div class="modal-content">
+      		<div class="modal-header">
+        		<h5 class="modal-title">Modal</h5>
+        		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="modalClose()">
+          			<span aria-hidden="true"></span>
+        		</button>
+      		</div>
+      		<div class="modal-body">
+	    		<h5>Course Name: 21-256 Multivariate Analysis</h5>
+				<h6>Unit: 9</h6> 
+				<h6>Description:</h6>
+        		<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
+      		</div>
+      		<div class="modal-footer">
+        		<a href="/course/15251" class="btn btn-primary">View More</a>
+      		</div>
+    	</div>
+  	</div>
 </div>
+
 
 <script>
 var display = false;
 function disappear(){
 	if(display){
-    	document.getElementById("advance-element").style.display = "none";
+    	document.getElementById("advance-element").style.display="none";
 		document.getElementById("advance-mode").innerHTML = "Advanced Search"
 		document.getElementById("advance-mode").style = "text-decoration:none;";
 		display = false;
@@ -111,9 +114,15 @@ function disappear(){
 		document.getElementById("advance-mode").style = "text-decoration:underline;";
   	}
 }
-function saved(){
-	document.getElementById("save").innerHTML = "Content Saved.";
+
+function modalClose(){
+	document.getElementById("modal").style.display = "none";
 }
+
+function modalOpen(){
+	document.getElementById("modal").style.display = "block";
+}
+
 function toggle(id){
 	var element = document.getElementById(id)
 	element.classList.toggle("active")
