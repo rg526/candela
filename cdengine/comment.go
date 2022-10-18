@@ -40,9 +40,14 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 		isAnonymous = 1
 	}
 	escapeContent := html.EscapeString(reqBody.Content)
-	_, err = ectx.DB.
+	res, err := ectx.DB.
 		Exec("INSERT INTO comment (cid, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)",
 			reqBody.CID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
+	if err != nil {
+		ReportError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	id, err := res.LastInsertId()
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
 		return
@@ -50,7 +55,8 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 
 	// Return result
 	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+		"Status": "OK",
+		"CommentID": id})
 }
 
 // Endpoint "/comment" POST
@@ -163,9 +169,14 @@ func PutCommentReply(ctx *gin.Context, ectx *Context) {
 		isAnonymous = 1
 	}
 	escapeContent := html.EscapeString(reqBody.Content)
-	_, err = ectx.DB.
+	res, err := ectx.DB.
 		Exec("INSERT INTO comment_reply (commentID, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)",
 			reqBody.CommentID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
+	if err != nil {
+		ReportError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	id, err := res.LastInsertId()
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
 		return
@@ -173,7 +184,8 @@ func PutCommentReply(ctx *gin.Context, ectx *Context) {
 
 	// Return result
 	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+		"Status": "OK",
+		"ReplyID": id})
 }
 
 // Endpoint "/commentReply" POST
