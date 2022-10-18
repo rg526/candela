@@ -67,7 +67,7 @@
 				<div class="card-header" style="font-weight: bold;font-size: 120%;">{{ $course.CID }}: {{ $course.Name }}</div>
 				<div class="card-body" style="margin-left:0.75%">
 <!--					<h4 class="card-title">{{ $course.CID }}: {{ $course.Name }}</h4> -->
-					{{ $maxLength := 300 }}
+					{{ $maxLength := 200 }}
 					{{ $length := len $course.Description }}
 					{{ if le $length $maxLength }}
 						<span class="card-text">{{ $course.Description }}</span>
@@ -86,19 +86,21 @@
   	<div class="modal-dialog" role="document">
     	<div class="modal-content">
       		<div class="modal-header">
-        		<h5 class="modal-title">Modal</h5>
+        		<h5 class="modal-title" id="name"></h5>
         		<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="modalClose()">
           			<span aria-hidden="true"></span>
         		</button>
       		</div>
       		<div class="modal-body">
-	    		<h5>Course Name: 21-256 Multivariate Analysis</h5>
-				<h6>Unit: 9</h6> 
+				<div>
+					<strong>Unit:</strong>
+					<span id="unit"></span>
+				</div> 
 				<h6>Description:</h6>
-        		<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
+        		<div id="description"></div>
       		</div>
       		<div class="modal-footer">
-        		<a href="/course/15251" class="btn btn-primary">View More</a>
+        		<a href="#" class="btn btn-primary" id="ref">View More</a>
       		</div>
     	</div>
   	</div>
@@ -110,6 +112,7 @@
 	{{ range $index, $course := .CourseArray }}
 	<span id="course-{{ $index }}-elem">
 		<span id="course-{{ $index }}-cid">{{ $course.CID }}</span>
+		<span id="course-{{ $index }}-name">{{ $course.Name }}</span>
 		<span id="course-{{ $index }}-units">{{ $course.Units }}</span>
 		<span id="course-{{ $index }}-description">{{ $course.Description }}</span>
 	</span>
@@ -137,7 +140,11 @@ function modalClose(){
 	document.getElementById("modal").style.display = "none";
 }
 
-function modalOpen(){
+function modalOpen(str){
+	document.getElementById("name").innerHTML = document.getElementById(str + "-cid").innerHTML + ": " + document.getElementById(str + "-name").innerHTML
+	document.getElementById("unit").innerHTML = document.getElementById(str + "-units").innerHTML
+	document.getElementById("description").innerHTML = document.getElementById(str + "-description").innerHTML
+	document.getElementById("ref").href = "/course/" + document.getElementById(str + "-cid").innerHTML
 	document.getElementById("modal").style.display = "block";
 }
 
@@ -146,7 +153,7 @@ function toggle(id){
 	element.classList.toggle("active")
 }
 function search(){
-	window.location.replace("http://localhost:8001/course/15213");
+	window.location.replace("/course/15213");
 }
 </script>
 
