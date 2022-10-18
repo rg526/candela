@@ -19,7 +19,7 @@
 
 <div class="alert alert-danger" role="alert" style="margin-top:20px" hidden>
 	0 result returned from search engine. (You may have invalid course id, professor, or keyword input)
-	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+	<a href="javascript:void(0)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 </div>
 
 
@@ -35,23 +35,23 @@
 		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
 			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="true">Department</button>
 			<ul class="dropdown-menu">
-				<li><a class="dropdown-item" id="statid" onclick="toggle('statid')">Statistics &amp; Data Science</a></li>
-				<li><a class="dropdown-item" id="csid" onclick="toggle('csid')">Computer Science</a></li>
-				<li><a class="dropdown-item" id="eceid" onclick="toggle('eceid')">Electrical &amp; Computer Engineering</a></li>
-				<li><a class="dropdown-item" id="bioid" onclick="toggle('bioid')">Biology</a></li>
-				<li><a class="dropdown-item" id="mathid" onclick="toggle('mathid')">Mathematics</a></li>
-				<li><a class="dropdown-item" id="phiid" onclick="toggle('phiid')">Philosophy</a></li>
-				<li><a class="dropdown-item" id="econid" onclick="toggle('econid')">Economics</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="statid" onclick="toggle('statid')">Statistics &amp; Data Science</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="csid" onclick="toggle('csid')">Computer Science</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="eceid" onclick="toggle('eceid')">Electrical &amp; Computer Engineering</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="bioid" onclick="toggle('bioid')">Biology</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="mathid" onclick="toggle('mathid')">Mathematics</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="phiid" onclick="toggle('phiid')">Philosophy</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="econid" onclick="toggle('econid')">Economics</a></li>
 			</ul>
 		</li>
 
 		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
 			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Unit</button>
 			<ul class="dropdown-menu">
-				<li><a class="dropdown-item" href="#" id="unit3" onclick="toggle('unit3')">0-3</a></li>
-				<li><a class="dropdown-item" href="#" id="unit8" onclick="toggle('unit8')">4-8</a></li>
-				<li><a class="dropdown-item" href="#" id="unit12" onclick="toggle('unit12')">9-12</a></li>
-				<li><a class="dropdown-item" href="#" id="unit+" onclick="toggle('unit+')">12+</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="unit3" onclick="toggle('unit3')">0-3</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="unit8" onclick="toggle('unit8')">4-8</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="unit12" onclick="toggle('unit12')">9-12</a></li>
+				<li><a class="dropdown-item" href="javascript:void(0)" id="unit+" onclick="toggle('unit+')">12+</a></li>
 			</ul>
 		</li>
 	</ul>
@@ -62,7 +62,7 @@
 		{{ range $index, $course := .CourseArray }}
 		<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
 			<!-- <a href="/course/{{ $course.CID }}" style="display: block; text-decoration: none;"> -->
-			<a href="#" style="display: block; text-decoration: none;" onclick="modalOpen('course-{{ $index }}')">
+			<a href="javascript:void(0)" style="display: block; text-decoration: none;" onclick="modalOpen('course-{{ $index }}')">
 			<span class="card text-white bg-primary mb-3">
 				<div class="card-header" style="font-weight: bold;font-size: 120%;">{{ $course.CID }}: {{ $course.Name }}</div>
 				<div class="card-body" style="margin-left:0.75%">
