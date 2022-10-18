@@ -1,7 +1,7 @@
 package cdmodel
 
-type Professor struct {
+type Prof struct {
 	Name				string
-	RMPRatingClass		string
-	RMPRatingOverall	float32
+	RatingClass			string
+	RatingOverall		float32
 }

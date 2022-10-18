@@ -25,9 +25,9 @@ func GetCourse(ctx *gin.Context, ectx *Context) {
 
 	// Query DB
 	err := ectx.DB.
-		QueryRow("SELECT cid, name, description, dept, units, prof, prereq, coreq FROM course WHERE cid = ?",
+		QueryRow("SELECT cid, name, description, dept, units, prereq, coreq FROM course WHERE cid = ?",
 			cid).
-		Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prof, &course.Prereq, &course.Coreq)
+		Scan(&course.CID, &course.Name, &course.Description, &course.Dept, &course.Units, &course.Prereq, &course.Coreq)
 
 	if err != nil && err != sql.ErrNoRows {
 		ReportError(ctx, http.StatusInternalServerError, err)
@@ -41,9 +41,9 @@ func GetCourse(ctx *gin.Context, ectx *Context) {
 }
 
 
-// Endpoint "/professor"
-// Get professor detailed info
-func GetProfessor(ctx *gin.Context, ectx *Context) {
+// Endpoint "/course/:cid/fce"
+// Get professor info for a cid
+func GetCourseProf(ctx *gin.Context, ectx *Context) {
 	// Verify token
 	_, isAuth := VerifyTokenFromCtx(ctx, ectx)
 	if !isAuth {
@@ -51,24 +51,49 @@ func GetProfessor(ctx *gin.Context, ectx *Context) {
 	}
 
 	// Find course ID
-	var prof cdmodel.Professor
-	prof_name := ctx.Param("name")
+	cid := ctx.Param("cid")
 
 	// Query DB
-
-	err := ectx.DB.
-		QueryRow("SELECT name, RMPRatingClass, RMPRatingOverall FROM professor WHERE name = ?",
-			prof_name).
-		Scan(&prof.Name, &prof.RMPRatingClass, &prof.RMPRatingOverall)
-	if err != nil && err != sql.ErrNoRows {
+	rows, err := ectx.DB.
+		Query(`SELECT
+			prof.name, rmp.ratingClass, ratingOverall
+			FROM prof
+			LEFT JOIN rmp ON prof.name = rmp.name
+			WHERE cid = ?`,
+				cid)
+	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
 		return
+	}
+	defer rows.Close()
+
+	// Append rows to array
+	var profArr []cdmodel.Prof
+	for rows.Next() {
+		var prof cdmodel.Prof
+		var rmpQuery struct {
+			RatingClass		sql.NullString
+			RatingOverall	sql.NullFloat64
+		}
+
+		err := rows.Scan(&prof.Name, &rmpQuery.RatingClass, &rmpQuery.RatingOverall)
+		if err != nil {
+			ReportError(ctx, http.StatusInternalServerError, err)
+			return
+		}
+		if (rmpQuery.RatingClass.Valid) {
+			prof.RatingClass = rmpQuery.RatingClass.String
+			prof.RatingOverall = float32(rmpQuery.RatingOverall.Float64)
+		}
+
+		// Append to array
+		profArr = append(profArr, prof)
 	}
 
 	// Return result
 	ctx.JSON(http.StatusOK, gin.H{
 		"Status": "OK",
-		"Data": prof})
+		"Data": profArr})
 }
 
 
