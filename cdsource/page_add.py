@@ -1,3 +1,9 @@
+"""
+page.json should contain the following information:
+- CID: string, course ID
+- URL: string, link
+- Priority: int, optional, priority of the link
+"""
 import json
 import mysql.connector
 import config
