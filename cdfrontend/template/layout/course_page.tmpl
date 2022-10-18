@@ -46,7 +46,7 @@
 {{ range $index, $page := .PageArray }}
 <div style="margin-bottom: 20px;">
 	<div>
-		<a href="{{ $page.Link }}" style="text-decoration: none;">{{ $page.Title }}</a>
+		<a target="_blank" href="{{ $page.Link }}" style="text-decoration: none;">{{ $page.Title }}</a>
 		<small class="text-muted">{{ $page.Link }}</small>
 	</div>
 	<figure class="bg-light" style="border-left: .30rem solid #720dff;">
