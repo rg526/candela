@@ -5,14 +5,16 @@
 <h1 clsss="display-1">{{ .Course.CID }}: {{ .Course.Name }}</h1>
 <div class="container">
 	<div class="row">
-		<div class="col-sm"><b>Department: </b>{{.Course.Dept}}</div>
-		<div class="col-sm"><b>Unit: </b>{{.Course.Units}}</div>
-		<div class="col-sm"><b>Course level: </b>{{.Course.FCELevel}}</div>
+		<div class="col-sm"><b>Department: </b>{{ .Course.Dept }}</div>
+		<div class="col-sm"><b>Unit: </b>{{ .Course.Units }}</div>
+		<div class="col-sm"><b>Course level: </b>{{ .FCE.Level }}</div>
 	</div>
+	{{ if gt .FCE.Hours 0.0 }}
 	<div class="row">
-		<div class="col-sm-4"> <b>FCE Hour: </b>{{.Course.FCEHours}}</div>
-		<div class="col-sm-4"> <b>FCE Rate: </b>{{.Course.FCECourseRate}}</div>
+		<div class="col-sm-4"> <b>FCE Hour: </b>{{ .FCE.Hours }}</div>
+		<div class="col-sm-4"> <b>FCE Rate: </b>{{ .FCE.CourseRate }}</div>
 	</div> 
+	{{ end }}
 </div>
 <br>
 <div class="container">
