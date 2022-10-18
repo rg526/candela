@@ -1,7 +1,6 @@
 package cdsite
 
 import (
-	"strings"
 	"net/http"
 	"github.com/gin-gonic/gin"
 
@@ -37,34 +36,22 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
-	// Fetch prof struct
-	profName := strings.Split(courseResp.Data.Prof, ";")
-	var profArr []cdmodel.Professor
-	for _, name := range(profName) {
-		var profResp struct {
-			Status string
-			Data cdmodel.Professor
-		}
-		isSuccess := CDRequest(ctx, sctx, "GET", "/professor/" + name, nil, true, &profResp)
-		if !isSuccess {
-			return
-		}
-
-		// Default data
-		if profResp.Data.Name == "" {
-			profResp.Data.Name = name
-			profResp.Data.RMPRatingClass = "Unknown"
-			profResp.Data.RMPRatingOverall = -1.0
-		}
-		profArr = append(profArr, profResp.Data)
-	}
-
 	// Load FCE
 	var fceResp struct {
 		Status		string
 		Data		cdmodel.FCE
 	}
 	isSuccess = CDRequest(ctx, sctx, "GET", "/course/" + cid + "/fce", nil, true, &fceResp)
+	if !isSuccess {
+		return
+	}
+
+	// Load prof
+	var profResp struct {
+		Status		string
+		Data		[]cdmodel.Prof
+	}
+	isSuccess = CDRequest(ctx, sctx, "GET", "/course/" + cid + "/prof", nil, true, &profResp)
 	if !isSuccess {
 		return
 	}
@@ -93,7 +80,7 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 	ctx.HTML(http.StatusOK, "layout/course_page", gin.H{
 		"Title": "Course " + courseResp.Data.CID,
 		"Course": courseResp.Data,
-		"ProfArray": profArr,
+		"ProfArray": profResp.Data,
 		"FCE": fceResp.Data,
 		"PageArray": pageResp.Data,
 		"CommentArray": commentResp.Data})
