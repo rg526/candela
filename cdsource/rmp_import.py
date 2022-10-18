@@ -19,6 +19,6 @@ cursor = conn.cursor()
 
 # professor table
 for name, prof in rmp_data.items():
-	sql = "INSERT INTO professor (name, RMPRatingClass, RMPRatingOverall) VALUES (%s, %s, %s)"
+	sql = "INSERT INTO rmp (name, ratingClass, ratingOverall) VALUES (%s, %s, %s)"
 	val = (name, prof["RMPRatingClass"], prof["RMPRatingOverall"])
 	cursor.execute(sql, val)
