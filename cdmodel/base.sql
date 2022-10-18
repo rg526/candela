@@ -5,7 +5,6 @@ CREATE TABLE course (
 	description			MEDIUMTEXT		NOT NULL,
 	dept				TEXT			NOT NULL,
 	units				DECIMAL			NOT NULL,
-	prof				TEXT			NOT NULL,
 	prereq				TEXT			NOT NULL,
 	coreq				TEXT			NOT NULL
 );
@@ -19,8 +18,14 @@ CREATE TABLE fce (
 	studentCount		INTEGER			NOT NULL
 );
 
-CREATE TABLE professor (
+CREATE TABLE prof (
+	cid					VARCHAR(128)	NOT NULL,
+	name				VARCHAR(128)	NOT NULL,
+	PRIMARY KEY(cid, name)
+);
+
+CREATE TABLE rmp (
 	name				VARCHAR(128)	NOT NULL PRIMARY KEY,
-	RMPRatingClass		TEXT			NOT NULL,
-	RMPRatingOverall	DECIMAL			NOT NULL
+	ratingClass			TEXT			NOT NULL,
+	ratingOverall		DECIMAL			NOT NULL
 );
