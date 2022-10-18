@@ -11,6 +11,12 @@ import (
 // Endpoint "/search"
 // Search for a list of course, given search params
 func GetSearch(ctx *gin.Context, sctx *Context) {
+	// Verify user
+	_, isAuth := VerifyUser(ctx, sctx)
+	if !isAuth {
+		return
+	}
+
 	exec := ctx.Query("exec")
 	if exec != "true" {
 		// Display search page

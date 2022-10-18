@@ -7,7 +7,23 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/sessions"
+
+	"candela/cdmodel"
 )
+
+
+// Make sure the user is authenticated
+func VerifyUser(ctx *gin.Context, sctx *Context) (cdmodel.User, bool) {
+	var userResp struct {
+		Status		string
+		Data		cdmodel.User
+	}
+	isSuccess := CDRequest(ctx, sctx, "GET", "/user", nil, true, &userResp)
+	if !isSuccess {
+		return cdmodel.User{}, false
+	}
+	return userResp.Data, true
+}
 
 
 // Endpoint "auth"

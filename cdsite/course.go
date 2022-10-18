@@ -12,6 +12,12 @@ import (
 // Endpoint "/course"
 // Get detailed information about a course
 func GetCourse(ctx *gin.Context, sctx *Context) {
+	// Verify user
+	_, isAuth := VerifyUser(ctx, sctx)
+	if !isAuth {
+		return
+	}
+
 	// Find course ID
 	cid := ctx.Param("cid")
 
