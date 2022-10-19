@@ -19,9 +19,18 @@ func GetSearch(ctx *gin.Context, ectx *Context) {
 	// Find course ID
 	var courseArr []cdmodel.Course
 
+	query := ctx.Query("query")
+
 	// Query DB
 	rows, err := ectx.DB.
-		Query("SELECT cid, name, description, dept, units, prereq, coreq  FROM course LIMIT ?",
+		Query(`
+			SELECT cid, name, description, dept, units, prereq, coreq
+			FROM course
+			WHERE
+				(LOCATE(?, cid) > 0 OR LOCATE(?, name) > 0 OR
+					LOCATE(?, description) > 0 OR LOCATE(?, dept) > 0)
+			LIMIT ?`,
+			query, query, query, query,
 			ectx.Conf.MaxSearchResult)
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
