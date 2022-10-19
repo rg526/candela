@@ -47,6 +47,7 @@ func GetSearch(ctx *gin.Context, sctx *Context) {
 	// Display course
 	ctx.HTML(http.StatusOK, "layout/course_search", gin.H{
 		"Title": "Course Search",
+		"CurrentQuery": ctx.Query("query"),
 		"CourseArray": courseArrResp.Data})
 }
 
