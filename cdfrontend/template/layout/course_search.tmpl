@@ -238,15 +238,21 @@ function doSearch() {
 	}
 
 	// Fallback to searching
-	searchPath = "/search?exec=true"
+	searchPath = "/search?exec=true";
 	const searchParams = {
-		exec: true,
-		query: queryText
+		query: queryText,
+		is_advanced: false
+	};
+	if (isAdvanced) {
+		searchParams.is_advanced = true;
+		Object.entries(searchOpt).forEach(([key, value]) => {
+			searchParams[key] = Array.from(value).join(";");
+		});
 	}
 
 	Object.entries(searchParams).forEach(([key, value]) => {
-		searchPath += "&" + key + "=" + encodeURIComponent(value)
-	})
+		searchPath += "&" + key + "=" + encodeURIComponent(value);
+	});
 	window.location.replace(searchPath);
 	return false;
 }
