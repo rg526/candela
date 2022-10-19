@@ -26,12 +26,20 @@ func GetSearch(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
+	// Retrieve query params
+	queryParamsName := []string{
+		"query", "is_advanced", "level", "dept", "units"}
+	queryParams := make(map[string]interface{})
+	for _, name := range queryParamsName {
+		queryParams[name] = ctx.Query(name)
+	}
+
 	var courseArrResp struct {
 		Status		string
 		Data		[]cdmodel.Course
 	}
 	// Execute search
-	isSuccess := CDRequest(ctx, sctx, "GET", "/search", nil, true, &courseArrResp)
+	isSuccess := CDRequest(ctx, sctx, "GET", "/search", queryParams, true, &courseArrResp)
 	if !isSuccess {
 		return
 	}
