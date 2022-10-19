@@ -4,7 +4,7 @@
 
 <h2 style="margin-left:7.5px">Search</h2>
 
-<form onsubmit="return doSearch()">
+<form onsubmit="doSearch();return false">
 <!-- Main search box -->
 <div class="container" style="margin-top: 25px;">
 	<div class="row justify-content-center">
@@ -75,8 +75,7 @@
 	<div class="row">
 		{{ range $index, $course := .CourseArray }}
 		<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-			<!-- <a href="/course/{{ $course.CID }}" style="display: block; text-decoration: none;"> -->
-			<a href="javascript:void(0)" style="display: block; text-decoration: none;" onclick="modalOpen('course-{{ $index }}')">
+			<a href="/course/{{ $course.CID }}" style="display: block; text-decoration: none;" onclick="modalOpen('course-{{ $index }}');return false">
 			<span class="card text-white bg-primary mb-3">
 				<div class="card-header" style="font-weight: bold;font-size: 120%;">{{ $course.CID }}: {{ $course.Name }}</div>
 				<div class="card-body" style="margin-left:0.75%">
@@ -236,11 +235,11 @@ function doSearch() {
 	if (!isAdvanced) {
 		if (/^[0-9]{5}$/.test(queryText)) {
 			window.location.assign("/course/" + queryText);
-			return false;
+			return;
 		} else if (/^([0-9]{2})\-([0-9]{3})$/.test(queryText)) {
 			const courseID = queryText.slice(0, 2) + queryText.slice(3);
 			window.location.assign("/course/" + courseID);
-			return false;
+			return;
 		}
 	}
 
@@ -261,7 +260,6 @@ function doSearch() {
 		searchPath += "&" + key + "=" + encodeURIComponent(value);
 	});
 	window.location.replace(searchPath);
-	return false;
 }
 </script>
 
