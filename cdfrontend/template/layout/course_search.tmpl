@@ -8,9 +8,9 @@
 	<div class="row justify-content-center">
 		<div class="input-group">
 			<div class="col-8">
-				<input class="form-control" placeholder="Search by Course ID, Professor, or Keyword">
+				<input class="form-control" placeholder="Search by Course ID, Professor, or Keyword" id="searchbox">
 			</div>
-			<button class="btn btn-success btn-md" style="margin-left:5px" onclick="search()">Search</button>
+			<button class="btn btn-success btn-md" style="margin-left:5px" onclick="doSearch()">Search</button>
 		</div>
 	</div>
 	<a href="javascript:void(0)" style="margin-top:12px; text-decoration:none;" id="advance-mode" onclick="disappear()">Advanced Search</a>
@@ -123,18 +123,18 @@
 
 
 <script>
-var display = false;
+var isAdvanced = false;
 function disappear(){
-	if(display){
+	if (isAdvanced) {
     	document.getElementById("advance-element").style.display="none";
 		document.getElementById("advance-mode").innerHTML = "Advanced Search"
 		document.getElementById("advance-mode").style = "text-decoration:none;";
-		display = false;
-	}else{
+		isAdvanced = false;
+	} else {
     	document.getElementById("advance-element").style.display = "block";
-		display = true;
 		document.getElementById("advance-mode").innerHTML = "Hide";
 		document.getElementById("advance-mode").style = "text-decoration:underline;";
+		isAdvanced = true;
   	}
 }
 
@@ -154,8 +154,23 @@ function toggle(id){
 	var element = document.getElementById(id)
 	element.classList.toggle("active")
 }
-function search(){
-	window.location.replace("/course/15213");
+
+// Execute search
+function doSearch() {
+	// Detect if searchbox contains a single course number
+	if (!isAdvanced) {
+		const queryText = document.getElementById("searchbox").value;
+		if (/^[0-9]{5}$/.test(queryText)) {
+			window.location.assign("/course/" + queryText)
+			return
+		} else if (/^([0-9]{2})\-([0-9]{3})$/.test(queryText)) {
+			const courseID = queryText.slice(0, 2) + queryText.slice(3)
+			window.location.assign("/course/" + courseID)
+			return
+		}
+	}
+	// Fallback to search
+	window.location.replace("/search?exec=true")
 }
 </script>
 
