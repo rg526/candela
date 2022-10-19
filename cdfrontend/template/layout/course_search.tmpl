@@ -164,6 +164,13 @@ function modalOpen(str){
 	document.getElementById("modal").style.display = "block";
 }
 
+// Close modal at Esc key
+document.addEventListener('keydown', (event) => {
+	if (event.key === 'Escape') {
+		modalClose();
+	}
+});
+
 var searchOpt = {
 	level: new Set(),
 	dept: new Set(),
