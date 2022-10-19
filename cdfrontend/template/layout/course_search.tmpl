@@ -5,6 +5,7 @@
 <h2 style="margin-left:7.5px">Search</h2>
 
 <form onsubmit="return doSearch()">
+<!-- Main search box -->
 <div class="container" style="margin-top: 25px;">
 	<div class="row justify-content-center">
 		<div class="input-group">
@@ -17,13 +18,7 @@
 	<a href="javascript:void(0)" style="margin-top:12px; text-decoration:none;" id="advance-mode" onclick="disappear()">Advanced Search</a>
 </div>
 
-
-<div class="alert alert-danger" role="alert" style="margin-top:20px" hidden>
-	0 result returned from search engine. (You may have invalid course id, professor, or keyword input)
-	<a href="javascript:void(0)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-</div>
-
-
+<!-- Advanced search section -->
 <div style="display:none;" id="advance-element">
 	<ul class="nav nav-pills" style="margin-top: 10px;">
 		<li class="nav-item btn-group" style="margin-top:8px; margin-left:10px;">
@@ -58,6 +53,15 @@
 	</ul>
 </div>
 </form>
+
+
+<!-- Search result warning -->
+<div class="alert alert-danger" role="alert" style="margin-top:20px" hidden>
+	0 result returned from search engine. (You may have invalid course id, professor, or keyword input)
+	<a href="javascript:void(0)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+</div>
+
+
 
 <div style="margin-top:40px;">
 	<div class="row">
