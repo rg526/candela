@@ -20,33 +20,31 @@
 <!-- Advanced search section -->
 <div style="display:none;" id="advance-element">
 	<ul class="nav nav-pills" style="margin-top: 10px;">
-		<li class="nav-item btn-group" style="margin-top:8px; margin-left:10px;">
-			<input type="checkbox" class="btn-check" id="btncheck1" checked="" autocomplete="off">
-			<label class="btn btn-primary" for="btncheck1">Undergraduate</label>
-			<input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
-			<label class="btn btn-primary" for="btncheck2">Graduate</label>
+		<li class="nav-item btn-group" style="margin-top:8px; margin-left:10px;" id="level-list">
+			<button class="btn btn-primary active" onclick="toggle('level-undergraduate')" type="button" id="level-undergraduate">Undergraduate</button>
+			<button class="btn btn-primary active" onclick="toggle('level-graduate')" type="button" id="level-graduate">Graduate</button>
 		</li>
 
 		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
 			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="true">Department</button>
-			<ul class="dropdown-menu">
-				<li><a class="dropdown-item" href="javascript:void(0)" id="statid" onclick="toggle('statid')">Statistics &amp; Data Science</a></li>
-				<li><a class="dropdown-item" href="javascript:void(0)" id="csid" onclick="toggle('csid')">Computer Science</a></li>
-				<li><a class="dropdown-item" href="javascript:void(0)" id="eceid" onclick="toggle('eceid')">Electrical &amp; Computer Engineering</a></li>
-				<li><a class="dropdown-item" href="javascript:void(0)" id="bioid" onclick="toggle('bioid')">Biology</a></li>
-				<li><a class="dropdown-item" href="javascript:void(0)" id="mathid" onclick="toggle('mathid')">Mathematics</a></li>
-				<li><a class="dropdown-item" href="javascript:void(0)" id="phiid" onclick="toggle('phiid')">Philosophy</a></li>
-				<li><a class="dropdown-item" href="javascript:void(0)" id="econid" onclick="toggle('econid')">Economics</a></li>
+			<ul class="dropdown-menu" id="dept-list">
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="dept-stat" onclick="toggle('dept-stat')">Statistics &amp; Data Science</a></li>
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="dept-cs" onclick="toggle('dept-cs')">Computer Science</a></li>
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="dept-ece" onclick="toggle('dept-ece')">Electrical &amp; Computer Engineering</a></li>
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="dept-bio" onclick="toggle('dept-bio')">Biology</a></li>
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="dept-math" onclick="toggle('dept-math')">Mathematics</a></li>
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="dept-phi" onclick="toggle('dept-phi')">Philosophy</a></li>
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="dept-econ" onclick="toggle('dept-econ')">Economics</a></li>
 			</ul>
 		</li>
 
 		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
 			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Unit</button>
-			<ul class="dropdown-menu">
-				<li><a class="dropdown-item" href="javascript:void(0)" id="unit3" onclick="toggle('unit3')">0-3</a></li>
-				<li><a class="dropdown-item" href="javascript:void(0)" id="unit8" onclick="toggle('unit8')">4-8</a></li>
-				<li><a class="dropdown-item" href="javascript:void(0)" id="unit12" onclick="toggle('unit12')">9-12</a></li>
-				<li><a class="dropdown-item" href="javascript:void(0)" id="unit+" onclick="toggle('unit+')">12+</a></li>
+			<ul class="dropdown-menu" id="units-list">
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="units-3" onclick="toggle('units-3')">0-3</a></li>
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="units-8" onclick="toggle('units-8')">4-8</a></li>
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="units-12" onclick="toggle('units-12')">9-12</a></li>
+				<li><a class="dropdown-item active" href="javascript:void(0)" id="units-+" onclick="toggle('units-+')">12+</a></li>
 			</ul>
 		</li>
 	</ul>
@@ -160,16 +158,46 @@ function modalOpen(str){
 	document.getElementById("modal").style.display = "block";
 }
 
+var searchOpt = {
+	level: new Set(),
+	dept: new Set(),
+	units: new Set()
+};
+// Init search options
+const levelElemList = document.getElementById("level-list").getElementsByTagName("button");
+for (let i = 0;i < levelElemList.length; i++) {
+	searchOpt.level.add(levelElemList[i].innerHTML)
+}
+const deptElemList = document.getElementById("dept-list").getElementsByTagName("a");
+for (let i = 0;i < deptElemList.length; i++) {
+	searchOpt.dept.add(deptElemList[i].innerHTML.replace(/&amp;/g, "&"))
+}
+const unitsElemList = document.getElementById("units-list").getElementsByTagName("a");
+for (let i = 0;i < unitsElemList.length; i++) {
+	searchOpt.units.add(unitsElemList[i].innerHTML)
+}
+
 function toggle(id){
-	var element = document.getElementById(id)
+	const element = document.getElementById(id)
+	const name = element.innerHTML
+	if (element.classList.contains("active")) {
+		if (id.startsWith("level")) searchOpt.level.delete(name)
+		if (id.startsWith("dept")) searchOpt.dept.delete(name)
+		if (id.startsWith("units")) searchOpt.units.delete(name)
+	} else {
+		if (id.startsWith("level")) searchOpt.level.add(name)
+		if (id.startsWith("dept")) searchOpt.dept.add(name)
+		if (id.startsWith("units")) searchOpt.units.add(name)
+	}
 	element.classList.toggle("active")
 }
 
 // Execute search
 function doSearch() {
+	const queryText = document.getElementById("searchbox").value;
+
 	// Detect if searchbox contains a single course number
 	if (!isAdvanced) {
-		const queryText = document.getElementById("searchbox").value;
 		if (/^[0-9]{5}$/.test(queryText)) {
 			window.location.assign("/course/" + queryText);
 			return false;
@@ -179,9 +207,19 @@ function doSearch() {
 			return false;
 		}
 	}
-	// Fallback to search
-	window.location.replace("/search?exec=true");
-	return true;
+
+	// Fallback to searching
+	searchPath = "/search?exec=true"
+	const searchParams = {
+		exec: true,
+		query: queryText
+	}
+
+	Object.entries(searchParams).forEach(([key, value]) => {
+		searchPath += "&" + key + "=" + encodeURIComponent(value)
+	})
+	window.location.replace(searchPath);
+	return false;
 }
 </script>
 
