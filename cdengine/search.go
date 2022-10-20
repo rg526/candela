@@ -24,7 +24,8 @@ func GetSearch(ctx *gin.Context, ectx *Context) {
 	query := ctx.Query("query")
 
 	// Prepare query string
-	queryStr := `SELECT course.cid, course.name, course.description,
+	queryStr := `SELECT DISTINCT
+					course.cid, course.name, course.description,
 					course.dept, course.units,
 					course.prereq, course.coreq
 			FROM course
