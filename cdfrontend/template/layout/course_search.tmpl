@@ -247,7 +247,7 @@ function searchOptActivate(id) {
 	const elem = document.getElementById(id);
 	const name = elem.innerHTML;
 	if (id.startsWith("level")) searchOpt.level.add(name);
-	if (id.startsWith("dept")) searchOpt.dept.add(name);
+	if (id.startsWith("dept")) searchOpt.dept.add(name.replace(/&amp;/g, "&"));
 	if (id.startsWith("units")) searchOpt.units.add(name);
 	elem.classList.add("active");
 }
@@ -255,7 +255,7 @@ function searchOptDeactivate(id) {
 	const elem = document.getElementById(id);
 	const name = elem.innerHTML;
 	if (id.startsWith("level")) searchOpt.level.delete(name);
-	if (id.startsWith("dept")) searchOpt.dept.delete(name);
+	if (id.startsWith("dept")) searchOpt.dept.delete(name.replace(/&amp;/g, "&"));
 	if (id.startsWith("units")) searchOpt.units.delete(name);
 	elem.classList.remove("active");
 }
