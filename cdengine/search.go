@@ -102,6 +102,7 @@ func GetSearch(ctx *gin.Context, ectx *Context) {
 			queryStr += " ) "
 		}
 	}
+	queryStr += ` ORDER BY course.cid ASC `
 	queryStr += ` LIMIT ? `
 	args = append(args, ectx.Conf.MaxSearchResult)
 
