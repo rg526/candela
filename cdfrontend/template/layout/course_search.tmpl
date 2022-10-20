@@ -21,20 +21,20 @@
 <div style="display:none;" id="advance-element">
 	<ul class="nav nav-pills" style="margin-top: 10px;">
 		<li class="nav-item btn-group" style="margin-top:8px; margin-left:10px;" id="level-list">
-			<button class="btn btn-primary active level-item" onclick="toggle('level-undergraduate')" type="button" id="level-undergraduate">Undergraduate</button>
-			<button class="btn btn-primary active level-item" onclick="toggle('level-graduate')" type="button" id="level-graduate">Graduate</button>
+			<button class="btn btn-primary level-item" onclick="toggle('level-undergraduate')" type="button" id="level-undergraduate">Undergraduate</button>
+			<button class="btn btn-primary level-item" onclick="toggle('level-graduate')" type="button" id="level-graduate">Graduate</button>
 		</li>
 
 		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
 			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="true">Department</button>
 			<ul class="dropdown-menu" id="dept-list">
-				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-stat" onclick="toggle('dept-stat')">Statistics &amp; Data Science</a></li>
-				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-ece" onclick="toggle('dept-ece')">Electrical &amp; Computer Engineering</a></li>
-				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-cs" onclick="toggle('dept-cs')">Computer Science</a></li>
-				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-bio" onclick="toggle('dept-bio')">Biology</a></li>
-				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-math" onclick="toggle('dept-math')">Mathematics</a></li>
-				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-phi" onclick="toggle('dept-phi')">Philosophy</a></li>
-				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-econ" onclick="toggle('dept-econ')">Economics</a></li>
+				<li><a class="dropdown-item dept-item" href="javascript:void(0)" id="dept-stat" onclick="toggle('dept-stat')">Statistics &amp; Data Science</a></li>
+				<li><a class="dropdown-item dept-item" href="javascript:void(0)" id="dept-ece" onclick="toggle('dept-ece')">Electrical &amp; Computer Engineering</a></li>
+				<li><a class="dropdown-item dept-item" href="javascript:void(0)" id="dept-cs" onclick="toggle('dept-cs')">Computer Science</a></li>
+				<li><a class="dropdown-item dept-item" href="javascript:void(0)" id="dept-bio" onclick="toggle('dept-bio')">Biology</a></li>
+				<li><a class="dropdown-item dept-item" href="javascript:void(0)" id="dept-math" onclick="toggle('dept-math')">Mathematics</a></li>
+				<li><a class="dropdown-item dept-item" href="javascript:void(0)" id="dept-phi" onclick="toggle('dept-phi')">Philosophy</a></li>
+				<li><a class="dropdown-item dept-item" href="javascript:void(0)" id="dept-econ" onclick="toggle('dept-econ')">Economics</a></li>
 				<div class="dropdown-divider"></div>
 				<li><a class="dropdown-item" href="javascript:void(0)" id="reset-dept" onclick="searchOptReset('dept-item')">Clear All</a></li>
 				<li><a class="dropdown-item" href="javascript:void(0)" id="preset-dept" onclick="searchOptPreset('dept-item')">Select All</a></li>
@@ -44,10 +44,10 @@
 		<li class="nav-item dropdown" style="margin-top:8px; margin-left:10px;">
 			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Unit</button>
 			<ul class="dropdown-menu" id="units-list">
-				<li><a class="dropdown-item active units-item" href="javascript:void(0)" id="units-3" onclick="toggle('units-3')">0-3</a></li>
-				<li><a class="dropdown-item active units-item" href="javascript:void(0)" id="units-8" onclick="toggle('units-8')">4-8</a></li>
-				<li><a class="dropdown-item active units-item" href="javascript:void(0)" id="units-12" onclick="toggle('units-12')">9-12</a></li>
-				<li><a class="dropdown-item active units-item" href="javascript:void(0)" id="units-+" onclick="toggle('units-+')">12+</a></li>
+				<li><a class="dropdown-item units-item" href="javascript:void(0)" id="units-3" onclick="toggle('units-3')">0-3</a></li>
+				<li><a class="dropdown-item units-item" href="javascript:void(0)" id="units-8" onclick="toggle('units-8')">4-8</a></li>
+				<li><a class="dropdown-item units-item" href="javascript:void(0)" id="units-12" onclick="toggle('units-12')">9-12</a></li>
+				<li><a class="dropdown-item units-item" href="javascript:void(0)" id="units-+" onclick="toggle('units-+')">12+</a></li>
 				<div class="dropdown-divider"></div>
 				<li><a class="dropdown-item" href="javascript:void(0)" id="reset-units" onclick="searchOptReset('units-item')">Clear All</a></li>
 				<li><a class="dropdown-item" href="javascript:void(0)" id="reset-units" onclick="searchOptPreset('units-item')">Select All</a></li>
@@ -175,19 +175,6 @@ var searchOpt = {
 	dept: new Set(),
 	units: new Set()
 };
-// Init search options
-const levelElemList = document.getElementsByClassName("level-item");
-for (let i = 0;i < levelElemList.length; i++) {
-	searchOpt.level.add(levelElemList[i].innerHTML)
-}
-const deptElemList = document.getElementsByClassName("dept-item");
-for (let i = 0;i < deptElemList.length; i++) {
-	searchOpt.dept.add(deptElemList[i].innerHTML.replace(/&amp;/g, "&"))
-}
-const unitsElemList = document.getElementsByClassName("units-item")
-for (let i = 0;i < unitsElemList.length; i++) {
-	searchOpt.units.add(unitsElemList[i].innerHTML)
-}
 
 
 // Recover last query status
@@ -206,8 +193,8 @@ function setLastQueryStatus() {
 		const arr = params.get("level").split(";");
 		const elemList = document.getElementsByClassName("level-item");
 		for (let i = 0;i < elemList.length; i++) {
-			if (!arr.includes(elemList[i].innerHTML)) {
-				searchOptDeactivate(elemList[i].id);
+			if (arr.includes(elemList[i].innerHTML)) {
+				searchOptActivate(elemList[i].id);
 			}
 		}
 	}
@@ -216,8 +203,8 @@ function setLastQueryStatus() {
 		const arr = params.get("dept").split(";");
 		const elemList = document.getElementsByClassName("dept-item");
 		for (let i = 0;i < elemList.length; i++) {
-			if (!arr.includes(elemList[i].innerHTML.replace(/&amp;/g, "&"))) {
-				searchOptDeactivate(elemList[i].id);
+			if (arr.includes(elemList[i].innerHTML.replace(/&amp;/g, "&"))) {
+				searchOptActivate(elemList[i].id);
 			}
 		}
 	}
@@ -226,8 +213,8 @@ function setLastQueryStatus() {
 		const arr = params.get("units").split(";");
 		const elemList = document.getElementsByClassName("units-item");
 		for (let i = 0;i < elemList.length; i++) {
-			if (!arr.includes(elemList[i].innerHTML)) {
-				searchOptDeactivate(elemList[i].id);
+			if (arr.includes(elemList[i].innerHTML)) {
+				searchOptActivate(elemList[i].id);
 			}
 		}
 	}
