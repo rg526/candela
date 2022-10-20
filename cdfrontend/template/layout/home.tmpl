@@ -4,34 +4,31 @@
 
 <h2 style="margin-left:7.5px">CMU Course List</h2>
 
+Welcome to CMUCourseList! On this website, you can find information related to all courses at CMU, discuss a course you really like/hate, and quickly go to links related to a course.
 
-<h4 style="margin-left:7.5px">Search</h4>
+
+<h3 style="margin-left:7.5px; margin-top: 40px;">Search</h3>
 
 {{ template "widget/search" . }}
 
-<!--
-<div class="container" style="margin-top:3%;  margin-left:20%">
-	<div class="row">
-		<div class="col">
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
-		</div>
+<h3 style="margin-left:7.5px; margin-top: 40px;">Tags</h3>
+
+<div class="container">
+	<div class="d-flex justify-content-start">
+			<a href="/search?exec=true&is_advanced=false&query=C++" class="btn btn-primary m-1">C++</a>
+			<a href="/search?exec=true&is_advanced=false&query=Dynamic Programming" class="btn btn-primary m-1">Dynamic Programming</a>
+			<a href="/search?exec=true&is_advanced=false&query=Network Flow" class="btn btn-primary m-1">Network Flow</a>
+			<a href="/search?exec=true&is_advanced=false&query=Ray Tracing" class="btn btn-primary m-1">Ray Tracing</a>
 	</div>
-	<div class="row" style="margin-top:1%">
+	<div class="d-flex justify-content-start">
 		<div class="col">
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
-			<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Tag</a>
+			<a href="/search?exec=true&is_advanced=false&query=Operational Amplifier" class="btn btn-primary m-1">Operational Amplifier</a>
+			<a href="/search?exec=true&is_advanced=false&query=KVL" class="btn btn-primary m-1">KVL</a>
+			<a href="/search?exec=true&is_advanced=false&query=Register-Transfer" class="btn btn-primary m-1">Register-Transfer</a>
 		</div>
 	</div>
 	
 </div>
--->
 
 <script src="/js/search.js"></script>
 
