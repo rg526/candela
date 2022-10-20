@@ -1,6 +1,7 @@
 package cdengine
 
 import (
+	"strings"
 	"net/http"
 	"github.com/gin-gonic/gin"
 
@@ -21,17 +22,53 @@ func GetSearch(ctx *gin.Context, ectx *Context) {
 
 	query := ctx.Query("query")
 
-	// Query DB
-	rows, err := ectx.DB.
-		Query(`
-			SELECT cid, name, description, dept, units, prereq, coreq
+	// Prepare query string
+	queryStr := `SELECT course.cid, course.name, course.description,
+					course.dept, course.units,
+					course.prereq, course.coreq
 			FROM course
+			LEFT JOIN fce
+			ON course.cid = fce.cid
 			WHERE
-				(LOCATE(?, cid) > 0 OR LOCATE(?, name) > 0 OR
-					LOCATE(?, description) > 0 OR LOCATE(?, dept) > 0)
-			LIMIT ?`,
-			query, query, query, query,
-			ectx.Conf.MaxSearchResult)
+				(LOCATE(?, course.cid) > 0 OR LOCATE(?, course.name) > 0 OR
+					LOCATE(?, course.description) > 0 OR LOCATE(?, course.dept) > 0) `
+	var args []interface{}
+	for i := 0;i < 4;i++ {
+		args = append(args, query)
+	}
+	if ctx.Query("is_advanced") == "true" {
+		// Level
+		if ctx.Query("level") != "" {
+			levelArr := strings.Split(ctx.Query("level"), ";")
+			queryStr += " AND ( "
+			for index, level := range levelArr {
+				if index != 0 {
+					queryStr += " OR "
+				}
+				queryStr += " fce.level = ? "
+				args = append(args, level)
+			}
+			queryStr += " ) "
+		}
+		// Dept
+		if ctx.Query("dept") != "" {
+			deptArr := strings.Split(ctx.Query("dept"), ";")
+			queryStr += " AND ( "
+			for index, dept := range deptArr {
+				if index != 0 {
+					queryStr += " OR "
+				}
+				queryStr += " course.dept = ? "
+				args = append(args, dept)
+			}
+			queryStr += " ) "
+		}
+	}
+	queryStr += ` LIMIT ? `
+	args = append(args, ectx.Conf.MaxSearchResult)
+
+	// Query DB
+	rows, err := ectx.DB.Query(queryStr, args...)
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
 		return
