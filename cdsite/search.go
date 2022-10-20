@@ -22,7 +22,6 @@ func GetSearch(ctx *gin.Context, sctx *Context) {
 		// Display search page
 		ctx.HTML(http.StatusOK, "layout/course_search", gin.H{
 			"Title": "Course Search",
-			"CourseArray": []cdmodel.Course{},
 			"FocusSearchbox": true})
 		return
 	}
@@ -49,6 +48,6 @@ func GetSearch(ctx *gin.Context, sctx *Context) {
 	ctx.HTML(http.StatusOK, "layout/course_search", gin.H{
 		"Title": "Course Search",
 		"CourseArray": courseArrResp.Data,
-		"FocusSearchbox": false})
+		"NoSearchResultWarning": len(courseArrResp.Data) == 0})
 }
 

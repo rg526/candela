@@ -4,13 +4,6 @@
 
 <h2 style="margin-left:7.5px">Search</h2>
 
-
-<!-- Search result warning -->
-<div class="alert alert-danger" role="alert" style="margin-top:20px" hidden>
-	0 result returned from search engine. (You may have invalid course id, professor, or keyword input)
-	<a href="javascript:void(0)" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-</div>
-
 {{ template "widget/search" . }}
 
 <div style="margin-top:40px;">
@@ -36,6 +29,15 @@
 		{{ end }}
 	</div>
 </div>
+
+
+<!-- Search result warning -->
+{{ if .NoSearchResultWarning }}
+<div class="alert alert-danger" role="alert">
+	0 result returned from search engine. (You may have invalid course id, professor, or keyword input)
+</div>
+{{ end }}
+
 
 <div class="modal" style="display:none;" id="modal">
 	<div class="modal-dialog" role="document">
