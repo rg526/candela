@@ -66,6 +66,16 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
+	// Load tags
+	var tagResp struct {
+		Status		string
+		Data		[]cdmodel.Tag
+	}
+	isSuccess = CDRequest(ctx, sctx, "GET", "/course/" + cid + "/tag", nil, true, &tagResp)
+	if !isSuccess {
+		return
+	}
+
 	// Load comments
 	var commentResp struct {
 		Status		string
