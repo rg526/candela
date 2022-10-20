@@ -255,7 +255,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 		"Data": commentArr})
 }
 
-// Endpoint "/course/:cid/comment"
+// Endpoint "/course/:cid/page"
 // Get pages related to a course
 func GetCoursePage(ctx *gin.Context, ectx *Context) {
 	// Verify token
@@ -279,7 +279,7 @@ func GetCoursePage(ctx *gin.Context, ectx *Context) {
 	}
 	defer rows.Close()
 
-	// Append comments to array
+	// Append pages to array
 	var pageArr []cdmodel.Page
 	for rows.Next() {
 		var page cdmodel.Page
