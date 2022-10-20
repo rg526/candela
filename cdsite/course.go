@@ -93,5 +93,6 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 		"ProfArray": profResp.Data,
 		"FCE": fceResp.Data,
 		"PageArray": pageResp.Data,
+		"TagArray": tagResp.Data,
 		"CommentArray": commentResp.Data})
 }
