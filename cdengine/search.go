@@ -2,6 +2,7 @@ package cdengine
 
 import (
 	"strings"
+	"regexp"
 	"net/http"
 	"github.com/gin-gonic/gin"
 
@@ -60,6 +61,36 @@ func GetSearch(ctx *gin.Context, ectx *Context) {
 				}
 				queryStr += " course.dept = ? "
 				args = append(args, dept)
+			}
+			queryStr += " ) "
+		}
+		// Units
+		if ctx.Query("units") != "" {
+			unitsArr := strings.Split(ctx.Query("units"), ";")
+			queryStr += " AND ( "
+			for index, units := range unitsArr {
+				if index != 0 {
+					queryStr += " OR "
+				}
+				match2 := regexp.MustCompile(`^([0-9]+)\-([0-9]+)$`).
+					FindSubmatch([]byte(units))
+				if match2 != nil {
+					queryStr += ` (course.units >= ? AND
+						course.units <= ?) `
+					args = append(args, match2[1])
+					args = append(args, match2[2])
+					continue
+				}
+				match1 := regexp.MustCompile(`^([0-9]+)\+$`).
+					FindSubmatch([]byte(units))
+				if match1 != nil {
+					queryStr += ` (course.units >= ?) `
+					args = append(args, match1[1])
+					continue
+				}
+				ReportErrorFromString(ctx, http.StatusBadRequest,
+					"Invalid units: " + units)
+				return
 			}
 			queryStr += " ) "
 		}
