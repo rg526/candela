@@ -32,12 +32,15 @@ func GetSearch(ctx *gin.Context, ectx *Context) {
 			ON course.cid = fce.cid
 			LEFT JOIN page
 			ON course.cid = page.cid
+			LEFT JOIN prof
+			ON course.cid = prof.cid
 			WHERE
 				(LOCATE(?, course.cid) > 0 OR LOCATE(?, course.name) > 0 OR
 					LOCATE(?, course.description) > 0 OR LOCATE(?, course.dept) > 0 OR
-					LOCATE(?, page.content) > 0) `
+					LOCATE(?, page.content) > 0 OR
+					LOCATE(?, prof.name) > 0) `
 	var args []interface{}
-	for i := 0;i < 5;i++ {
+	for i := 0;i < 6;i++ {
 		args = append(args, query)
 	}
 	if ctx.Query("is_advanced") == "true" {
