@@ -10,7 +10,7 @@
 	<div class="row justify-content-center">
 		<div class="input-group">
 			<div class="col-8">
-				<input class="form-control" placeholder="Search by Course ID, Professor, or Keyword" id="searchbox" value="{{ .CurrentQuery }}">
+				<input class="form-control" placeholder="Search by Course ID, Professor, or Keyword" id="searchbox">
 			</div>
 			<button class="btn btn-success btn-md" style="margin-left:5px" type="submit">Search</button>
 		</div>
@@ -29,8 +29,8 @@
 			<button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="true">Department</button>
 			<ul class="dropdown-menu" id="dept-list">
 				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-stat" onclick="toggle('dept-stat')">Statistics &amp; Data Science</a></li>
-				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-cs" onclick="toggle('dept-cs')">Computer Science</a></li>
 				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-ece" onclick="toggle('dept-ece')">Electrical &amp; Computer Engineering</a></li>
+				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-cs" onclick="toggle('dept-cs')">Computer Science</a></li>
 				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-bio" onclick="toggle('dept-bio')">Biology</a></li>
 				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-math" onclick="toggle('dept-math')">Mathematics</a></li>
 				<li><a class="dropdown-item active dept-item" href="javascript:void(0)" id="dept-phi" onclick="toggle('dept-phi')">Philosophy</a></li>
@@ -188,6 +188,51 @@ const unitsElemList = document.getElementsByClassName("units-item")
 for (let i = 0;i < unitsElemList.length; i++) {
 	searchOpt.units.add(unitsElemList[i].innerHTML)
 }
+
+
+// Recover last query status
+function setLastQueryStatus() {
+	const params = (new URL(document.location)).searchParams;
+	// is_advanced
+	if (params.get("is_advanced") == "true") {
+		disappear();
+	}
+	// query
+	if (params.get("query") !== null) {
+		document.getElementById("searchbox").value = params.get("query");
+	}
+	// level
+	if (params.get("level") !== null) {
+		const arr = params.get("level").split(";");
+		const elemList = document.getElementsByClassName("level-item");
+		for (let i = 0;i < elemList.length; i++) {
+			if (!arr.includes(elemList[i].innerHTML)) {
+				searchOptDeactivate(elemList[i].id);
+			}
+		}
+	}
+	// dept
+	if (params.get("dept") !== null) {
+		const arr = params.get("dept").split(";");
+		const elemList = document.getElementsByClassName("dept-item");
+		for (let i = 0;i < elemList.length; i++) {
+			if (!arr.includes(elemList[i].innerHTML.replace(/&amp;/g, "&"))) {
+				searchOptDeactivate(elemList[i].id);
+			}
+		}
+	}
+	// units
+	if (params.get("units") !== null) {
+		const arr = params.get("units").split(";");
+		const elemList = document.getElementsByClassName("units-item");
+		for (let i = 0;i < elemList.length; i++) {
+			if (!arr.includes(elemList[i].innerHTML)) {
+				searchOptDeactivate(elemList[i].id);
+			}
+		}
+	}
+}
+setLastQueryStatus()
 
 function toggle(id){
 	const elem = document.getElementById(id);
