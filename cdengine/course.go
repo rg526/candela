@@ -296,3 +296,46 @@ func GetCoursePage(ctx *gin.Context, ectx *Context) {
 		"Status": "OK",
 		"Data": pageArr})
 }
+
+
+// Endpoint "/course/:cid/tag"
+// Get tags of a course
+func GetCourseTag(ctx *gin.Context, ectx *Context) {
+	// Verify token
+	_, isAuth := VerifyTokenFromCtx(ctx, ectx)
+	if !isAuth {
+		return
+	}
+
+	// Find course ID
+	cid := ctx.Param("cid")
+
+	// Query DB
+	rows, err := ectx.DB.
+		Query(`SELECT content FROM tag
+			WHERE cid = ?
+			ORDER BY priority DESC, tagID ASC`,
+			cid)
+	if err != nil {
+		ReportError(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	defer rows.Close()
+
+	// Append pages to array
+	var tagArr []cdmodel.Tag
+	for rows.Next() {
+		var tag cdmodel.Tag
+		err = rows.Scan(&tag.Content)
+		if err != nil {
+			ReportError(ctx, http.StatusInternalServerError, err)
+			return
+		}
+		tagArr = append(tagArr, tag)
+	}
+
+	// Return result
+	ctx.JSON(http.StatusOK, gin.H{
+		"Status": "OK",
+		"Data": tagArr})
+}

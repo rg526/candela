@@ -28,6 +28,9 @@ func main() {
 	r.GET("/course/:cid/page", func(c *gin.Context) {
 		cdengine.GetCoursePage(c, &engineCtx)
 	})
+	r.GET("/course/:cid/tag", func(c *gin.Context) {
+		cdengine.GetCourseTag(c, &engineCtx)
+	})
 	r.GET("/auth", func(c *gin.Context) {
 		cdengine.GetAuth(c, &engineCtx)
 	})
