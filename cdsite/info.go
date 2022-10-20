@@ -17,7 +17,8 @@ func GetHome(ctx *gin.Context, sctx *Context) {
 
 	// Main content
 	ctx.HTML(http.StatusOK, "layout/home", gin.H{
-		"Title": "CMU Course List"})
+		"Title": "CMU Course List",
+		"FocusSearchbox": true})
 }
 
 

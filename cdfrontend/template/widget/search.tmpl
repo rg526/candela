@@ -6,7 +6,11 @@
 	<div class="row justify-content-center">
 		<div class="input-group">
 			<div class="col-8">
+{{ if .FocusSearchbox }}
 				<input class="form-control" placeholder="Search by Course ID, Professor, or Keyword" id="searchbox" autofocus>
+{{ else }}
+				<input class="form-control" placeholder="Search by Course ID, Professor, or Keyword" id="searchbox">
+{{ end }}
 			</div>
 			<button class="btn btn-success btn-md" style="margin-left:5px" type="submit">Search</button>
 		</div>
