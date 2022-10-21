@@ -18,13 +18,13 @@ func PutComment(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
-	isSuccess := CDRequestErrJSON(ctx, sctx, "PUT", "/comment", reqBody, true, nil)
+	var respBody map[string]interface{}
+	isSuccess := CDRequestErrJSON(ctx, sctx, "PUT", "/comment", reqBody, true, &respBody)
 	if !isSuccess {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+	ctx.JSON(http.StatusOK, respBody)
 }
 
 // Endpoint "/comment" (POST)
@@ -40,13 +40,13 @@ func PostComment(ctx *gin.Context, sctx *Context) {
 	}
 
 	commentID := ctx.Param("commentID")
-	isSuccess := CDRequestErrJSON(ctx, sctx, "POST", "/comment/" + commentID, reqBody, true, nil)
+	var respBody map[string]interface{}
+	isSuccess := CDRequestErrJSON(ctx, sctx, "POST", "/comment/" + commentID, reqBody, true, &respBody)
 	if !isSuccess {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+	ctx.JSON(http.StatusOK, respBody)
 }
 
 
@@ -63,13 +63,13 @@ func DeleteComment(ctx *gin.Context, sctx *Context) {
 	}
 
 	commentID := ctx.Param("commentID")
-	isSuccess := CDRequestErrJSON(ctx, sctx, "DELETE", "/comment/" + commentID, reqBody, true, nil)
+	var respBody map[string]interface{}
+	isSuccess := CDRequestErrJSON(ctx, sctx, "DELETE", "/comment/" + commentID, reqBody, true, &respBody)
 	if !isSuccess {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+	ctx.JSON(http.StatusOK, respBody)
 }
 
 
@@ -85,13 +85,13 @@ func PutCommentReply(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
-	isSuccess := CDRequestErrJSON(ctx, sctx, "PUT", "/commentReply", reqBody, true, nil)
+	var respBody map[string]interface{}
+	isSuccess := CDRequestErrJSON(ctx, sctx, "PUT", "/commentReply", reqBody, true, &respBody)
 	if !isSuccess {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+	ctx.JSON(http.StatusOK, respBody)
 }
 
 // Endpoint "/commentReply" (POST)
@@ -107,13 +107,13 @@ func PostCommentReply(ctx *gin.Context, sctx *Context) {
 	}
 
 	replyID := ctx.Param("replyID")
-	isSuccess := CDRequestErrJSON(ctx, sctx, "POST", "/commentReply/" + replyID, reqBody, true, nil)
+	var respBody map[string]interface{}
+	isSuccess := CDRequestErrJSON(ctx, sctx, "POST", "/commentReply/" + replyID, reqBody, true, &respBody)
 	if !isSuccess {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+	ctx.JSON(http.StatusOK, respBody)
 }
 
 
@@ -130,13 +130,13 @@ func DeleteCommentReply(ctx *gin.Context, sctx *Context) {
 	}
 
 	replyID := ctx.Param("replyID")
-	isSuccess := CDRequestErrJSON(ctx, sctx, "DELETE", "/commentReply/" + replyID, reqBody, true, nil)
+	var respBody map[string]interface{}
+	isSuccess := CDRequestErrJSON(ctx, sctx, "DELETE", "/commentReply/" + replyID, reqBody, true, &respBody)
 	if !isSuccess {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+	ctx.JSON(http.StatusOK, respBody)
 }
 
 // Endpoint "/comment/:commentID/respond" (POST)
@@ -152,11 +152,11 @@ func PostCommentResponse(ctx *gin.Context, sctx *Context) {
 	}
 
 	commentID := ctx.Param("commentID")
-	isSuccess := CDRequestErrJSON(ctx, sctx, "POST", "/comment/" + commentID + "/respond", reqBody, true, nil)
+	var respBody map[string]interface{}
+	isSuccess := CDRequestErrJSON(ctx, sctx, "POST", "/comment/" + commentID + "/respond", reqBody, true, &respBody)
 	if !isSuccess {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+	ctx.JSON(http.StatusOK, respBody)
 }

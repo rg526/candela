@@ -18,11 +18,11 @@ func PutTag(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
-	isSuccess := CDRequestErrJSON(ctx, sctx, "PUT", "/tag", reqBody, true, nil)
+	var respBody map[string]interface{}
+	isSuccess := CDRequestErrJSON(ctx, sctx, "PUT", "/tag", reqBody, true, &respBody)
 	if !isSuccess {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"Status": "OK"})
+	ctx.JSON(http.StatusOK, respBody)
 }
