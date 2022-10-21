@@ -1,7 +1,7 @@
 package cdsite
 
 import (
-	_ "log"
+	"errors"
 	"encoding/base64"
 	"net/url"
 	"net/http"
@@ -50,8 +50,9 @@ func GetAuth(ctx *gin.Context, sctx *Context) {
 func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	// Get authCode
 	if ctx.Query("error") != "" {
-		ReportErrorFromString(ctx, http.StatusBadGateway,
-			"Auth Error", "Google returns " + ctx.Query("error") + ".")
+		ReportError(ctx, http.StatusBadGateway,
+			"Auth Error",
+			errors.New("Google returns " + ctx.Query("error")))
 		return
 	}
 	authCode := ctx.Query("code")
@@ -74,8 +75,8 @@ func GetAuthCallback(ctx *gin.Context, sctx *Context) {
 	retPath := ctx.Query("state")
 	data, err := base64.URLEncoding.DecodeString(retPath)
 	if err != nil {
-		ReportErrorFromString(ctx, http.StatusInternalServerError,
-			"Auth Error", "Error decoding state " + err.Error() + ".")
+		ReportError(ctx, http.StatusInternalServerError,
+			"Auth Error", err)
 		return
 	}
 	ctx.Redirect(http.StatusTemporaryRedirect, string(data))

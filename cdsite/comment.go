@@ -18,7 +18,7 @@ func PutComment(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
-	isSuccess := CDRequest(ctx, sctx, "PUT", "/comment", reqBody, true, nil)
+	isSuccess := CDRequestErrJSON(ctx, sctx, "PUT", "/comment", reqBody, true, nil)
 	if !isSuccess {
 		return
 	}
@@ -40,7 +40,7 @@ func PostComment(ctx *gin.Context, sctx *Context) {
 	}
 
 	commentID := ctx.Param("commentID")
-	isSuccess := CDRequest(ctx, sctx, "POST", "/comment/" + commentID, reqBody, true, nil)
+	isSuccess := CDRequestErrJSON(ctx, sctx, "POST", "/comment/" + commentID, reqBody, true, nil)
 	if !isSuccess {
 		return
 	}
@@ -63,7 +63,7 @@ func DeleteComment(ctx *gin.Context, sctx *Context) {
 	}
 
 	commentID := ctx.Param("commentID")
-	isSuccess := CDRequest(ctx, sctx, "DELETE", "/comment/" + commentID, reqBody, true, nil)
+	isSuccess := CDRequestErrJSON(ctx, sctx, "DELETE", "/comment/" + commentID, reqBody, true, nil)
 	if !isSuccess {
 		return
 	}
@@ -85,7 +85,7 @@ func PutCommentReply(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
-	isSuccess := CDRequest(ctx, sctx, "PUT", "/commentReply", reqBody, true, nil)
+	isSuccess := CDRequestErrJSON(ctx, sctx, "PUT", "/commentReply", reqBody, true, nil)
 	if !isSuccess {
 		return
 	}
@@ -107,7 +107,7 @@ func PostCommentReply(ctx *gin.Context, sctx *Context) {
 	}
 
 	replyID := ctx.Param("replyID")
-	isSuccess := CDRequest(ctx, sctx, "POST", "/commentReply/" + replyID, reqBody, true, nil)
+	isSuccess := CDRequestErrJSON(ctx, sctx, "POST", "/commentReply/" + replyID, reqBody, true, nil)
 	if !isSuccess {
 		return
 	}
@@ -130,7 +130,7 @@ func DeleteCommentReply(ctx *gin.Context, sctx *Context) {
 	}
 
 	replyID := ctx.Param("replyID")
-	isSuccess := CDRequest(ctx, sctx, "DELETE", "/commentReply/" + replyID, reqBody, true, nil)
+	isSuccess := CDRequestErrJSON(ctx, sctx, "DELETE", "/commentReply/" + replyID, reqBody, true, nil)
 	if !isSuccess {
 		return
 	}
@@ -152,7 +152,7 @@ func PostCommentResponse(ctx *gin.Context, sctx *Context) {
 	}
 
 	commentID := ctx.Param("commentID")
-	isSuccess := CDRequest(ctx, sctx, "POST", "/comment/" + commentID + "/respond", reqBody, true, nil)
+	isSuccess := CDRequestErrJSON(ctx, sctx, "POST", "/comment/" + commentID + "/respond", reqBody, true, nil)
 	if !isSuccess {
 		return
 	}

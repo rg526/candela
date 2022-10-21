@@ -1,6 +1,7 @@
 package cdsite
 
 import (
+	"errors"
 	"net/http"
 	"github.com/gin-gonic/gin"
 
@@ -31,8 +32,9 @@ func GetCourse(ctx *gin.Context, sctx *Context) {
 	}
 
 	if courseResp.Data.CID == "" {
-		ReportErrorFromString(ctx, http.StatusBadRequest,
-			"No such course", "Course " + cid + " not found")
+		ReportError(ctx, http.StatusBadRequest,
+			"No such course",
+			errors.New("Course " + cid + " not found"))
 		return
 	}
 

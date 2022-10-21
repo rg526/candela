@@ -18,7 +18,7 @@ func PutTag(ctx *gin.Context, sctx *Context) {
 		return
 	}
 
-	isSuccess := CDRequest(ctx, sctx, "PUT", "/tag", reqBody, true, nil)
+	isSuccess := CDRequestErrJSON(ctx, sctx, "PUT", "/tag", reqBody, true, nil)
 	if !isSuccess {
 		return
 	}

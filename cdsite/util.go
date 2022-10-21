@@ -3,6 +3,7 @@ package cdsite
 import (
 	"io"
 	"bytes"
+	"errors"
 	"encoding/json"
 	"encoding/base64"
 	"net/url"
@@ -19,19 +20,19 @@ func ReportError(ctx *gin.Context, code int, title string, err error) {
 		"ErrorDescription": "Error: " + err.Error()})
 }
 
-func ReportErrorFromString(ctx *gin.Context, code int, title string, msg string) {
-	ctx.HTML(code, "layout/error", gin.H{
-		"Title": "Error",
-		"ErrorTitle": title,
-		"ErrorDescription": msg})
+func ReportErrorToJSON(ctx *gin.Context, code int, title string, err error) {
+	ctx.JSON(code, gin.H{
+		"Status": "ERROR",
+		"Error": err.Error()})
 }
 
 
 // Request to CDEngine
-func CDRequest(ctx *gin.Context, sctx *Context,
+func CDRequestImpl(ctx *gin.Context, sctx *Context,
 		reqType string,
 		path string, value map[string]interface{}, useToken bool,
-		result any) bool {
+		result any,
+		errCb func(*gin.Context, int, string, error)) bool {
 
 	// Prepare request value
 	reqUrl := sctx.Conf.CDAPIUrl + path
@@ -47,8 +48,8 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 		var buf bytes.Buffer
 		err := json.NewEncoder(&buf).Encode(value)
 		if err != nil {
-			ReportErrorFromString(ctx, http.StatusInternalServerError,
-				"Service Error", "Connection error: " + err.Error())
+			errCb(ctx, http.StatusInternalServerError,
+				"Service Error", err)
 			return false
 		}
 		reqBody = &buf
@@ -56,8 +57,8 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 
 	req, err := http.NewRequest(reqType, reqUrl, reqBody)
 	if err != nil {
-		ReportErrorFromString(ctx, http.StatusInternalServerError,
-			"Service Error", "Connection error: " + err.Error())
+		errCb(ctx, http.StatusInternalServerError,
+			"Service Error", err)
 		return false
 	}
 
@@ -78,8 +79,8 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 	// Do request
 	res, err := sctx.Client.Do(req)
 	if err != nil {
-		ReportErrorFromString(ctx, http.StatusBadGateway,
-			"Service Error", "Connection error: " + err.Error())
+		errCb(ctx, http.StatusBadGateway,
+			"Service Error", err)
 		return false
 	}
 	if res.StatusCode == http.StatusUnauthorized {
@@ -92,8 +93,9 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 	if res.StatusCode != http.StatusOK {
 		var msg map[string]interface{}
 		json.NewDecoder(res.Body).Decode(&msg)
-		ReportErrorFromString(ctx, http.StatusBadGateway,
-			"Service Error", "CDEngine error: " + msg["Error"].(string))
+		errCb(ctx, http.StatusBadGateway,
+			"Service Error",
+			errors.New("CDEngine error: " + msg["Error"].(string)))
 		return false
 	}
 
@@ -104,10 +106,30 @@ func CDRequest(ctx *gin.Context, sctx *Context,
 	}
 	err = json.NewDecoder(res.Body).Decode(result)
 	if err != nil {
-		ReportErrorFromString(ctx, http.StatusInternalServerError,
-			"Service Error", "Decode error: " + err.Error())
+		errCb(ctx, http.StatusInternalServerError,
+			"Service Error", err)
 		return false
 	}
 
 	return true
+}
+
+// Request to CDEngine, Report error as HTML
+func CDRequest(ctx *gin.Context, sctx *Context,
+		reqType string,
+		path string, value map[string]interface{}, useToken bool,
+		result any) bool {
+
+	return CDRequestImpl(ctx, sctx, reqType, path, value, useToken, result,
+		ReportError);
+}
+
+// Request to CDEngine, Report error as JSON
+func CDRequestErrJSON(ctx *gin.Context, sctx *Context,
+		reqType string,
+		path string, value map[string]interface{}, useToken bool,
+		result any) bool {
+
+	return CDRequestImpl(ctx, sctx, reqType, path, value, useToken, result,
+		ReportErrorToJSON);
 }
