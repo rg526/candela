@@ -134,7 +134,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 <div class="container">
 	<div class="d-flex justify-content-start">
 	{{ range $tag := .TagArray }}
-		<a href="/search?exec=true&is_advanced=false&query={{ $tag.Content }}" class="btn btn-primary m-1">{{ $tag.Content }}</a>
+		<a href="/search?exec=true&is_advanced=false&query={{ $tag.Content }}" class="btn btn-outline-success m-1">{{ $tag.Content }}</a>
 	{{ end }}
 	</div>
 </div>
