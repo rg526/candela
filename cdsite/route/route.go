@@ -69,6 +69,10 @@ func main() {
 	r.POST("/comment/:commentID/respond", func(c *gin.Context) {
 		cdsite.PostCommentResponse(c, &siteCtx)
 	})
+	// tag
+	r.PUT("/tag", func(c *gin.Context) {
+		cdsite.PutTag(c, &siteCtx)
+	})
 
 	// Run CDSITE
 	r.Run(siteCtx.Conf.Host + ":" + strconv.Itoa(siteCtx.Conf.Port))
