@@ -68,6 +68,11 @@ func main() {
 		cdengine.PostCommentResponse(c, &engineCtx)
 	})
 
+	// tag
+	r.PUT("/tag", func(c *gin.Context) {
+		cdengine.PutTag(c, &engineCtx)
+	})
+
 	// Run CDENGINE
 	r.Run(engineCtx.Conf.Host + ":" + strconv.Itoa(engineCtx.Conf.Port))
 }
