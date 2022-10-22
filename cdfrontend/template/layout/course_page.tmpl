@@ -108,11 +108,13 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 		<div class="card-text">
 			{{ $comment.Content }}
 			<div style="margin-top: 6px;">
+				{{ $likeIcon := "fa-thumbs-o-up" }}
+				{{ $likeRespond := true }}
 				{{ if $comment.SelfResponse }}
-				<a href="javascript:void(0)"><i class="fa fa-thumbs-up"></i></a>
-				{{ else }}
-				<a href="javascript:void(0)"><i class="fa fa-thumbs-o-up"></i></a>
+				{{ $likeIcon = "fa-thumbs-up" }}
+				{{ $likeRespond = false }}
 				{{ end }}
+				<a href="javascript:void(0)" onclick="commentRespond({{ $commentID }}, {{ $likeRespond }})" id="comment-{{ $commentID }}-respond"><i class="fa {{ $likeIcon }}"></i></a>
 				&nbsp;
 				{{ $comment.Score }}
 			</div>
@@ -200,6 +202,27 @@ function commentAdd() {
 			"CID":  "{{ .Course.CID }}",
 			"Content": commentContent,
 			"Anonymous": commentIsAnon
+		})
+	}).then((response) => {
+		return response.json();
+	}).then((data) => {
+		if (data.Status != "OK") {
+			throw new Error(data.Error);
+		}
+		// Reload window
+		window.location.reload();
+	}).catch((error) => {
+		alert(error);
+	})
+}
+function commentRespond(commentID, nextResponse) {
+	document.getElementById("comment-" + commentID + "-respond").style.pointerEvents = "none";
+
+	// Submit commentContent PUT request
+	fetch("/comment/" + commentID + "/respond", {
+		method: "POST",
+		body:JSON.stringify({
+			"Like": nextResponse
 		})
 	}).then((response) => {
 		return response.json();
