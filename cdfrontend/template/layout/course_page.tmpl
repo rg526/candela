@@ -73,6 +73,9 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 </div>
 
 
+<!-- Comment section -->
+<div class="container" id="comment-section">
+
 <!--Comment Box-->
 <h4 style="margin-top: 60px;">Comments</h4>
 <form>
@@ -91,7 +94,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 	</fieldset>
 </form>
 
-<div id="comment-list">
+<!-- Comment list -->
 {{ range $comment := .CommentArray }}
 {{ $commentID := $comment.CommentID }}
 <div>
@@ -180,9 +183,9 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 {{ end }}
 
 {{ end }}
-</div>
+</div> <!-- div for comment -->
 
-</div>
+</div> <!-- Comment section -->
 
 
 <!--Tags-->
@@ -222,6 +225,16 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 </div>
 
 <script>
+function replaceCommentSection() {
+	fetch(window.location.href).then((response) => {
+		return response.text();
+	}).then((data) => {
+		let parser = new DOMParser();
+		let page = parser.parseFromString(data, "text/html");
+		document.getElementById("comment-section").replaceWith(page.getElementById("comment-section"));
+	});
+}
+
 document.getElementById("comment-add-text").addEventListener("keydown", (event) => {
 	if (event.keyCode == 13 && event.ctrlKey) {
 		document.getElementById("comment-add-button").click();
@@ -251,7 +264,7 @@ function commentAdd(CID) {
 			throw new Error(data.Error);
 		}
 		// Reload window
-		window.location.reload();
+		replaceCommentSection();
 	}).catch((error) => {
 		alert(error);
 	})
@@ -272,7 +285,7 @@ function commentRespond(commentID, nextResponse) {
 			throw new Error(data.Error);
 		}
 		// Reload window
-		window.location.reload();
+		replaceCommentSection();
 	}).catch((error) => {
 		alert(error);
 	})
@@ -291,7 +304,7 @@ function commentDelete(commentID) {
 			throw new Error(data.Error);
 		}
 		// Reload window
-		window.location.reload();
+		replaceCommentSection();
 	}).catch((error) => {
 		alert(error);
 	})
@@ -326,7 +339,7 @@ function commentEditSend(commentID, CID) {
 			throw new Error(data.Error);
 		}
 		// Reload window
-		window.location.reload();
+		replaceCommentSection();
 	}).catch((error) => {
 		alert(error);
 	})
@@ -361,7 +374,7 @@ function commentReplySend(commentID) {
 			throw new Error(data.Error);
 		}
 		// Reload window
-		window.location.reload();
+		replaceCommentSection();
 	}).catch((error) => {
 		alert(error);
 	})
@@ -380,7 +393,7 @@ function replyDelete(replyID) {
 			throw new Error(data.Error);
 		}
 		// Reload window
-		window.location.reload();
+		replaceCommentSection();
 	}).catch((error) => {
 		alert(error);
 	})
@@ -415,7 +428,7 @@ function replyEditSend(replyID, commentID) {
 			throw new Error(data.Error);
 		}
 		// Reload window
-		window.location.reload();
+		replaceCommentSection();
 	}).catch((error) => {
 		alert(error);
 	})
