@@ -133,14 +133,36 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 <h4 style="margin-top: 60px;">Tags</h4>
 <div class="container">
 	<div class="d-flex justify-content-start">
-	{{ range $tag := .TagArray }}
-		<a href="/search?exec=true&is_advanced=false&query={{ $tag.Content }}" class="btn btn-outline-success m-1">{{ $tag.Content }}</a>
-	{{ end }}
+		<span id="tag-list">
+		{{ range $tag := .TagArray }}
+			<a href="/search?exec=true&is_advanced=false&query={{ $tag.Content }}" class="btn btn-outline-success m-1">{{ $tag.Content }}</a>
+		{{ end }}
+		</span>
+		<button class="btn btn-outline-success m-1" onclick="tagAdd()" id="tag-start"> &nbsp;+&nbsp; </button>
 	</div>
 </div>
 
-<div>
-Fill out this <a target="_blank" href="https://forms.gle/KN4d1Z5DWL9TwwsV7" style="text-decoration: none;">form</a> to add a tag!
+<div class="container" style="margin-top: 10px; display: none;" id="tag-input">
+	<h5>Add a tag</h5>
+	<div style="margin-top: 8px;">
+		<span id="tag-input-staging" style="display: block;">
+			<div class="row">
+				<div class="col-lg-4">
+					<input class="form-control" placeholder="Tag name" id="tag-name">
+				</div>
+			</div>
+			<button class="btn btn-primary" style="margin-top: 8px;" onclick="tagAdd1()">Add</button>
+		</span>
+		<span id="tag-input-final" style="display: none;">
+			<div>
+				<strong> Warning: </strong> This operation cannot be undone. Please confirm if the tag name is correct.
+				<br>
+				However, you can still send us an email if there is a error in tag name to fix it.
+			</div>
+			<button class="btn btn-danger" style="margin-top: 8px;" id="tag-confirm" onclick="tagAddConfirm()">Confirm</button>
+			<button class="btn btn-secondary" style="margin-top: 8px;" id="tag-cancel" onclick="tagAddCancel()">Cancel</button>
+		</span>
+	</div>
 </div>
 
 
@@ -152,6 +174,63 @@ function pageContentToggle(name) {
 	elemLess.hidden = !elemLess.hidden;
 	elemMore.hidden = !elemMore.hidden;
 	elemToggle.innerHTML = elemToggle.innerHTML == "More" ? "Less" : "More";
+}
+
+function tagAdd() {
+	document.getElementById("tag-start").classList.add("disabled");
+	document.getElementById("tag-input-staging").style.display = "block";
+	document.getElementById("tag-input-final").style.display = "none";
+	document.getElementById("tag-name").value = "";
+	document.getElementById("tag-confirm").classList.remove("disabled");
+	document.getElementById("tag-cancel").classList.remove("disabled");
+	document.getElementById("tag-input").style.display = "block";
+}
+function tagAdd1() {
+	const tagName = document.getElementById("tag-name").value;
+	if (tagName == "") {
+		alert("Tag name cannot be empty");
+		return;
+	}
+	document.getElementById("tag-input-staging").style.display = "none";
+	document.getElementById("tag-input-final").style.display = "block";
+	document.getElementById("tag-confirm").innerHTML = "Confirm \"" + tagName + "\"";
+}
+function tagAddCancel() {
+	document.getElementById("tag-input-staging").style.display = "block";
+	document.getElementById("tag-input-final").style.display = "none";
+}
+function tagAddConfirm() {
+	document.getElementById("tag-confirm").classList.add("disabled");
+	document.getElementById("tag-cancel").classList.add("disabled");
+
+	let tagName = document.getElementById("tag-name").value;
+
+	// Do PUT request
+	fetch("/tag", {
+		method: "PUT",
+		body: JSON.stringify({
+			"CID": "{{ .Course.CID }}",
+			"Content": tagName
+		})
+	}).then((response) => {
+		return response.json();
+	}).then((data) => {
+		if (data.Status != "OK") {
+			throw new Error(data.Error);
+		}
+		// Insert new tag
+		let tag = document.createElement("a");
+		tag.href = "/search?exec=true&is_advanced=false&query=" + encodeURIComponent(tagName);
+		tag.classList = "btn btn-outline-success m-1";
+		tag.innerHTML = tagName;
+		document.getElementById("tag-list").appendChild(tag);
+
+		// Recover new tag controls
+		document.getElementById("tag-start").classList.remove("disabled");
+		document.getElementById("tag-input").style.display = "none";
+	}).catch((error) => {
+		alert(error);
+	})
 }
 </script>
 
