@@ -21,12 +21,18 @@ cursor = conn.cursor()
 
 # course table
 for cid, course in course_data.items():
-	sql = "INSERT INTO course (cid, name, description, dept, units, prereq, coreq) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+	sql = "REPLACE INTO course (cid, name, description, dept, units, prereq, coreq) VALUES (%s, %s, %s, %s, %s, %s, %s)"
 	val = (cid, course["name"], course["description"], course["dept"], course["units"], course["prereq"], course["coreq"])
 	cursor.execute(sql, val)
 
 # prof table
 for cid, prof_list in prof_data.items():
+	# Clear this cid first
+	sql = "DELETE FROM prof WHERE cid = %s"
+	val = (cid)
+	cursor.execute(sql, val)
+
+	# Add profs
 	for prof in prof_list:
 		sql = "INSERT INTO prof (cid, name) VALUES (%s, %s)"
 		val = (cid, prof)
