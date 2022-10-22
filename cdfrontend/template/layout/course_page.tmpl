@@ -108,7 +108,12 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 		<div class="card-text">
 			{{ $comment.Content }}
 			<div style="margin-top: 6px;">
+				{{ if $comment.SelfResponse }}
+				<a href="javascript:void(0)"><i class="fa fa-thumbs-up"></i></a>
+				{{ else }}
 				<a href="javascript:void(0)"><i class="fa fa-thumbs-o-up"></i></a>
+				{{ end }}
+				&nbsp;
 				{{ $comment.Score }}
 			</div>
 		</div>

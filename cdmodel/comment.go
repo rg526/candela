@@ -8,6 +8,7 @@ type Comment struct {
 	Self			bool
 	Replies			[]CommentReply
 	Score			int
+	SelfResponse	bool
 }
 
 type CommentReply struct {
