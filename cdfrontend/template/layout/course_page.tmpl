@@ -82,7 +82,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			<textarea class="form-control" id="comment-add-text" rows="2" placeholder="Enter comment here"></textarea>
 			<div class="form-check">
 				<input class="form-check-input" type="checkbox" value="" id="comment-add-is-anon" checked="">
-				<label class="form-check-label" for="comment-add-is-anon"> Post anonymously</label>
+				<label class="form-check-label" for="comment-add-is-anon"> Post anonymously </label>
 			</div>
 		</div>
 		<button type="button" class="btn btn-primary" style="margin-top:10px" id="comment-add-button" onclick="commentAdd()">Send</button>
@@ -106,7 +106,15 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			{{ end }}
 		</div>
 		<div class="card-text">
-			{{ $comment.Content }}
+			<div style="display: block;" id="comment-{{ $commentID }}-edit-original">{{ $comment.Content }}</div>
+			<div style="display: none;" id="comment-{{ $commentID }}-edit-form">
+				<textarea class="form-control" id="comment-{{ $commentID }}-add-text" rows="2"></textarea>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" value="" id="comment-{{ $commentID }}-add-is-anon" checked="">
+					<label class="form-check-label" for="comment-{{ $commentID }}-add-is-anon"> Post anonymously </label>
+				</div>
+				<button type="button" class="btn btn-primary" style="margin-top:10px" id="comment-{{ $commentID }}-add-button" onclick="commentEditSend({{ $commentID }})">Send</button>
+			</div>
 			<div style="margin-top: 6px;">
 				{{ $likeIcon := "fa-thumbs-o-up" }}
 				{{ $likeRespond := true }}
@@ -257,15 +265,18 @@ function commentDelete(commentID) {
 }
 function commentEdit(commentID) {
 	document.getElementById("comment-" + commentID + "-edit").style.pointerEvents = "none";
-	alert("test")
+	document.getElementById("comment-" + commentID + "-add-text").value = document.getElementById("comment-" + commentID + "-edit-original").innerHTML;
+	document.getElementById("comment-" + commentID + "-edit-original").style.display = "none";
+	document.getElementById("comment-" + commentID + "-edit-form").style.display = "block";
 }
-/*
-	const commentContent = document.getElementById("comment-add-text").value;
-	const commentIsAnon = document.getElementById("comment-add-is-anon").checked;
+function commentEditSend(commentID) {
+	document.getElementById("comment-" + commentID + "-add-button").classList.add("disabled");
+	const commentContent = document.getElementById("comment-" + commentID + "-add-text").value;
+	const commentIsAnon = document.getElementById("comment-" + commentID + "-add-is-anon").checked;
 
 	// Submit commentContent PUT request
-	fetch("/comment", {
-		"method": "PUT",
+	fetch("/comment/" + commentID, {
+		"method": "POST",
 		body: JSON.stringify({
 			"CID":  "{{ .Course.CID }}",
 			"Content": commentContent,
@@ -283,7 +294,6 @@ function commentEdit(commentID) {
 		alert(error);
 	})
 }
-*/
 </script>
 
 <script>
