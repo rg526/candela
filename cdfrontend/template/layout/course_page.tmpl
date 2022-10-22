@@ -188,9 +188,12 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 </div> <!-- Comment section -->
 
 
-<!-- Tag section -->
 <!--Tags-->
 <h4 style="margin-top: 60px;">Tags</h4>
+
+<!-- Tag section -->
+<div class="container" id="tag-section">
+
 <div class="container">
 	<div class="d-flex justify-content-start">
 		<span id="tag-list">
@@ -224,6 +227,8 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 		</span>
 	</div>
 </div>
+
+</div> <!-- end of tag section -->
 
 <script>
 function replaceCommentSection() {
@@ -437,6 +442,17 @@ function replyEditSend(replyID, commentID) {
 </script>
 
 <script>
+function replaceTagSection() {
+	fetch(window.location.href).then((response) => {
+		return response.text();
+	}).then((data) => {
+		let parser = new DOMParser();
+		let page = parser.parseFromString(data, "text/html");
+		document.getElementById("tag-section").replaceWith(page.getElementById("tag-section"));
+	});
+}
+
+
 function pageContentToggle(name) {
 	elemLess = document.getElementById(name + "-less");
 	elemMore = document.getElementById(name + "-more");
@@ -484,7 +500,7 @@ function tagAddConfirm(CID) {
 			throw new Error(data.Error);
 		}
 		// Insert new tag
-		window.location.reload();
+		replaceTagSection();
 	}).catch((error) => {
 		alert(error);
 	})
