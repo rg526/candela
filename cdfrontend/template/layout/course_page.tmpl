@@ -106,6 +106,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			{{ if $comment.Self }}
 				<span style="float: right;">
 					<a href="javascript:void(0)" onclick="commentEdit({{ $commentID }})" id="comment-{{ $commentID }}-edit"><i class="fa fa-edit"></i></a>
+					&ensp;
 					<a href="javascript:void(0)" onclick="commentDelete({{ $commentID }})" id="comment-{{ $commentID }}-delete"><i class="fa fa-close"></i></a>
 				</span>
 			{{ end }}
