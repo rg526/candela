@@ -298,11 +298,6 @@ function pageContentToggle(name) {
 
 function tagAdd() {
 	document.getElementById("tag-start").classList.add("disabled");
-	document.getElementById("tag-input-staging").style.display = "block";
-	document.getElementById("tag-input-final").style.display = "none";
-	document.getElementById("tag-name").value = "";
-	document.getElementById("tag-confirm").classList.remove("disabled");
-	document.getElementById("tag-cancel").classList.remove("disabled");
 	document.getElementById("tag-input").style.display = "block";
 }
 function tagAdd1() {
@@ -339,16 +334,7 @@ function tagAddConfirm() {
 			throw new Error(data.Error);
 		}
 		// Insert new tag
-		let tag = document.createElement("a");
-		tag.href = "/search?exec=true&is_advanced=false&query=" + encodeURIComponent(tagName);
-		tag.classList = "btn btn-outline-success m-1";
-		tag.innerHTML = tagName;
-		document.getElementById("tag-list").insertBefore(tag,
-			document.getElementById("tag-start"));
-
-		// Recover new tag controls
-		document.getElementById("tag-start").classList.remove("disabled");
-		document.getElementById("tag-input").style.display = "none";
+		window.location.reload();
 	}).catch((error) => {
 		alert(error);
 	})
