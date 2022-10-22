@@ -312,7 +312,7 @@ func GetCourseTag(ctx *gin.Context, ectx *Context) {
 
 	// Query DB
 	rows, err := ectx.DB.
-		Query(`SELECT content FROM tag
+		Query(`SELECT UNIQUE content FROM tag
 			WHERE cid = ?
 			ORDER BY priority DESC, tagID ASC`,
 			cid)
