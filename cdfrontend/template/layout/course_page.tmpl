@@ -163,6 +163,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			{{ if $reply.Self }}
 				<span style="float: right;">
 					<a href="javascript:void(0)" onclick="replyEdit({{ $replyID }})" id="reply-{{ $replyID }}-edit"><i class="fa fa-edit"></i></a>
+					&ensp;
 					<a href="javascript:void(0)" onclick="replyDelete({{ $replyID }})" id="reply-{{ $replyID }}-delete"><i class="fa fa-close"></i></a>
 				</span>
 			{{ end }}
