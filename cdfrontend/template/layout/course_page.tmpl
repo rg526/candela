@@ -137,8 +137,8 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 		{{ range $tag := .TagArray }}
 			<a href="/search?exec=true&is_advanced=false&query={{ $tag.Content }}" class="btn btn-outline-success m-1">{{ $tag.Content }}</a>
 		{{ end }}
-		</span>
 		<button class="btn btn-outline-success m-1" onclick="tagAdd()" id="tag-start"> &nbsp;+&nbsp; </button>
+		</span>
 	</div>
 </div>
 
@@ -223,7 +223,8 @@ function tagAddConfirm() {
 		tag.href = "/search?exec=true&is_advanced=false&query=" + encodeURIComponent(tagName);
 		tag.classList = "btn btn-outline-success m-1";
 		tag.innerHTML = tagName;
-		document.getElementById("tag-list").appendChild(tag);
+		document.getElementById("tag-list").insertBefore(tag,
+			document.getElementById("tag-start"));
 
 		// Recover new tag controls
 		document.getElementById("tag-start").classList.remove("disabled");
