@@ -144,7 +144,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 	rows, err := ectx.DB.
 		Query(`SELECT
 		comment.commentID, comment.content, comment.time, comment.anonymous, comment.uid, comment.score, user_comment.name,
-		response.responseID,
+		response.commentID,
 		reply.replyID, reply.content, reply.time, reply.anonymous, reply.uid, user_reply.name
 		FROM comment
 		LEFT JOIN comment_reply AS reply

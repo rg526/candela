@@ -20,8 +20,8 @@ CREATE TABLE comment_reply (
 );
 
 CREATE TABLE comment_response (
-	responseID			INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	commentID			INT				NOT NULL,
 	uid					VARCHAR(128)	NOT NULL,
-	time				TEXT			NOT NULL
+	time				TEXT			NOT NULL,
+	PRIMARY KEY(commentID, uid)
 );
