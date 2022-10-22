@@ -79,13 +79,20 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			<!--
 			<label for="exampleTextarea" class="form-label mt-4">Comment Board</label>
 			-->
-			<textarea class="form-control" id="exampleTextarea" rows="3" placeholder="Enter comment here"></textarea>
+			<textarea class="form-control" id="comment-add-text" rows="2" placeholder="Enter comment here"></textarea>
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" value="" id="comment-add-is-anon" checked="">
+				<label class="form-check-label" for="comment-add-is-anon"> Post anonymously</label>
+			</div>
 		</div>
-		<button type="button" class="btn btn-primary" style="margin-top:10px">Send</button>
+		<button type="button" class="btn btn-primary" style="margin-top:10px" id="comment-add-button" onclick="commentAdd()">Send</button>
 	</fieldset>
 </form>
 
+<div id="comment-list">
 {{ range $comment := .CommentArray }}
+{{ $commentID := $comment.CommentID }}
+<div>
 <div class="card border-primary" style="margin-top: 20px">
 	<div class="card-body">
 		<div class="card-title" style="margin-left:7.5px">
@@ -93,8 +100,8 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			<small class="text-muted">({{ $comment.Time }})</small>
 			{{ if $comment.Self }}
 				<span style="float: right;">
-					<a href="javascript:void(0)"><i class="fa fa-edit"></i></a>
-					<a href="javascript:void(0)"><i class="fa fa-close"></i></a>
+					<a href="javascript:void(0)" onclick="commentEdit({{ $commentID }})" id="comment-{{ $commentID }}-edit"><i class="fa fa-edit"></i></a>
+					<a href="javascript:void(0)" onclick="commentDelete({{ $commentID }})" id="comment-{{ $commentID }}-delete"><i class="fa fa-close"></i></a>
 				</span>
 			{{ end }}
 		</div>
@@ -107,6 +114,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 		</div>
 	</div>
 </div>
+
 {{ range $reply := $comment.Replies }}
 <div class="card border-secondary" style="margin-top:5px; margin-left: 30px;">
 	<div class="card-body">
@@ -126,7 +134,11 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 	</div>
 </div>
 {{ end }}
+
 {{ end }}
+</div>
+
+</div>
 
 
 <!--Tags-->
@@ -165,6 +177,86 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 	</div>
 </div>
 
+<script>
+document.getElementById("comment-add-text").addEventListener("keydown", (event) => {
+	if (event.keyCode == 13 && event.ctrlKey) {
+		document.getElementById("comment-add-button").click();
+	}
+})
+function commentAdd() {
+	document.getElementById("comment-add-button").classList.add("disabled");
+	const commentContent = document.getElementById("comment-add-text").value;
+	const commentIsAnon = document.getElementById("comment-add-is-anon").checked;
+
+	// Submit commentContent PUT request
+	fetch("/comment", {
+		method: "PUT",
+		body: JSON.stringify({
+			"CID":  "{{ .Course.CID }}",
+			"Content": commentContent,
+			"Anonymous": commentIsAnon
+		})
+	}).then((response) => {
+		return response.json();
+	}).then((data) => {
+		if (data.Status != "OK") {
+			throw new Error(data.Error);
+		}
+		// Reload window
+		window.location.reload();
+	}).catch((error) => {
+		alert(error);
+	})
+}
+function commentDelete(commentID) {
+	document.getElementById("comment-" + commentID + "-delete").style.pointerEvents = "none";
+
+	// Submit commentContent PUT request
+	fetch("/comment/" + commentID, {
+		method: "DELETE",
+		body:JSON.stringify({})
+	}).then((response) => {
+		return response.json();
+	}).then((data) => {
+		if (data.Status != "OK") {
+			throw new Error(data.Error);
+		}
+		// Reload window
+		window.location.reload();
+	}).catch((error) => {
+		alert(error);
+	})
+}
+function commentEdit(commentID) {
+	document.getElementById("comment-" + commentID + "-edit").style.pointerEvents = "none";
+	alert("test")
+}
+/*
+	const commentContent = document.getElementById("comment-add-text").value;
+	const commentIsAnon = document.getElementById("comment-add-is-anon").checked;
+
+	// Submit commentContent PUT request
+	fetch("/comment", {
+		"method": "PUT",
+		body: JSON.stringify({
+			"CID":  "{{ .Course.CID }}",
+			"Content": commentContent,
+			"Anonymous": commentIsAnon
+		})
+	}).then((response) => {
+		return response.json();
+	}).then((data) => {
+		if (data.Status != "OK") {
+			throw new Error(data.Error);
+		}
+		// Reload window
+		window.location.reload();
+	}).catch((error) => {
+		alert(error);
+	})
+}
+*/
+</script>
 
 <script>
 function pageContentToggle(name) {
