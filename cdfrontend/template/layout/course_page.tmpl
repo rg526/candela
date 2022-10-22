@@ -156,13 +156,22 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			<small class="text-muted">({{ $reply.Time }})</small>
 			{{ if $reply.Self }}
 				<span style="float: right;">
-					<a href="javascript:void(0)"><i class="fa fa-edit"></i></a>
+					<a href="javascript:void(0)" onclick="replyEdit({{ $replyID }})" id="reply-{{ $replyID }}-edit"><i class="fa fa-edit"></i></a>
 					<a href="javascript:void(0)" onclick="replyDelete({{ $replyID }})" id="reply-{{ $replyID }}-delete"><i class="fa fa-close"></i></a>
 				</span>
 			{{ end }}
 		</div>
 		<div class="card-text">
-			{{ $reply.Content }}
+			<div style="display: block;" id="reply-{{ $replyID }}-edit-original">{{ $reply.Content }}</div>
+			<div style="display: none;" id="reply-{{ $replyID }}-edit-form">
+				<textarea class="form-control" id="reply-{{ $replyID }}-add-text" rows="2"></textarea>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" value="" id="reply-{{ $replyID }}-add-is-anon" value="0">
+					<label class="form-check-label" for="reply-{{ $replyID }}-add-is-anon"> Post anonymously </label>
+				</div>
+				<button type="button" class="btn btn-primary" style="margin-top:10px" id="reply-{{ $replyID }}-add-button" onclick="replyEditSend({{ $replyID }}, {{ $commentID }})">Send</button>
+			</div>
+
 		</div>
 	</div>
 </div>
@@ -313,6 +322,7 @@ function commentEditSend(commentID) {
 	})
 }
 
+// replies
 function commentReply(commentID) {
 	document.getElementById("comment-" + commentID + "-reply").style.pointerEvents = "none";
 	document.getElementById("comment-" + commentID + "-reply-form").style.display = "block";
@@ -349,6 +359,37 @@ function replyDelete(replyID) {
 	fetch("/commentReply/" + replyID, {
 		method: "DELETE",
 		body:JSON.stringify({})
+	}).then((response) => {
+		return response.json();
+	}).then((data) => {
+		if (data.Status != "OK") {
+			throw new Error(data.Error);
+		}
+		// Reload window
+		window.location.reload();
+	}).catch((error) => {
+		alert(error);
+	})
+}
+function replyEdit(replyID) {
+	document.getElementById("reply-" + replyID + "-edit").style.pointerEvents = "none";
+	document.getElementById("reply-" + replyID + "-add-text").value = document.getElementById("reply-" + replyID + "-edit-original").innerHTML;
+	document.getElementById("reply-" + replyID + "-edit-original").style.display = "none";
+	document.getElementById("reply-" + replyID + "-edit-form").style.display = "block";
+}
+function replyEditSend(replyID, commentID) {
+	document.getElementById("reply-" + replyID + "-add-button").classList.add("disabled");
+	const replyContent = document.getElementById("reply-" + replyID + "-add-text").value;
+	const replyIsAnon = document.getElementById("reply-" + replyID + "-add-is-anon").checked;
+
+	// POST request
+	fetch("/commentReply/" + replyID, {
+		"method": "POST",
+		body: JSON.stringify({
+			"CommentID": commentID,
+			"Content": replyContent,
+			"Anonymous": replyIsAnon
+		})
 	}).then((response) => {
 		return response.json();
 	}).then((data) => {
