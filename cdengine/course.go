@@ -144,6 +144,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 	rows, err := ectx.DB.
 		Query(`SELECT
 		comment.commentID, comment.content, comment.time, comment.anonymous, comment.uid, comment.score, user_comment.name,
+		response.responseID,
 		reply.replyID, reply.content, reply.time, reply.anonymous, reply.uid, user_reply.name
 		FROM comment
 		LEFT JOIN comment_reply AS reply
@@ -152,9 +153,12 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 		ON comment.uid = user_comment.uid
 		LEFT JOIN user AS user_reply
 		ON reply.uid = user_reply.uid
+		LEFT JOIN comment_response AS response
+		ON comment.commentID = response.commentID AND comment.uid = ?
 		WHERE cid = ?
 		ORDER BY comment.score DESC, comment.commentID ASC,
 			reply.replyID ASC`,
+			user.UID,
 			cid)
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
@@ -173,6 +177,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 			UID				string
 			Score			int
 			Author			string
+			SelfResponse	sql.NullInt32
 		}
 		var replyQuery struct {
 			ReplyID			sql.NullInt32
@@ -186,6 +191,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 		err = rows.Scan(&commentQuery.CommentID, &commentQuery.Content, &commentQuery.Time,
 			&commentQuery.Anonymous, &commentQuery.UID, &commentQuery.Score,
 			&commentQuery.Author,
+			&commentQuery.SelfResponse,
 			&replyQuery.ReplyID, &replyQuery.Content, &replyQuery.Time, &replyQuery.Anonymous, &replyQuery.UID, &replyQuery.Author)
 		if err != nil {
 			ReportError(ctx, http.StatusInternalServerError, err)
@@ -200,6 +206,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 			comment.Content = commentQuery.Content
 			comment.Self = commentQuery.UID == user.UID
 			comment.Score = commentQuery.Score
+			comment.SelfResponse = commentQuery.SelfResponse.Valid
 
 			// Convert time from unix ts (string) into readable string
 			commentTimeUnix, err := strconv.ParseInt(commentQuery.Time, 10, 64)
