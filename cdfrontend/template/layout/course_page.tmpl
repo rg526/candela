@@ -231,6 +231,10 @@ function commentAdd(CID) {
 	document.getElementById("comment-add-button").classList.add("disabled");
 	const commentContent = document.getElementById("comment-add-text").value;
 	const commentIsAnon = document.getElementById("comment-add-is-anon").checked;
+	if (commentContent == "") {
+		alert("Comment is empty");
+		return;
+	}
 
 	// PUT request
 	fetch("/comment", {
@@ -302,6 +306,10 @@ function commentEditSend(commentID, CID) {
 	document.getElementById("comment-" + commentID + "-add-button").classList.add("disabled");
 	const commentContent = document.getElementById("comment-" + commentID + "-add-text").value;
 	const commentIsAnon = document.getElementById("comment-" + commentID + "-add-is-anon").checked;
+	if (commentContent == "") {
+		alert("Comment is empty");
+		return;
+	}
 
 	// POST request
 	fetch("/comment/" + commentID, {
@@ -333,6 +341,10 @@ function commentReplySend(commentID) {
 	document.getElementById("comment-" + commentID + "-reply-button").classList.add("disabled");
 	const replyContent = document.getElementById("comment-" + commentID + "-reply-text").value;
 	const replyIsAnon = document.getElementById("comment-" + commentID + "-reply-is-anon").checked;
+	if (replyContent == "") {
+		alert("Reply is empty");
+		return;
+	}
 
 	// PUT request
 	fetch("/commentReply", {
@@ -383,6 +395,10 @@ function replyEditSend(replyID, commentID) {
 	document.getElementById("reply-" + replyID + "-add-button").classList.add("disabled");
 	const replyContent = document.getElementById("reply-" + replyID + "-add-text").value;
 	const replyIsAnon = document.getElementById("reply-" + replyID + "-add-is-anon").checked;
+	if (replyContent == "") {
+		alert("Reply is empty");
+		return;
+	}
 
 	// POST request
 	fetch("/commentReply/" + replyID, {
