@@ -2,6 +2,8 @@
 
 {{ template "base/header" . }}
 
+{{ $CID := .Course.CID }}
+
 <h2 style="margin-left:7.5px">{{ .Course.CID }}: {{ .Course.Name }}</h2>
 <div class="container">
 	<div class="row">
@@ -85,7 +87,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 				<label class="form-check-label" for="comment-add-is-anon"> Post anonymously </label>
 			</div>
 		</div>
-		<button type="button" class="btn btn-primary" style="margin-top:10px" id="comment-add-button" onclick="commentAdd()">Send</button>
+		<button type="button" class="btn btn-primary" style="margin-top:10px" id="comment-add-button" onclick="commentAdd('{{ $CID }}')">Send</button>
 	</fieldset>
 </form>
 
@@ -113,7 +115,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 					<input class="form-check-input" type="checkbox" value="" id="comment-{{ $commentID }}-add-is-anon" value="0">
 					<label class="form-check-label" for="comment-{{ $commentID }}-add-is-anon"> Post anonymously </label>
 				</div>
-				<button type="button" class="btn btn-primary" style="margin-top:10px" id="comment-{{ $commentID }}-add-button" onclick="commentEditSend({{ $commentID }})">Send</button>
+				<button type="button" class="btn btn-primary" style="margin-top:10px" id="comment-{{ $commentID }}-add-button" onclick="commentEditSend({{ $commentID }}, '{{ $CID }}')">Send</button>
 			</div>
 			<div style="margin-top: 6px;">
 				{{ $likeIcon := "fa-thumbs-o-up" }}
@@ -213,7 +215,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 				<br>
 				However, you can still send us an email if there is a error in tag name to fix it.
 			</div>
-			<button class="btn btn-danger" style="margin-top: 8px;" id="tag-confirm" onclick="tagAddConfirm()">Confirm</button>
+			<button class="btn btn-danger" style="margin-top: 8px;" id="tag-confirm" onclick="tagAddConfirm('{{ $CID }}')">Confirm</button>
 			<button class="btn btn-secondary" style="margin-top: 8px;" id="tag-cancel" onclick="tagAddCancel()">Cancel</button>
 		</span>
 	</div>
@@ -225,7 +227,7 @@ document.getElementById("comment-add-text").addEventListener("keydown", (event) 
 		document.getElementById("comment-add-button").click();
 	}
 })
-function commentAdd() {
+function commentAdd(CID) {
 	document.getElementById("comment-add-button").classList.add("disabled");
 	const commentContent = document.getElementById("comment-add-text").value;
 	const commentIsAnon = document.getElementById("comment-add-is-anon").checked;
@@ -234,7 +236,7 @@ function commentAdd() {
 	fetch("/comment", {
 		method: "PUT",
 		body: JSON.stringify({
-			"CID":  "{{ .Course.CID }}",
+			"CID":  CID,
 			"Content": commentContent,
 			"Anonymous": commentIsAnon
 		})
@@ -296,7 +298,7 @@ function commentEdit(commentID) {
 	document.getElementById("comment-" + commentID + "-edit-original").style.display = "none";
 	document.getElementById("comment-" + commentID + "-edit-form").style.display = "block";
 }
-function commentEditSend(commentID) {
+function commentEditSend(commentID, CID) {
 	document.getElementById("comment-" + commentID + "-add-button").classList.add("disabled");
 	const commentContent = document.getElementById("comment-" + commentID + "-add-text").value;
 	const commentIsAnon = document.getElementById("comment-" + commentID + "-add-is-anon").checked;
@@ -305,7 +307,7 @@ function commentEditSend(commentID) {
 	fetch("/comment/" + commentID, {
 		"method": "POST",
 		body: JSON.stringify({
-			"CID":  "{{ .Course.CID }}",
+			"CID":  CID,
 			"Content": commentContent,
 			"Anonymous": commentIsAnon
 		})
@@ -432,7 +434,7 @@ function tagAddCancel() {
 	document.getElementById("tag-input-staging").style.display = "block";
 	document.getElementById("tag-input-final").style.display = "none";
 }
-function tagAddConfirm() {
+function tagAddConfirm(CID) {
 	document.getElementById("tag-confirm").classList.add("disabled");
 	document.getElementById("tag-cancel").classList.add("disabled");
 
@@ -442,7 +444,7 @@ function tagAddConfirm() {
 	fetch("/tag", {
 		method: "PUT",
 		body: JSON.stringify({
-			"CID": "{{ .Course.CID }}",
+			"CID": CID,
 			"Content": tagName
 		})
 	}).then((response) => {
