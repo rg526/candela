@@ -2,7 +2,6 @@ package cdengine
 
 import (
 	"time"
-	"html"
 	"net/http"
 	"github.com/gin-gonic/gin"
 )
@@ -39,10 +38,9 @@ func PutComment(ctx *gin.Context, ectx *Context) {
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
-	escapeContent := html.EscapeString(reqBody.Content)
 	res, err := ectx.DB.
 		Exec("INSERT INTO comment (cid, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)",
-			reqBody.CID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
+			reqBody.CID, user.UID, reqBody.Content, time.Now().Unix(), isAnonymous)
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
 		return
@@ -93,10 +91,9 @@ func PostComment(ctx *gin.Context, ectx *Context) {
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
-	escapeContent := html.EscapeString(reqBody.Content)
 	_, err = ectx.DB.
 		Exec("UPDATE comment SET cid = ?, content = ?, time = ?, anonymous = ? WHERE commentID = ? AND uid = ?",
-			reqBody.CID, escapeContent, time.Now().Unix(), isAnonymous, commentID, user.UID)
+			reqBody.CID, reqBody.Content, time.Now().Unix(), isAnonymous, commentID, user.UID)
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
 		return
@@ -168,10 +165,9 @@ func PutCommentReply(ctx *gin.Context, ectx *Context) {
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
-	escapeContent := html.EscapeString(reqBody.Content)
 	res, err := ectx.DB.
 		Exec("INSERT INTO comment_reply (commentID, uid, content, time, anonymous) VALUES (?, ?, ?, ?, ?)",
-			reqBody.CommentID, user.UID, escapeContent, time.Now().Unix(), isAnonymous)
+			reqBody.CommentID, user.UID, reqBody.Content, time.Now().Unix(), isAnonymous)
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
 		return
@@ -222,10 +218,9 @@ func PostCommentReply(ctx *gin.Context, ectx *Context) {
 	if reqBody.Anonymous {
 		isAnonymous = 1
 	}
-	escapeContent := html.EscapeString(reqBody.Content)
 	_, err = ectx.DB.
 		Exec("UPDATE comment_reply SET commentID = ?, content = ?, time = ?, anonymous = ? WHERE replyID = ? AND uid = ?",
-			reqBody.CommentID, escapeContent, time.Now().Unix(), isAnonymous, replyID, user.UID)
+			reqBody.CommentID, reqBody.Content, time.Now().Unix(), isAnonymous, replyID, user.UID)
 	if err != nil {
 		ReportError(ctx, http.StatusInternalServerError, err)
 		return
