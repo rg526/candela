@@ -148,6 +148,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 </div>
 
 {{ range $reply := $comment.Replies }}
+{{ $replyID := $reply.ReplyID }}
 <div class="card border-secondary" style="margin-top:5px; margin-left: 30px;">
 	<div class="card-body">
 		<div class="card-title" style="margin-left:7.5px">
@@ -156,7 +157,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			{{ if $reply.Self }}
 				<span style="float: right;">
 					<a href="javascript:void(0)"><i class="fa fa-edit"></i></a>
-					<a href="javascript:void(0)"><i class="fa fa-close"></i></a>
+					<a href="javascript:void(0)" onclick="replyDelete({{ $replyID }})" id="reply-{{ $replyID }}-delete"><i class="fa fa-close"></i></a>
 				</span>
 			{{ end }}
 		</div>
@@ -220,7 +221,7 @@ function commentAdd() {
 	const commentContent = document.getElementById("comment-add-text").value;
 	const commentIsAnon = document.getElementById("comment-add-is-anon").checked;
 
-	// Submit commentContent PUT request
+	// PUT request
 	fetch("/comment", {
 		method: "PUT",
 		body: JSON.stringify({
@@ -243,7 +244,7 @@ function commentAdd() {
 function commentRespond(commentID, nextResponse) {
 	document.getElementById("comment-" + commentID + "-respond").style.pointerEvents = "none";
 
-	// Submit commentContent PUT request
+	// POST request
 	fetch("/comment/" + commentID + "/respond", {
 		method: "POST",
 		body:JSON.stringify({
@@ -264,7 +265,7 @@ function commentRespond(commentID, nextResponse) {
 function commentDelete(commentID) {
 	document.getElementById("comment-" + commentID + "-delete").style.pointerEvents = "none";
 
-	// Submit commentContent PUT request
+	// DELETE request
 	fetch("/comment/" + commentID, {
 		method: "DELETE",
 		body:JSON.stringify({})
@@ -291,7 +292,7 @@ function commentEditSend(commentID) {
 	const commentContent = document.getElementById("comment-" + commentID + "-add-text").value;
 	const commentIsAnon = document.getElementById("comment-" + commentID + "-add-is-anon").checked;
 
-	// Submit commentContent PUT request
+	// POST request
 	fetch("/comment/" + commentID, {
 		"method": "POST",
 		body: JSON.stringify({
@@ -321,7 +322,7 @@ function commentReplySend(commentID) {
 	const replyContent = document.getElementById("comment-" + commentID + "-reply-text").value;
 	const replyIsAnon = document.getElementById("comment-" + commentID + "-reply-is-anon").checked;
 
-	// Submit commentContent PUT request
+	// PUT request
 	fetch("/commentReply", {
 		"method": "PUT",
 		body: JSON.stringify({
@@ -341,7 +342,25 @@ function commentReplySend(commentID) {
 		alert(error);
 	})
 }
+function replyDelete(replyID) {
+	document.getElementById("reply-" + replyID + "-delete").style.pointerEvents = "none";
 
+	// DELETE request
+	fetch("/commentReply/" + replyID, {
+		method: "DELETE",
+		body:JSON.stringify({})
+	}).then((response) => {
+		return response.json();
+	}).then((data) => {
+		if (data.Status != "OK") {
+			throw new Error(data.Error);
+		}
+		// Reload window
+		window.location.reload();
+	}).catch((error) => {
+		alert(error);
+	})
+}
 </script>
 
 <script>
