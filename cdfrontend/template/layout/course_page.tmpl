@@ -81,7 +81,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			-->
 			<textarea class="form-control" id="comment-add-text" rows="2" placeholder="Enter comment here"></textarea>
 			<div class="form-check">
-				<input class="form-check-input" type="checkbox" value="" id="comment-add-is-anon" checked="">
+				<input class="form-check-input" type="checkbox" value="" id="comment-add-is-anon" value="0">
 				<label class="form-check-label" for="comment-add-is-anon"> Post anonymously </label>
 			</div>
 		</div>
@@ -110,7 +110,7 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 			<div style="display: none;" id="comment-{{ $commentID }}-edit-form">
 				<textarea class="form-control" id="comment-{{ $commentID }}-add-text" rows="2"></textarea>
 				<div class="form-check">
-					<input class="form-check-input" type="checkbox" value="" id="comment-{{ $commentID }}-add-is-anon" checked="">
+					<input class="form-check-input" type="checkbox" value="" id="comment-{{ $commentID }}-add-is-anon" value="0">
 					<label class="form-check-label" for="comment-{{ $commentID }}-add-is-anon"> Post anonymously </label>
 				</div>
 				<button type="button" class="btn btn-primary" style="margin-top:10px" id="comment-{{ $commentID }}-add-button" onclick="commentEditSend({{ $commentID }})">Send</button>
@@ -126,7 +126,22 @@ Fill out this <a target="_blank" href="https://forms.gle/bGfK5areKuayaYFS6" styl
 				&nbsp;
 				{{ $comment.Score }}
 				&emsp;&emsp;
-				<a href="javascript:void(0)" onclick="commentRespond({{ $commentID }}, {{ $likeRespond }})" id="comment-{{ $commentID }}-respond"><i class="fa fa-reply"></i></a>
+				<a href="javascript:void(0)" onclick="commentReply({{ $commentID }})" id="comment-{{ $commentID }}-reply"><i class="fa fa-reply"></i></a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="card border-secondary" style="margin-top:5px; margin-left: 30px; display: none;" id="comment-{{ $commentID }}-reply-form">
+	<div class="card-body">
+		<div class="card-text">
+			<div>
+				<textarea class="form-control" id="comment-{{ $commentID }}-reply-text" rows="2"></textarea>
+				<div class="form-check">
+					<input class="form-check-input" type="checkbox" value="" id="comment-{{ $commentID }}-reply-is-anon" value="0">
+					<label class="form-check-label" for="comment-{{ $commentID }}-reply-is-anon"> Post anonymously </label>
+				</div>
+				<button type="button" class="btn btn-primary" style="margin-top:10px" id="comment-{{ $commentID }}-reply-button" onclick="commentReplySend({{ $commentID }})">Send</button>
 			</div>
 		</div>
 	</div>
@@ -296,6 +311,37 @@ function commentEditSend(commentID) {
 		alert(error);
 	})
 }
+
+function commentReply(commentID) {
+	document.getElementById("comment-" + commentID + "-reply").style.pointerEvents = "none";
+	document.getElementById("comment-" + commentID + "-reply-form").style.display = "block";
+}
+function commentReplySend(commentID) {
+	document.getElementById("comment-" + commentID + "-reply-button").classList.add("disabled");
+	const replyContent = document.getElementById("comment-" + commentID + "-reply-text").value;
+	const replyIsAnon = document.getElementById("comment-" + commentID + "-reply-is-anon").checked;
+
+	// Submit commentContent PUT request
+	fetch("/commentReply", {
+		"method": "PUT",
+		body: JSON.stringify({
+			"CommentID": commentID,
+			"Content": replyContent,
+			"Anonymous": replyIsAnon
+		})
+	}).then((response) => {
+		return response.json();
+	}).then((data) => {
+		if (data.Status != "OK") {
+			throw new Error(data.Error);
+		}
+		// Reload window
+		window.location.reload();
+	}).catch((error) => {
+		alert(error);
+	})
+}
+
 </script>
 
 <script>
