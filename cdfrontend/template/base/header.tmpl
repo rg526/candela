@@ -5,7 +5,13 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title> {{ .Title }} </title>
+
+		<!-- PWA flags -->
 		<link rel="manifest" href="/manifest.json">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-title" content="CMU Course List">
+
 		<script>
 var themeID = "theme-css"
 if (!document.getElementById(themeID)) {
