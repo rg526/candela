@@ -12,22 +12,8 @@
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-title" content="CMU Course List">
 
-		<script>
-var themeID = "theme-css"
-if (!document.getElementById(themeID)) {
-	var head  = document.getElementsByTagName('head')[0];
-	var link  = document.createElement('link');
-	link.id   = themeID;
-	link.rel  = "stylesheet";
-	link.type = "text/css";
-	if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-		link.href = "/css/dark.css";
-	} else {
-		link.href = "/css/light.css";
-	}
-	head.appendChild(link);
-}
-		</script>
+		<link rel="stylesheet" href="/css/light.css" media="(prefers-color-scheme: light)">
+		<link rel="stylesheet" href="/css/dark.css" media="(prefers-color-scheme: dark)">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
     </head>
 
