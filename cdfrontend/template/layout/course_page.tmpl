@@ -322,6 +322,13 @@ function commentEdit(commentID) {
 	document.getElementById("comment-" + commentID + "-add-text").value = document.getElementById("comment-" + commentID + "-edit-original").innerHTML;
 	document.getElementById("comment-" + commentID + "-edit-original").style.display = "none";
 	document.getElementById("comment-" + commentID + "-edit-form").style.display = "block";
+
+	// Set ctrl-enter to submit
+	document.getElementById("comment-" + commentID + "-add-text").addEventListener("keydown", (event) => {
+		if (event.keyCode == 13 && event.ctrlKey) {
+			document.getElementById("comment-" + commentID + "-add-button").click();
+		}
+	})
 }
 function commentEditSend(commentID, CID) {
 	document.getElementById("comment-" + commentID + "-add-button").classList.add("disabled");
@@ -418,6 +425,13 @@ function replyEdit(replyID) {
 	document.getElementById("reply-" + replyID + "-add-text").value = document.getElementById("reply-" + replyID + "-edit-original").innerHTML;
 	document.getElementById("reply-" + replyID + "-edit-original").style.display = "none";
 	document.getElementById("reply-" + replyID + "-edit-form").style.display = "block";
+
+	// Set ctrl-enter to submit
+	document.getElementById("reply-" + replyID + "-add-text").addEventListener("keydown", (event) => {
+		if (event.keyCode == 13 && event.ctrlKey) {
+			document.getElementById("reply-" + replyID + "-add-button").click();
+		}
+	})
 }
 function replyEditSend(replyID, commentID) {
 	document.getElementById("reply-" + replyID + "-add-button").classList.add("disabled");
