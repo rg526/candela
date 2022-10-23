@@ -357,6 +357,13 @@ function commentEditSend(commentID, CID) {
 function commentReply(commentID) {
 	document.getElementById("comment-" + commentID + "-reply").style.pointerEvents = "none";
 	document.getElementById("comment-" + commentID + "-reply-form").style.display = "block";
+
+	// Set ctrl-enter to submit
+	document.getElementById("comment-" + commentID + "-reply-text").addEventListener("keydown", (event) => {
+		if (event.keyCode == 13 && event.ctrlKey) {
+			document.getElementById("comment-" + commentID + "-reply-button").click();
+		}
+	})
 }
 function commentReplySend(commentID) {
 	document.getElementById("comment-" + commentID + "-reply-button").classList.add("disabled");
