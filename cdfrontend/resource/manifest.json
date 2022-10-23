@@ -1,0 +1,8 @@
+{
+  "name": "CMU Course List",
+  "short_name": "CMU Course List",
+  "display": "standalone",
+  "background_color": "#007CFF",
+  "start_url": "https://cmucourselist.org",
+  "description": "CMU Course List"
+}

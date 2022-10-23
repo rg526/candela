@@ -23,6 +23,7 @@ func main() {
 	r.Static("/css", "../../cdfrontend/css")
 	r.Static("/js", "../../cdfrontend/js")
 	r.StaticFile("/robots.txt", "../../cdfrontend/resource/robots.txt")
+	r.StaticFile("/manifest.json", "../../cdfrontend/resource/manifest.json")
 	r.GET("/", func(c *gin.Context) {
 		cdsite.GetHome(c, &siteCtx)
 	})
