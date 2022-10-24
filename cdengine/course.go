@@ -154,7 +154,7 @@ func GetCourseComment(ctx *gin.Context, ectx *Context) {
 		LEFT JOIN user AS user_reply
 		ON reply.uid = user_reply.uid
 		LEFT JOIN comment_response AS response
-		ON comment.commentID = response.commentID AND comment.uid = ?
+		ON comment.commentID = response.commentID AND response.uid = ?
 		WHERE cid = ?
 		ORDER BY comment.score DESC, comment.commentID ASC,
 			reply.replyID ASC`,
