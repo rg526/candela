@@ -29,7 +29,7 @@ for cid, course in course_data.items():
 for cid, prof_list in prof_data.items():
 	# Clear this cid first
 	sql = "DELETE FROM prof WHERE cid = %s"
-	val = (cid)
+	val = (cid,)
 	cursor.execute(sql, val)
 
 	# Add profs
