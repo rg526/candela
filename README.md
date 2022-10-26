@@ -13,7 +13,7 @@ Project Candela contains the following modules:
 - CDSite: A website interface to CDEngine (https://cmucourselist.org)
 - CDFrontend: Frontend things
 
-PROJCD is designed to be modular. You can write your own client to CDEngine (Android, command-line, GUI client, browser extension, etc.) using CDAPI. 
+PROJCD is designed to be modular. You can write your own client to CDEngine (Android, command-line, GUI client, browser extension, etc.) using CDAPI. And you can access the CDAPI endpoint at https://api.cmucourselist.org.
 
 ## Getting Started
 
